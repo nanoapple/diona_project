@@ -12,7 +12,8 @@ import {
   User, 
   CheckSquare,
   Menu,
-  X
+  X,
+  Users
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -59,6 +60,7 @@ const Sidebar = () => {
         { to: "/documents", icon: FileText, label: "Documents" },
       ],
       psychologist: [
+        { to: "/clients", icon: Users, label: "Clients" },
         { to: "/assessments", icon: ClipboardCheck, label: "Assessments" },
         { to: "/reports", icon: Book, label: "Reports" },
       ]

@@ -13,6 +13,7 @@ import AiAssistant from "./pages/AiAssistant";
 import Documents from "./pages/Documents";
 import Assessments from "./pages/Assessments";
 import Reports from "./pages/Reports";
+import Clients from "./pages/Clients";
 import Profile from "./pages/Profile";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/documents" element={<Documents />} />
               <Route path="/assessments" element={<Assessments />} />
               <Route path="/reports" element={<Reports />} />
+              <Route path="/clients" element={<Clients />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
             <Route path="*" element={<NotFound />} />
