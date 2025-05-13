@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -185,13 +184,13 @@ const Reports = () => {
   const reportSectionTemplates = [
     { id: 'clientDetails', title: '1. Client Details', placeholder: 'Enter client details including name, DOB, address, etc.' },
     { id: 'introduction', title: '2. Introduction', placeholder: 'Introduce the purpose of this report and assessment.' },
-    { id: 'backgroundAndIssues', title: '3. Background and Issues', placeholder: 'Describe the background of the case and the client's issues.' },
-    { id: 'suitableEmploymentRequirements', title: '4. Suitable Employment Requirements', placeholder: 'Define the requirements for suitable employment considering the client's condition.' },
+    { id: 'backgroundAndIssues', title: '3. Background and Issues', placeholder: 'Describe the background of the case and the client\'s issues.' },
+    { id: 'suitableEmploymentRequirements', title: '4. Suitable Employment Requirements', placeholder: 'Define the requirements for suitable employment considering the client\'s condition.' },
     { id: 'investigationAndEnquiry', title: '5. Investigation and Enquiry', placeholder: 'Detail the investigation and enquiry process undertaken.' },
     { id: 'injuryHistory', title: '6. Injury History', placeholder: 'Provide a comprehensive history of the injury and its progression.' },
-    { id: 'capacity', title: '7. Capacity', placeholder: 'Assess the client's current capacity for work and daily activities.' },
+    { id: 'capacity', title: '7. Capacity', placeholder: 'Assess the client\'s current capacity for work and daily activities.' },
     { id: 'returnToWorkHistory', title: '8. Return to Work History', placeholder: 'Document any attempts to return to work and their outcomes.' },
-    { id: 'trainingAndEmploymentHistory', title: '9. Training and Employment History', placeholder: 'Detail the client's educational background, qualifications, and employment history.' },
+    { id: 'trainingAndEmploymentHistory', title: '9. Training and Employment History', placeholder: 'Detail the client\'s educational background, qualifications, and employment history.' },
     { id: 'cognitiveImpacts', title: '10. Cognitive Impacts on Employability', placeholder: 'Assess how cognitive functioning affects employability.' },
     { id: 'retainedKSAs', title: '11. Retained Knowledge, Skills and Abilities', placeholder: 'Identify the KSAs the client has maintained despite their injury.' },
     { id: 'rehabilitationPlans', title: '12. Workplace Rehabilitation and Injury Management Plans', placeholder: 'Outline rehabilitation plans and their effectiveness.' },
@@ -350,10 +349,8 @@ const Reports = () => {
           
           backgroundAndIssues: `${activeReport.patientName} was involved in ${activeReport.type === 'workers_comp' ? 'a workplace incident on [Date] while performing duties as [Occupation]' : 'a motor vehicle accident on [Date] while [circumstances of accident]'}. The client reports experiencing [key symptoms] since the incident, which have significantly impacted daily functioning and ability to work.`,
           
-          // Generate placeholders for other sections
           suitableEmploymentRequirements: 'Based on the client\'s current psychological presentation, suitable employment would need to accommodate the following requirements: [list requirements]',
           
-          // More placeholder content for other sections...
           summaryAndConclusion: `In summary, ${activeReport.patientName} continues to experience significant psychological symptoms as a direct result of the ${activeReport.type === 'workers_comp' ? 'workplace incident' : 'motor vehicle accident'}. These symptoms are having a substantial impact on daily functioning and work capacity. With appropriate treatment as outlined in this report, prognosis for improvement is [prognosis].`,
           
           expertDeclaration: 'I declare that I have made all the inquiries that I believe are desirable and appropriate, and that no matters of significance that I regard as relevant have, to my knowledge, been withheld from the court.',

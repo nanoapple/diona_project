@@ -1,537 +1,621 @@
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import { User, FileText, ClipboardCheck, Search, Calendar, Download, Phone, Mail, MapPin, Clipboard, FileUp } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
+import { Users, User, FileText, ClipboardCheck, FileCheck, File } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
 
 interface Client {
   id: string;
   name: string;
+  dateOfBirth: string;
   email: string;
   phone: string;
   address: string;
-  dateOfBirth: string;
   dateOfInjury: string;
   injuryType: string;
   referralSource: string;
-  referralDate: string;
-  assessments: {
-    id: string;
-    title: string;
-    date: string;
-    type: string;
-    status: 'completed' | 'in_progress' | 'pending';
-    score?: string;
-  }[];
-  interviews: {
-    id: string;
-    title: string;
-    date: string;
-    status: 'completed' | 'in_progress' | 'pending';
-    summary?: string;
-  }[];
-  documents: {
-    id: string;
-    title: string;
-    type: string;
-    uploadedBy: string;
-    date: string;
-    fileSize: string;
-  }[];
+  notes: string;
+  assessments: Assessment[];
+  interviews: Interview[];
+  documents: Document[];
+}
+
+interface Assessment {
+  id: string;
+  title: string;
+  date: string;
+  type: string;
+  status: 'completed' | 'in_progress' | 'pending';
+  score?: string;
+  summary?: string;
+}
+
+interface Interview {
+  id: string;
+  title: string;
+  date: string;
+  status: 'completed' | 'in_progress' | 'pending';
+  summary?: string;
+}
+
+interface Document {
+  id: string;
+  title: string;
+  date: string;
+  type: 'medical' | 'legal' | 'assessment' | 'personal' | 'other';
+  uploadedBy: string;
+  fileSize: string;
 }
 
 const Clients = () => {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeClient, setActiveClient] = useState<Client | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [editMode, setEditMode] = useState(false);
-  const [editedClient, setEditedClient] = useState<Partial<Client>>({});
-
-  useEffect(() => {
-    const fetchClients = async () => {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const mockClients: Client[] = [
+  const { toast } = useToast();
+  const [clients, setClients] = useState<Client[]>([
+    {
+      id: '1',
+      name: 'John Doe',
+      dateOfBirth: '1985-06-12',
+      email: 'john.doe@example.com',
+      phone: '555-123-4567',
+      address: '123 Main St, Sydney NSW 2000',
+      dateOfInjury: '2023-01-15',
+      injuryType: 'Workplace Injury - Back',
+      referralSource: 'WorkCover Insurance',
+      notes: 'Client has reported significant psychological distress following the workplace incident. Initial assessment indicates development of adjustment disorder with anxiety features.',
+      assessments: [
         {
           id: '1',
-          name: 'John Doe',
-          email: 'john.doe@example.com',
-          phone: '(555) 123-4567',
-          address: '123 Main St, Anytown, CA 90210',
-          dateOfBirth: '1985-06-12',
-          dateOfInjury: '2023-01-15',
-          injuryType: 'Workplace Injury - Back',
-          referralSource: 'Dr. Smith (GP)',
-          referralDate: '2023-02-10',
-          assessments: [
-            {
-              id: '1',
-              title: 'Work-Related Stress Assessment',
-              date: '2023-02-15',
-              type: 'Psychological',
-              status: 'completed',
-              score: 'Moderate (65/100)'
-            },
-            {
-              id: '2',
-              title: 'Depression, Anxiety & Stress Scale (DASS-21)',
-              date: '2023-03-05',
-              type: 'Psychological',
-              status: 'completed',
-              score: 'Severe (78/100)'
-            }
-          ],
-          interviews: [
-            {
-              id: '1',
-              title: 'Initial Self-Guided Interview',
-              date: '2023-02-12',
-              status: 'completed',
-              summary: 'Client reports significant pain and emotional distress following workplace incident. Unable to return to previous duties.'
-            }
-          ],
-          documents: [
-            {
-              id: '1',
-              title: 'Medical Report - Initial Assessment',
-              type: 'Medical',
-              uploadedBy: 'Jane Smith (Lawyer)',
-              date: '2023-02-08',
-              fileSize: '1.2 MB'
-            },
-            {
-              id: '2',
-              title: 'Workplace Incident Report',
-              type: 'Legal',
-              uploadedBy: 'Jane Smith (Lawyer)',
-              date: '2023-01-17',
-              fileSize: '3.5 MB'
-            }
-          ]
+          title: 'Work-Related Stress Assessment',
+          date: '2023-02-15',
+          type: 'Psychological',
+          status: 'completed',
+          score: 'Moderate (65/100)',
+          summary: 'Assessment indicates moderate levels of work-related stress with significant impact on daily functioning.'
         },
         {
           id: '2',
-          name: 'Jane Smith',
-          email: 'jane.smith@example.com',
-          phone: '(555) 987-6543',
-          address: '456 Oak Ave, Somewhere, CA 92101',
-          dateOfBirth: '1978-09-23',
-          dateOfInjury: '2023-02-05',
-          injuryType: 'Motor Vehicle Accident',
-          referralSource: 'Dr. Johnson (Specialist)',
-          referralDate: '2023-03-01',
-          assessments: [
-            {
-              id: '3',
-              title: 'Post-Accident Trauma Screening',
-              date: '2023-03-10',
-              type: 'Psychological',
-              status: 'completed',
-              score: 'Significant (72/100)'
-            }
-          ],
-          interviews: [
-            {
-              id: '2',
-              title: 'Structured Clinical Interview',
-              date: '2023-03-15',
-              status: 'completed',
-              summary: 'Client demonstrates symptoms consistent with PTSD following MVA. Reports flashbacks and anxiety when in vehicles.'
-            }
-          ],
-          documents: [
-            {
-              id: '3',
-              title: 'Police Report - Accident',
-              type: 'Legal',
-              uploadedBy: 'Michael Johnson (Lawyer)',
-              date: '2023-02-06',
-              fileSize: '2.1 MB'
-            },
-            {
-              id: '4',
-              title: 'Hospital Discharge Summary',
-              type: 'Medical',
-              uploadedBy: 'Jane Smith',
-              date: '2023-02-07',
-              fileSize: '1.8 MB'
-            }
-          ]
+          title: 'Depression, Anxiety & Stress Scale (DASS-21)',
+          date: '2023-03-05',
+          type: 'Psychological',
+          status: 'completed',
+          score: 'Severe (78/100)',
+          summary: 'Client shows severe levels of depression and anxiety, moderate levels of stress.'
         }
-      ];
-      
-      setClients(mockClients);
-      setIsLoading(false);
-    };
-    
-    fetchClients();
-  }, []);
-
-  const filteredClients = clients.filter(client => 
-    client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      ],
+      interviews: [
+        {
+          id: '1',
+          title: 'Initial Self-Guided Interview',
+          date: '2023-02-12',
+          status: 'completed',
+          summary: 'Client reports significant pain and emotional distress following workplace incident. Unable to return to previous duties. Experiencing sleep disturbances, irritability, and persistent worries about financial security.'
+        }
+      ],
+      documents: [
+        {
+          id: '1',
+          title: 'Initial Medical Report',
+          date: '2023-01-20',
+          type: 'medical',
+          uploadedBy: 'Dr. Sarah Johnson',
+          fileSize: '1.2 MB'
+        },
+        {
+          id: '2',
+          title: 'WorkCover Claim Documentation',
+          date: '2023-01-25',
+          type: 'legal',
+          uploadedBy: 'John Doe',
+          fileSize: '3.5 MB'
+        }
+      ]
+    },
+    {
+      id: '2',
+      name: 'Jane Smith',
+      dateOfBirth: '1978-09-23',
+      email: 'jane.smith@example.com',
+      phone: '555-987-6543',
+      address: '456 Park Ave, Melbourne VIC 3000',
+      dateOfInjury: '2023-02-05',
+      injuryType: 'Motor Vehicle Accident',
+      referralSource: 'Smith & Associates Law Firm',
+      notes: 'Client was involved in a significant motor vehicle accident as a passenger. Displaying symptoms consistent with PTSD including flashbacks, avoidance behaviors, and heightened anxiety when in vehicles.',
+      assessments: [
+        {
+          id: '3',
+          title: 'Post-Accident Trauma Screening',
+          date: '2023-03-10',
+          type: 'Psychological',
+          status: 'completed',
+          score: 'Significant (72/100)',
+          summary: 'Client displays clinically significant symptoms of post-traumatic stress including intrusive thoughts, hypervigilance, and avoidance behaviors.'
+        }
+      ],
+      interviews: [
+        {
+          id: '2',
+          title: 'Structured Clinical Interview',
+          date: '2023-03-15',
+          status: 'completed',
+          summary: 'Client demonstrates symptoms consistent with PTSD following MVA. Reports flashbacks and anxiety when in vehicles. Significant impact on daily functioning and inability to return to work due to required travel.'
+        }
+      ],
+      documents: [
+        {
+          id: '3',
+          title: 'Emergency Room Records',
+          date: '2023-02-05',
+          type: 'medical',
+          uploadedBy: 'Melbourne City Hospital',
+          fileSize: '2.3 MB'
+        },
+        {
+          id: '4',
+          title: 'Insurance Claim Documentation',
+          date: '2023-02-15',
+          type: 'legal',
+          uploadedBy: 'Smith & Associates',
+          fileSize: '1.8 MB'
+        },
+        {
+          id: '5',
+          title: 'Police Report',
+          date: '2023-02-06',
+          type: 'legal',
+          uploadedBy: 'Melbourne Police Department',
+          fileSize: '1.1 MB'
+        }
+      ]
+    }
+  ]);
+  
+  const [activeClient, setActiveClient] = useState<Client | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editedClient, setEditedClient] = useState<Partial<Client>>({});
+  const [isNewDialogOpen, setIsNewDialogOpen] = useState(false);
+  const [newClient, setNewClient] = useState<Partial<Client>>({
+    name: '',
+    dateOfBirth: '',
+    email: '',
+    phone: '',
+    address: '',
+    dateOfInjury: '',
+    injuryType: '',
+    referralSource: '',
+    notes: '',
+    assessments: [],
+    interviews: [],
+    documents: []
+  });
+  const [activeTab, setActiveTab] = useState('profile');
 
   const handleSelectClient = (client: Client) => {
     setActiveClient(client);
-    setEditedClient({});
-    setEditMode(false);
+    setEditedClient({...client});
+    setActiveTab('profile');
   };
 
-  const handleStartEdit = () => {
-    if (!activeClient) return;
-    setEditedClient({...activeClient});
-    setEditMode(true);
-  };
-
-  const handleSaveChanges = () => {
-    if (!activeClient || !editedClient) return;
+  const handleEditToggle = () => {
+    if (editMode) {
+      // If we're saving changes
+      const updatedClients = clients.map(client => 
+        client.id === activeClient?.id 
+          ? {...client, ...editedClient} as Client
+          : client
+      );
+      
+      setClients(updatedClients);
+      setActiveClient({...activeClient!, ...editedClient} as Client);
+      
+      toast({
+        title: "Changes saved",
+        description: "Client information has been updated",
+      });
+    }
     
-    const updatedClients = clients.map(client => 
-      client.id === activeClient.id ? {...client, ...editedClient} as Client : client
-    );
-    
-    setClients(updatedClients);
-    setActiveClient({...activeClient, ...editedClient} as Client);
-    setEditMode(false);
+    setEditMode(!editMode);
   };
 
-  const handleUploadDocument = () => {
-    // This would be implemented to handle document uploads
-    alert('Document upload functionality would be implemented here.');
+  const handleCreateClient = () => {
+    if (!newClient.name || !newClient.dateOfBirth) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const client: Client = {
+      id: Date.now().toString(),
+      name: newClient.name || '',
+      dateOfBirth: newClient.dateOfBirth || '',
+      email: newClient.email || '',
+      phone: newClient.phone || '',
+      address: newClient.address || '',
+      dateOfInjury: newClient.dateOfInjury || '',
+      injuryType: newClient.injuryType || '',
+      referralSource: newClient.referralSource || '',
+      notes: newClient.notes || '',
+      assessments: [],
+      interviews: [],
+      documents: []
+    };
+
+    setClients([...clients, client]);
+    setIsNewDialogOpen(false);
+    setNewClient({
+      name: '',
+      dateOfBirth: '',
+      email: '',
+      phone: '',
+      address: '',
+      dateOfInjury: '',
+      injuryType: '',
+      referralSource: '',
+      notes: ''
+    });
+    
+    toast({
+      title: "Client added",
+      description: "New client has been added successfully",
+    });
+  };
+
+  const getDocumentIcon = (type: string) => {
+    switch (type) {
+      case 'medical':
+        return <FileCheck className="h-4 w-4" />;
+      case 'legal':
+        return <FileText className="h-4 w-4" />;
+      case 'assessment':
+        return <ClipboardCheck className="h-4 w-4" />;
+      default:
+        return <File className="h-4 w-4" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      case 'in_progress':
+        return 'bg-blue-100 text-blue-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
 
   return (
-    <div className="container mx-auto max-w-7xl">
+    <div className="container mx-auto max-w-6xl">
       {activeClient ? (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold mb-1">{activeClient.name}</h1>
               <p className="text-muted-foreground">
-                {activeClient.injuryType} | Referred on {formatDate(activeClient.referralDate)}
+                DOB: {formatDate(activeClient.dateOfBirth)} | Case Type: {activeClient.injuryType}
               </p>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setActiveClient(null)}>
                 Back to Clients
               </Button>
-              {!editMode ? (
-                <Button onClick={handleStartEdit}>Edit Profile</Button>
-              ) : (
-                <Button onClick={handleSaveChanges}>Save Changes</Button>
-              )}
+              <Button onClick={handleEditToggle}>
+                {editMode ? 'Save Changes' : 'Edit Profile'}
+              </Button>
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="md:col-span-1">
-              <CardHeader>
-                <CardTitle>Client Profile</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {!editMode ? (
-                  <>
-                    <div className="space-y-1">
-                      <div className="text-sm text-muted-foreground">Email</div>
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
-                        <span>{activeClient.email}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <div className="text-sm text-muted-foreground">Phone</div>
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-muted-foreground" />
-                        <span>{activeClient.phone}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <div className="text-sm text-muted-foreground">Address</div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span>{activeClient.address}</span>
-                      </div>
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div className="space-y-1">
-                      <div className="text-sm text-muted-foreground">Date of Birth</div>
-                      <div>{formatDate(activeClient.dateOfBirth)}</div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <div className="text-sm text-muted-foreground">Date of Injury</div>
-                      <div>{formatDate(activeClient.dateOfInjury)}</div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <div className="text-sm text-muted-foreground">Injury Type</div>
-                      <div>{activeClient.injuryType}</div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <div className="text-sm text-muted-foreground">Referral Source</div>
-                      <div>{activeClient.referralSource}</div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input 
-                        id="email" 
-                        value={editedClient.email || ''}
-                        onChange={(e) => setEditedClient({...editedClient, email: e.target.value})}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone</Label>
-                      <Input 
-                        id="phone" 
-                        value={editedClient.phone || ''}
-                        onChange={(e) => setEditedClient({...editedClient, phone: e.target.value})}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="address">Address</Label>
-                      <Input 
-                        id="address" 
-                        value={editedClient.address || ''}
-                        onChange={(e) => setEditedClient({...editedClient, address: e.target.value})}
-                      />
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="dob">Date of Birth</Label>
-                      <Input 
-                        id="dob" 
-                        type="date"
-                        value={editedClient.dateOfBirth || ''}
-                        onChange={(e) => setEditedClient({...editedClient, dateOfBirth: e.target.value})}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="injuryDate">Date of Injury</Label>
-                      <Input 
-                        id="injuryDate" 
-                        type="date"
-                        value={editedClient.dateOfInjury || ''}
-                        onChange={(e) => setEditedClient({...editedClient, dateOfInjury: e.target.value})}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="injuryType">Injury Type</Label>
-                      <Input 
-                        id="injuryType" 
-                        value={editedClient.injuryType || ''}
-                        onChange={(e) => setEditedClient({...editedClient, injuryType: e.target.value})}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="referralSource">Referral Source</Label>
-                      <Input 
-                        id="referralSource" 
-                        value={editedClient.referralSource || ''}
-                        onChange={(e) => setEditedClient({...editedClient, referralSource: e.target.value})}
-                      />
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-            
-            <Card className="md:col-span-2">
-              <Tabs defaultValue="assessments">
+
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="mb-6">
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+              <TabsTrigger value="assessments">Assessments</TabsTrigger>
+              <TabsTrigger value="interviews">Interviews</TabsTrigger>
+              <TabsTrigger value="documents">Documents</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="profile">
+              <Card>
                 <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <CardTitle>Client Records</CardTitle>
-                    <TabsList>
-                      <TabsTrigger value="assessments">Assessments</TabsTrigger>
-                      <TabsTrigger value="interviews">Interviews</TabsTrigger>
-                      <TabsTrigger value="documents">Documents</TabsTrigger>
-                    </TabsList>
+                  <CardTitle>Client Information</CardTitle>
+                  <CardDescription>
+                    Personal information and case details
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>Full Name</Label>
+                      {editMode ? (
+                        <Input 
+                          value={editedClient.name} 
+                          onChange={(e) => setEditedClient({...editedClient, name: e.target.value})}
+                        />
+                      ) : (
+                        <p>{activeClient.name}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Date of Birth</Label>
+                      {editMode ? (
+                        <Input 
+                          type="date"
+                          value={editedClient.dateOfBirth} 
+                          onChange={(e) => setEditedClient({...editedClient, dateOfBirth: e.target.value})}
+                        />
+                      ) : (
+                        <p>{formatDate(activeClient.dateOfBirth)}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Email</Label>
+                      {editMode ? (
+                        <Input 
+                          value={editedClient.email} 
+                          onChange={(e) => setEditedClient({...editedClient, email: e.target.value})}
+                        />
+                      ) : (
+                        <p>{activeClient.email}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Phone</Label>
+                      {editMode ? (
+                        <Input 
+                          value={editedClient.phone} 
+                          onChange={(e) => setEditedClient({...editedClient, phone: e.target.value})}
+                        />
+                      ) : (
+                        <p>{activeClient.phone}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Address</Label>
+                      {editMode ? (
+                        <Input 
+                          value={editedClient.address} 
+                          onChange={(e) => setEditedClient({...editedClient, address: e.target.value})}
+                        />
+                      ) : (
+                        <p>{activeClient.address}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Date of Injury/Incident</Label>
+                      {editMode ? (
+                        <Input 
+                          type="date"
+                          value={editedClient.dateOfInjury} 
+                          onChange={(e) => setEditedClient({...editedClient, dateOfInjury: e.target.value})}
+                        />
+                      ) : (
+                        <p>{formatDate(activeClient.dateOfInjury)}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Injury Type</Label>
+                      {editMode ? (
+                        <Input 
+                          value={editedClient.injuryType} 
+                          onChange={(e) => setEditedClient({...editedClient, injuryType: e.target.value})}
+                        />
+                      ) : (
+                        <p>{activeClient.injuryType}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Referral Source</Label>
+                      {editMode ? (
+                        <Input 
+                          value={editedClient.referralSource} 
+                          onChange={(e) => setEditedClient({...editedClient, referralSource: e.target.value})}
+                        />
+                      ) : (
+                        <p>{activeClient.referralSource}</p>
+                      )}
+                    </div>
                   </div>
+
+                  <div className="space-y-2">
+                    <Label>Clinical Notes</Label>
+                    {editMode ? (
+                      <Textarea 
+                        value={editedClient.notes} 
+                        onChange={(e) => setEditedClient({...editedClient, notes: e.target.value})}
+                        className="min-h-[150px]"
+                      />
+                    ) : (
+                      <div className="bg-muted/50 p-3 rounded-md whitespace-pre-wrap">
+                        {activeClient.notes}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="assessments">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Psychological Assessments</CardTitle>
+                  <CardDescription>
+                    Completed and ongoing psychological assessments for this client
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <TabsContent value="assessments" className="space-y-4">
-                    {activeClient.assessments.length > 0 ? (
-                      activeClient.assessments.map(assessment => (
+                  {activeClient.assessments && activeClient.assessments.length > 0 ? (
+                    <div className="space-y-4">
+                      {activeClient.assessments.map((assessment) => (
                         <Card key={assessment.id}>
-                          <CardContent className="p-4">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
+                          <CardContent className="pt-6">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                               <div>
-                                <div className="font-medium">{assessment.title}</div>
-                                <div className="text-sm text-muted-foreground">
-                                  {formatDate(assessment.date)} • {assessment.type}
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="text-lg font-medium">{assessment.title}</h3>
+                                  <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(assessment.status)}`}>
+                                    {assessment.status.replace('_', ' ')}
+                                  </span>
                                 </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Badge variant={assessment.status === 'completed' ? 'default' : 'secondary'}>
-                                  {assessment.status}
-                                </Badge>
-                                {assessment.status === 'completed' && (
-                                  <Button variant="outline" size="sm">
-                                    View Results
-                                  </Button>
+                                <div className="text-sm text-muted-foreground">
+                                  {assessment.type} | {formatDate(assessment.date)}
+                                </div>
+                                {assessment.score && (
+                                  <div className="mt-1 text-sm font-medium">
+                                    Score: {assessment.score}
+                                  </div>
                                 )}
                               </div>
+                              <Button variant="outline" size="sm">
+                                View Full Results
+                              </Button>
                             </div>
-                            {assessment.score && (
-                              <div className="text-sm mt-2">
-                                <span className="font-medium">Score:</span> {assessment.score}
+                            {assessment.summary && (
+                              <div className="mt-4 bg-muted/50 p-3 rounded-md text-sm">
+                                <p className="font-medium mb-1">Summary:</p>
+                                <p>{assessment.summary}</p>
                               </div>
                             )}
                           </CardContent>
                         </Card>
-                      ))
-                    ) : (
-                      <div className="text-center py-8 text-muted-foreground">
-                        No assessments available for this client.
-                      </div>
-                    )}
-                  </TabsContent>
-                  
-                  <TabsContent value="interviews" className="space-y-4">
-                    {activeClient.interviews.length > 0 ? (
-                      activeClient.interviews.map(interview => (
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <ClipboardCheck className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
+                      <h3 className="mt-4 text-lg font-medium">No Assessments</h3>
+                      <p className="text-muted-foreground mt-2">
+                        This client doesn't have any completed assessments yet.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="interviews">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Self-Guided Interviews</CardTitle>
+                  <CardDescription>
+                    Completed interview responses and findings
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {activeClient.interviews && activeClient.interviews.length > 0 ? (
+                    <div className="space-y-4">
+                      {activeClient.interviews.map((interview) => (
                         <Card key={interview.id}>
-                          <CardContent className="p-4">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
+                          <CardContent className="pt-6">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                               <div>
-                                <div className="font-medium">{interview.title}</div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="text-lg font-medium">{interview.title}</h3>
+                                  <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(interview.status)}`}>
+                                    {interview.status.replace('_', ' ')}
+                                  </span>
+                                </div>
                                 <div className="text-sm text-muted-foreground">
-                                  {formatDate(interview.date)}
+                                  Completed on {formatDate(interview.date)}
                                 </div>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <Badge variant={interview.status === 'completed' ? 'default' : 'secondary'}>
-                                  {interview.status}
-                                </Badge>
-                                {interview.status === 'completed' && (
-                                  <Button variant="outline" size="sm">
-                                    View Details
-                                  </Button>
-                                )}
-                              </div>
+                              <Button variant="outline" size="sm">
+                                View Complete Interview
+                              </Button>
                             </div>
                             {interview.summary && (
-                              <div className="text-sm mt-2">
-                                <span className="font-medium">Summary:</span> {interview.summary}
+                              <div className="mt-4 bg-muted/50 p-3 rounded-md text-sm">
+                                <p className="font-medium mb-1">Summary:</p>
+                                <p>{interview.summary}</p>
                               </div>
                             )}
                           </CardContent>
                         </Card>
-                      ))
-                    ) : (
-                      <div className="text-center py-8 text-muted-foreground">
-                        No interviews available for this client.
-                      </div>
-                    )}
-                  </TabsContent>
-                  
-                  <TabsContent value="documents" className="space-y-4">
-                    <div className="flex justify-end mb-4">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button>
-                            <FileUp className="h-4 w-4 mr-2" />
-                            Upload Document
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Upload Document</DialogTitle>
-                            <DialogDescription>
-                              Upload a document relevant to this client's case
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="grid gap-4 py-4">
-                            <div className="grid gap-2">
-                              <Label htmlFor="docTitle">Document Title</Label>
-                              <Input id="docTitle" placeholder="Enter document title" />
-                            </div>
-                            <div className="grid gap-2">
-                              <Label htmlFor="docType">Document Type</Label>
-                              <Select>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select document type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="medical">Medical</SelectItem>
-                                  <SelectItem value="legal">Legal</SelectItem>
-                                  <SelectItem value="assessment">Assessment</SelectItem>
-                                  <SelectItem value="other">Other</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="grid gap-2">
-                              <Label htmlFor="file">File</Label>
-                              <Input id="file" type="file" />
-                            </div>
-                          </div>
-                          <DialogFooter>
-                            <Button onClick={handleUploadDocument}>Upload</Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
+                      ))}
                     </div>
-                    
-                    {activeClient.documents.length > 0 ? (
-                      activeClient.documents.map(document => (
-                        <Card key={document.id}>
-                          <CardContent className="p-4">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
-                              <div>
-                                <div className="font-medium">{document.title}</div>
-                                <div className="text-sm text-muted-foreground">
-                                  {formatDate(document.date)} • {document.type} • {document.fileSize}
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Badge variant="outline">{document.type}</Badge>
-                                <Button variant="outline" size="sm">
-                                  <Download className="h-3 w-3 mr-2" />
-                                  Download
-                                </Button>
-                              </div>
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-1">
-                              Uploaded by: {document.uploadedBy}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))
-                    ) : (
-                      <div className="text-center py-8 text-muted-foreground">
-                        No documents available for this client.
-                      </div>
-                    )}
-                  </TabsContent>
+                  ) : (
+                    <div className="text-center py-12">
+                      <User className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
+                      <h3 className="mt-4 text-lg font-medium">No Interviews</h3>
+                      <p className="text-muted-foreground mt-2">
+                        This client hasn't completed any self-guided interviews yet.
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
-              </Tabs>
-            </Card>
-          </div>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="documents">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Documents</CardTitle>
+                  <CardDescription>
+                    Support documentation provided by the client or legal representatives
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {activeClient.documents && activeClient.documents.length > 0 ? (
+                    <div className="grid gap-4">
+                      {activeClient.documents.map((document) => (
+                        <div 
+                          key={document.id} 
+                          className="flex items-center justify-between p-3 border rounded-md hover:bg-accent/50 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="bg-primary/10 p-2 rounded">
+                              {getDocumentIcon(document.type)}
+                            </div>
+                            <div>
+                              <h3 className="font-medium">{document.title}</h3>
+                              <div className="text-xs text-muted-foreground flex gap-3">
+                                <span>Uploaded {formatDate(document.date)}</span>
+                                <span>•</span>
+                                <span>{document.fileSize}</span>
+                              </div>
+                            </div>
+                            <Badge variant="outline" className="ml-2 capitalize">
+                              {document.type}
+                            </Badge>
+                          </div>
+                          <Button variant="ghost" size="sm">
+                            View
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <FileText className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
+                      <h3 className="mt-4 text-lg font-medium">No Documents</h3>
+                      <p className="text-muted-foreground mt-2">
+                        There are no documents uploaded for this client.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       ) : (
         <>
@@ -539,84 +623,190 @@ const Clients = () => {
             <div>
               <h1 className="text-3xl font-bold mb-1">Clients</h1>
               <p className="text-muted-foreground">
-                Manage your clients and their assessments
+                Manage client information and records
               </p>
             </div>
+            
+            <Dialog open={isNewDialogOpen} onOpenChange={setIsNewDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>Add New Client</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add New Client</DialogTitle>
+                  <DialogDescription>
+                    Enter the client's information below to create a new client record
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <ScrollArea className="h-[60vh]">
+                  <div className="space-y-4 py-2 pr-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name *</Label>
+                      <Input 
+                        id="name" 
+                        value={newClient.name} 
+                        onChange={(e) => setNewClient({...newClient, name: e.target.value})}
+                        placeholder="Enter client's full name" 
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="dob">Date of Birth *</Label>
+                      <Input 
+                        id="dob" 
+                        type="date"
+                        value={newClient.dateOfBirth} 
+                        onChange={(e) => setNewClient({...newClient, dateOfBirth: e.target.value})}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input 
+                        id="email" 
+                        type="email"
+                        value={newClient.email} 
+                        onChange={(e) => setNewClient({...newClient, email: e.target.value})}
+                        placeholder="Enter client's email" 
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input 
+                        id="phone" 
+                        value={newClient.phone} 
+                        onChange={(e) => setNewClient({...newClient, phone: e.target.value})}
+                        placeholder="Enter client's phone number" 
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="address">Address</Label>
+                      <Input 
+                        id="address" 
+                        value={newClient.address} 
+                        onChange={(e) => setNewClient({...newClient, address: e.target.value})}
+                        placeholder="Enter client's address" 
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="dateOfInjury">Date of Injury/Incident</Label>
+                      <Input 
+                        id="dateOfInjury" 
+                        type="date"
+                        value={newClient.dateOfInjury} 
+                        onChange={(e) => setNewClient({...newClient, dateOfInjury: e.target.value})}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="injuryType">Injury Type</Label>
+                      <Input 
+                        id="injuryType" 
+                        value={newClient.injuryType} 
+                        onChange={(e) => setNewClient({...newClient, injuryType: e.target.value})}
+                        placeholder="E.g., Workplace Injury, Motor Vehicle Accident" 
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="referralSource">Referral Source</Label>
+                      <Input 
+                        id="referralSource" 
+                        value={newClient.referralSource} 
+                        onChange={(e) => setNewClient({...newClient, referralSource: e.target.value})}
+                        placeholder="E.g., Insurance Company, Law Firm" 
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="notes">Clinical Notes</Label>
+                      <Textarea 
+                        id="notes" 
+                        value={newClient.notes} 
+                        onChange={(e) => setNewClient({...newClient, notes: e.target.value})}
+                        placeholder="Enter any initial clinical notes" 
+                        rows={4}
+                      />
+                    </div>
+                  </div>
+                </ScrollArea>
+                
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsNewDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleCreateClient}>
+                    Create Client
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
           
-          <Card className="mb-6">
-            <CardContent className="p-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Search clients by name or email..." 
-                  className="pl-10"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
+          <Card>
+            <CardHeader>
+              <CardTitle>Client List</CardTitle>
+              <CardDescription>
+                Select a client to view their complete profile and records
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4">
+                {clients.map((client) => (
+                  <Card key={client.id} className="overflow-hidden hover:bg-accent/50 cursor-pointer transition-colors" onClick={() => handleSelectClient(client)}>
+                    <div className="flex flex-col md:flex-row">
+                      <div className="md:w-16 flex items-center justify-center p-4 bg-primary/10">
+                        <User className="h-8 w-8 text-primary" />
+                      </div>
+                      <CardContent className="p-6 flex-1">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                          <div>
+                            <h3 className="text-lg font-medium">{client.name}</h3>
+                            <div className="flex flex-col md:flex-row md:items-center gap-0 md:gap-3 mt-1 text-sm text-muted-foreground">
+                              <p>Date of Birth: {formatDate(client.dateOfBirth)}</p>
+                              <span className="hidden md:inline">•</span>
+                              <p>Injury Type: {client.injuryType}</p>
+                            </div>
+                            <div className="mt-1 text-xs">
+                              <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                {client.assessments.length} Assessments
+                              </span>
+                              <span className="ml-2 bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                {client.documents.length} Documents
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <Button size="sm">
+                            View Profile
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </div>
+                  </Card>
+                ))}
+                
+                {clients.length === 0 && (
+                  <Card className="p-10 text-center">
+                    <div className="flex flex-col items-center">
+                      <Users className="h-10 w-10 text-muted-foreground mb-2" />
+                      <CardTitle className="mb-2">No Clients</CardTitle>
+                      <CardDescription>
+                        You haven't added any clients yet.
+                      </CardDescription>
+                      <Button className="mt-4" onClick={() => setIsNewDialogOpen(true)}>
+                        Add Your First Client
+                      </Button>
+                    </div>
+                  </Card>
+                )}
               </div>
             </CardContent>
           </Card>
-          
-          {isLoading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-            </div>
-          ) : filteredClients.length > 0 ? (
-            <div className="grid gap-4">
-              {filteredClients.map(client => (
-                <Card key={client.id} className="overflow-hidden">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-16 flex items-center justify-center p-4 bg-primary/10">
-                      <User className="h-8 w-8 text-primary" />
-                    </div>
-                    <CardContent className="p-6 flex-1">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                        <div>
-                          <h3 className="text-lg font-medium">{client.name}</h3>
-                          <div className="flex flex-col gap-1 mt-1">
-                            <div className="text-sm text-muted-foreground">
-                              <span className="inline-flex items-center gap-1">
-                                <Mail className="h-3 w-3" /> {client.email}
-                              </span>
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              <span className="inline-flex items-center gap-1">
-                                <ClipboardCheck className="h-3 w-3" /> {client.injuryType}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="mt-1">
-                            <Badge variant="outline" className="mr-2">
-                              {client.assessments.length} Assessments
-                            </Badge>
-                            <Badge variant="outline">
-                              {client.documents.length} Documents
-                            </Badge>
-                          </div>
-                        </div>
-                        <div className="flex gap-2 mt-3 md:mt-0">
-                          <Button onClick={() => handleSelectClient(client)}>
-                            View Client
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card className="p-10 text-center">
-              <div className="flex flex-col items-center">
-                <User className="h-10 w-10 text-muted-foreground mb-2" />
-                <CardTitle className="mb-2">No Clients Found</CardTitle>
-                <CardDescription>
-                  No clients match your search criteria.
-                </CardDescription>
-              </div>
-            </Card>
-          )}
         </>
       )}
     </div>
