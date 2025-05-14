@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,6 +7,7 @@ import { FileText, Clock, AlertCircle, Plus, Calendar } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { CaseSilo as CaseSiloType, CaseSiloStatus } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/components/ui/use-toast';
 
 const CaseSilo = () => {
   const { currentUser } = useAuth();
@@ -140,6 +140,62 @@ const CaseSilo = () => {
       reports: [],
       notes: [],
       externalUploads: []
+    },
+    {
+      id: '4',
+      claimantName: 'Sarah Johnson',
+      caseType: 'Medical Negligence',
+      status: 'active',
+      createdDate: '2023-02-20',
+      expiryDate: '2023-08-20',
+      participants: {
+        claimantId: 'victim-4',
+        lawyerId: 'lawyer-1',
+        psychologistId: 'psych-1'
+      },
+      documents: [
+        {
+          id: 'doc-4',
+          name: 'Hospital Records',
+          type: 'PDF',
+          uploadedBy: 'Sarah Johnson',
+          uploadDate: '2023-02-22',
+          url: '#',
+          size: '3.2 MB'
+        }
+      ],
+      assessments: [
+        {
+          id: 'a-2',
+          title: 'Trauma Assessment',
+          description: 'Evaluate psychological impact of medical procedure',
+          status: 'in_progress',
+          completionPercentage: 60,
+          date: '2023-03-10',
+          assignedTo: 'Sarah Johnson'
+        }
+      ],
+      reports: [],
+      notes: [
+        {
+          id: 'note-3',
+          content: 'Client has provided all requested medical documentation',
+          createdBy: 'Dr. Smith',
+          createdAt: '2023-03-05'
+        }
+      ],
+      externalUploads: [
+        {
+          id: 'ext-2',
+          name: 'Specialist Consultation Notes',
+          type: 'PDF',
+          uploadedBy: 'Dr. Williams (Specialist)',
+          uploadDate: '2023-03-01',
+          url: '#',
+          size: '1.1 MB',
+          isExternal: true
+        }
+      ]
     }
   ]);
   
@@ -157,18 +213,22 @@ const CaseSilo = () => {
         // For victims/claimants, only show cases where they are the claimant
         userSilos = caseSilos.filter(silo => 
           silo.participants.claimantId === currentUser.id || 
-          // For demo purposes, also show cases where claimantName matches user name
-          silo.claimantName === currentUser.name
+          // For demo purposes, also show cases where claimantName matches John Doe (for demo victim account)
+          silo.claimantName === 'John Doe'
         );
       } else if (currentUser.role === 'lawyer') {
         // For lawyers, show cases where they are assigned
         userSilos = caseSilos.filter(silo => 
-          silo.participants.lawyerId === currentUser.id
+          silo.participants.lawyerId === currentUser.id ||
+          // For demo purposes, include cases assigned to lawyer-1
+          silo.participants.lawyerId === 'lawyer-1'
         );
       } else if (currentUser.role === 'psychologist') {
         // For psychologists, show cases where they are assigned
         userSilos = caseSilos.filter(silo => 
-          silo.participants.psychologistId === currentUser.id
+          silo.participants.psychologistId === currentUser.id ||
+          // For demo purposes, include cases assigned to psych-1
+          silo.participants.psychologistId === 'psych-1'
         );
       } else {
         userSilos = [];
@@ -180,8 +240,18 @@ const CaseSilo = () => {
         : userSilos.filter(silo => silo.status === filter);
         
       setFilteredSilos(statusFiltered);
+      
+      // For demonstration purposes, show a toast notification about the available cases
+      if (userSilos.length > 0 && !selectedSilo) {
+        const roleText = currentUser.role === 'victim' ? 'your' : 'assigned';
+        toast({
+          title: `${userSilos.length} case silo${userSilos.length > 1 ? 's' : ''} available`,
+          description: `You can view ${roleText} case silos and access shared information.`,
+          duration: 5000,
+        });
+      }
     }
-  }, [currentUser, caseSilos, filter]);
+  }, [currentUser, caseSilos, filter, selectedSilo]);
 
   const handleSelectSilo = (silo: CaseSiloType) => {
     setSelectedSilo(silo);
