@@ -14,6 +14,7 @@ import Documents from "./pages/Documents";
 import Assessments from "./pages/Assessments";
 import Reports from "./pages/Reports";
 import Clients from "./pages/Clients";
+import CaseSilo from "./pages/CaseSilo";
 import Profile from "./pages/Profile";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -38,6 +39,7 @@ const App = () => (
               <Route path="/assessments" element={<Assessments />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/clients" element={<Clients />} />
+              <Route path="/case-silo" element={<CaseSilo />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
             <Route path="*" element={<NotFound />} />

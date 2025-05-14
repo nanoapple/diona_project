@@ -13,7 +13,8 @@ import {
   CheckSquare,
   Menu,
   X,
-  Users
+  Users,
+  Archive
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -46,6 +47,7 @@ const Sidebar = () => {
   const getNavItems = () => {
     const commonItems = [
       { to: "/dashboard", icon: CheckSquare, label: "Dashboard" },
+      { to: "/case-silo", icon: Archive, label: "Case Silo" },
       { to: "/profile", icon: User, label: "Profile" }
     ];
 
