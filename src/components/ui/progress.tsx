@@ -1,122 +1,162 @@
 
-import * as React from "react"
-import * as ProgressPrimitive from "@radix-ui/react-progress"
-import { cn } from "@/lib/utils"
-import { CheckCircle } from "lucide-react"
-
-interface ProgressProps extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> {
-  value?: number
-}
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 const Progress = React.forwardRef<
-  React.ElementRef<typeof ProgressPrimitive.Root>,
-  ProgressProps
->(({ className, value, ...props }, ref) => (
-  <ProgressPrimitive.Root
-    ref={ref}
-    className={cn(
-      "relative h-4 w-full overflow-hidden rounded-full bg-secondary",
-      className
-    )}
-    {...props}
-  >
-    <ProgressPrimitive.Indicator
-      className="h-full w-full flex-1 bg-primary transition-all"
-      style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
-    />
-  </ProgressPrimitive.Root>
-))
-Progress.displayName = ProgressPrimitive.Root.displayName
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & {
+    value: number;
+    max?: number;
+    complete?: boolean;
+  }
+>(({ className, value, max = 100, complete = false, ...props }, ref) => {
+  const percentage = (value / max) * 100;
+  
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "relative h-2 w-full overflow-hidden rounded-full bg-primary/20",
+        className
+      )}
+      {...props}
+    >
+      <div
+        className={cn(
+          "h-full w-full flex-1 bg-primary transition-all",
+          complete ? "bg-green-600" : ""
+        )}
+        style={{ width: `${percentage}%` }}
+      />
+    </div>
+  );
+});
+Progress.displayName = "Progress";
+
+export interface TaskItem {
+  description: string;
+  complete: boolean;
+}
+
+export interface ProgressStage {
+  title: string;
+  description: string;
+  complete?: boolean;
+  active?: boolean;
+  tasks: TaskItem[];
+}
 
 interface SegmentedProgressProps {
-  stages: {
-    title: string
-    description: string
-    complete: boolean
-    active?: boolean
-    tasks?: Array<{
-      description: string
-      complete: boolean
-    }>
-  }[]
-  className?: string
-  currentStage: number
+  stages: ProgressStage[];
+  currentStage: number;
 }
 
 const SegmentedProgress = ({
   stages,
-  className,
-  currentStage,
+  currentStage
 }: SegmentedProgressProps) => {
+  const [expandedStage, setExpandedStage] = React.useState<number>(currentStage);
+  
   return (
-    <div className={cn("w-full", className)}>
-      <div className="relative flex w-full justify-between mb-2">
+    <div className="space-y-8">
+      <div className="flex items-center w-full justify-between">
+        {stages.map((stage, index) => {
+          const isComplete = index < currentStage;
+          const isActive = index === currentStage;
+          
+          return (
+            <div key={index} className="flex flex-col items-center relative">
+              <div 
+                className={cn(
+                  "w-10 h-10 rounded-full flex items-center justify-center text-white",
+                  isComplete ? "bg-green-600" : isActive ? "bg-blue-600" : "bg-gray-300"
+                )}
+              >
+                {isComplete ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+                ) : (
+                  <span>{index + 1}</span>
+                )}
+              </div>
+              <div className="text-xs text-center mt-2 font-medium max-w-[80px]">
+                {stage.title}
+              </div>
+              {index < stages.length - 1 && (
+                <div 
+                  className={cn(
+                    "absolute h-0.5 top-5 -right-full w-full",
+                    isComplete ? "bg-green-600" : "bg-gray-300"
+                  )}
+                  style={{ width: "calc(100% - 10px)", left: "calc(50% + 5px)" }}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+      
+      <div className="space-y-4">
         {stages.map((stage, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className={cn(
-              "flex flex-col items-center relative z-10",
-              index < currentStage ? "text-primary" : 
-              index === currentStage ? "text-primary" : "text-muted-foreground"
+              "border rounded-lg overflow-hidden",
+              expandedStage === index ? "border-primary" : "border-muted"
             )}
           >
             <div 
               className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center mb-1",
-                index < currentStage ? "bg-primary text-primary-foreground" : 
-                index === currentStage ? "border-2 border-primary bg-background" : "border border-muted-foreground bg-background"
+                "p-4 flex justify-between items-center cursor-pointer",
+                expandedStage === index ? "bg-muted/50" : ""
               )}
+              onClick={() => setExpandedStage(index)}
             >
-              {index < currentStage ? (
-                <CheckCircle className="h-5 w-5" />
-              ) : (
-                <span className="text-sm">{index + 1}</span>
-              )}
+              <div>
+                <h3 className="font-medium">{stage.title}</h3>
+                <p className="text-sm text-muted-foreground">{stage.description}</p>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {index < currentStage ? "Completed" : 
+                 index === currentStage ? "In Progress" : "Pending"}
+              </div>
             </div>
-            <span className="text-xs font-medium text-center max-w-[80px]">{stage.title}</span>
+            
+            {expandedStage === index && stage.tasks.length > 0 && (
+              <div className="px-4 pb-4 pt-2 border-t border-muted">
+                <h4 className="text-sm font-medium mb-2">Tasks</h4>
+                <ul className="space-y-2">
+                  {stage.tasks.map((task, taskIndex) => (
+                    <li key={taskIndex} className="flex items-start gap-2">
+                      <div className={cn(
+                        "mt-0.5 w-4 h-4 rounded-full flex items-center justify-center",
+                        task.complete ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
+                      )}>
+                        {task.complete ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 6L9 17l-5-5"/>
+                          </svg>
+                        ) : (
+                          <div className="w-2 h-2 rounded-full bg-current" />
+                        )}
+                      </div>
+                      <span className={cn(
+                        "text-sm",
+                        task.complete ? "line-through text-muted-foreground" : ""
+                      )}>
+                        {task.description}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         ))}
-        <div className="absolute top-4 left-0 w-full h-0.5 bg-muted -translate-y-1/2 z-0">
-          <div 
-            className="h-full bg-primary transition-all" 
-            style={{ 
-              width: `${currentStage > 0 ? (currentStage / (stages.length - 1)) * 100 : 0}%`
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="mt-4 p-4 border rounded-md bg-background">
-        <div className="flex justify-between items-center mb-2">
-          <h4 className="font-medium">{stages[currentStage].title}</h4>
-          <span className="text-xs text-muted-foreground">Stage {currentStage + 1} of {stages.length}</span>
-        </div>
-        <p className="text-sm text-muted-foreground mb-4">{stages[currentStage].description}</p>
-        
-        {stages[currentStage].tasks && stages[currentStage].tasks.length > 0 && (
-          <div className="space-y-2">
-            <h5 className="text-sm font-medium">Tasks:</h5>
-            {stages[currentStage].tasks.map((task, index) => (
-              <div key={index} className="flex items-start gap-2">
-                <div className={cn(
-                  "w-4 h-4 mt-0.5 rounded-full border flex items-center justify-center",
-                  task.complete ? "bg-primary border-primary" : "border-muted-foreground"
-                )}>
-                  {task.complete && <CheckCircle className="h-3 w-3 text-primary-foreground" />}
-                </div>
-                <span className={cn(
-                  "text-sm",
-                  task.complete ? "line-through text-muted-foreground" : ""
-                )}>
-                  {task.description}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export { Progress, SegmentedProgress }
+export { Progress, SegmentedProgress };

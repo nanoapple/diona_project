@@ -1,13 +1,15 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FileText, Clock, AlertCircle, Plus, Calendar } from 'lucide-react';
+import { FileText, Clock, AlertCircle, Plus, Calendar, Share2 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { CaseSilo as CaseSiloType, CaseSiloStatus } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/components/ui/use-toast';
+import ShareDialog from '@/components/ShareDialog';
 
 const CaseSilo = () => {
   const { currentUser } = useAuth();
@@ -202,6 +204,7 @@ const CaseSilo = () => {
   const [filter, setFilter] = useState<CaseSiloStatus | 'all'>('all');
   const [selectedSilo, setSelectedSilo] = useState<CaseSiloType | null>(null);
   const [filteredSilos, setFilteredSilos] = useState<CaseSiloType[]>([]);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
   // Filter silos based on current user and selected filter
   useEffect(() => {
@@ -259,6 +262,22 @@ const CaseSilo = () => {
 
   const handleBackToList = () => {
     setSelectedSilo(null);
+  };
+
+  const handleShareSilo = () => {
+    if (!selectedSilo) return;
+    
+    // Only allow lawyers and psychologists to share
+    if (currentUser?.role !== 'lawyer' && currentUser?.role !== 'psychologist') {
+      toast({
+        title: "Permission denied",
+        description: "Only lawyers and psychologists can share case silos.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setShareDialogOpen(true);
   };
 
   const calculateDaysRemaining = (expiryDate: string): number => {
@@ -351,6 +370,7 @@ const CaseSilo = () => {
     
     const isExpired = selectedSilo.status === 'expired';
     const daysRemaining = calculateDaysRemaining(selectedSilo.expiryDate);
+    const canShare = !isExpired && (currentUser?.role === 'lawyer' || currentUser?.role === 'psychologist');
     
     return (
       <>
@@ -367,7 +387,17 @@ const CaseSilo = () => {
               {renderStatusBadge(selectedSilo.status, selectedSilo.expiryDate)}
             </div>
           </div>
-          <div className="text-right">
+          <div className="flex flex-col items-end">
+            {canShare && (
+              <Button 
+                variant="outline"
+                size="sm"
+                className="mb-2"
+                onClick={handleShareSilo}
+              >
+                <Share2 className="h-4 w-4 mr-1" /> Share
+              </Button>
+            )}
             <div className="text-sm text-muted-foreground">Created on {formatDate(selectedSilo.createdDate)}</div>
             <div className="text-sm text-muted-foreground">
               {isExpired 
@@ -625,6 +655,15 @@ const CaseSilo = () => {
             </TabsContent>
           )}
         </Tabs>
+        
+        {selectedSilo && (
+          <ShareDialog 
+            open={shareDialogOpen}
+            onOpenChange={setShareDialogOpen}
+            siloName={selectedSilo.claimantName}
+            siloType={selectedSilo.caseType}
+          />
+        )}
       </>
     );
   };

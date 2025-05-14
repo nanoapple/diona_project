@@ -1,8 +1,8 @@
-
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress, SegmentedProgress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '../contexts/AuthContext';
 import { CheckCircle, Clock, AlertCircle, FileText, Calendar } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
@@ -185,6 +185,7 @@ const Dashboard = () => {
   const { currentUser } = useAuth();
   const [cases, setCases] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedCaseId, setSelectedCaseId] = useState<string>('');
 
   useEffect(() => {
     // Simulate API call to fetch cases
@@ -253,6 +254,9 @@ const Dashboard = () => {
       ];
       
       setCases(mockCases);
+      if (mockCases.length > 0) {
+        setSelectedCaseId(mockCases[0].id);
+      }
       setIsLoading(false);
     };
     
@@ -284,6 +288,8 @@ const Dashboard = () => {
         return <AlertCircle className="w-4 h-4" />;
     }
   };
+
+  const selectedCase = cases.find(c => c.id === selectedCaseId) || (cases.length > 0 ? cases[0] : null);
 
   const renderVictimDashboard = () => (
     <>
@@ -485,42 +491,30 @@ const Dashboard = () => {
             <CardTitle>Case Progress</CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="case1">
-              <TabsList className="mb-4">
-                {cases.map(c => (
-                  <TabsTrigger key={c.id} value={`case${c.id}`}>{c.client} - {c.title}</TabsTrigger>
-                ))}
-              </TabsList>
-              {cases.map(c => (
-                <TabsContent key={c.id} value={`case${c.id}`}>
-                  <div className="space-y-4">
-                    <SegmentedProgress 
-                      stages={progressStages.map((stage, index) => ({
-                        ...stage,
-                        tasks: getTasksForStage(index, 'lawyer')
-                      }))}
-                      currentStage={c.currentStage}
-                    />
-                    
-                    <div className="space-y-3 mt-6">
-                      <h4 className="text-sm font-medium">Recent Updates:</h4>
-                      {c.updates.map(update => (
-                        <div key={update.id} className="flex items-start gap-3">
-                          <div className="p-1 rounded-full bg-primary/10 mt-0.5">
-                            {renderUpdateIcon(update.type)}
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium">{update.title}</div>
-                            <div className="text-xs text-muted-foreground">{formatDate(update.date)}</div>
-                            <p className="text-sm mt-1">{update.description}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </TabsContent>
-              ))}
-            </Tabs>
+            <div className="mb-4">
+              <Select value={selectedCaseId} onValueChange={setSelectedCaseId}>
+                <SelectTrigger className="w-full md:w-[300px]">
+                  <SelectValue placeholder="Select a case" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cases.map(c => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.client} - {c.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {selectedCase && (
+              <SegmentedProgress 
+                stages={progressStages.map((stage, index) => ({
+                  ...stage,
+                  tasks: getTasksForStage(index, 'lawyer')
+                }))}
+                currentStage={selectedCase.currentStage}
+              />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -621,24 +615,30 @@ const Dashboard = () => {
             <CardTitle>Case Progress</CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="case1">
-              <TabsList className="mb-4">
-                {cases.map(c => (
-                  <TabsTrigger key={c.id} value={`case${c.id}`}>{c.client} - {c.title}</TabsTrigger>
-                ))}
-              </TabsList>
-              {cases.map(c => (
-                <TabsContent key={c.id} value={`case${c.id}`}>
-                  <SegmentedProgress 
-                    stages={progressStages.map((stage, index) => ({
-                      ...stage,
-                      tasks: getTasksForStage(index, 'psychologist')
-                    }))}
-                    currentStage={c.currentStage}
-                  />
-                </TabsContent>
-              ))}
-            </Tabs>
+            <div className="mb-4">
+              <Select value={selectedCaseId} onValueChange={setSelectedCaseId}>
+                <SelectTrigger className="w-full md:w-[300px]">
+                  <SelectValue placeholder="Select a case" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cases.map(c => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.client} - {c.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {selectedCase && (
+              <SegmentedProgress 
+                stages={progressStages.map((stage, index) => ({
+                  ...stage,
+                  tasks: getTasksForStage(index, 'psychologist')
+                }))}
+                currentStage={selectedCase.currentStage}
+              />
+            )}
           </CardContent>
         </Card>
       </div>

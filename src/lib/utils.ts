@@ -1,4 +1,3 @@
-
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -24,4 +23,11 @@ export function formatDate(date: Date | string): string {
     month: 'short',
     day: 'numeric'
   }).format(date);
+}
+
+/**
+ * Generate a random 6-digit passcode
+ */
+export function generatePasscode(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
 }
