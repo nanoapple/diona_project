@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { Progress, SegmentedProgress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '../contexts/AuthContext';
 import { CheckCircle, Clock, AlertCircle, FileText, Calendar } from 'lucide-react';
@@ -20,10 +20,166 @@ interface Case {
   title: string;
   status: 'active' | 'pending' | 'completed';
   progress: number;
+  currentStage: number;
   updates: CaseUpdate[];
   type: string;
   client?: string;
 }
+
+// Define our progress stages
+const progressStages = [
+  {
+    title: 'Intake & Triage',
+    description: 'Claimant signs up, completes symptom screener, uploads incident documents',
+    complete: true,
+    tasks: []
+  },
+  {
+    title: 'Legal & Clinical Review',
+    description: 'Lawyer and psychologist review documents, determine eligibility and next steps',
+    complete: true,
+    tasks: []
+  },
+  {
+    title: 'Assessment Phase',
+    description: 'Psychological assessments assigned, GP info requested, claimant completes interviews',
+    complete: false,
+    active: true,
+    tasks: []
+  },
+  {
+    title: 'Report Preparation',
+    description: 'AI-supported report drafted (Capacity or Vocational), reviewed by psychologist',
+    complete: false,
+    tasks: []
+  },
+  {
+    title: 'Lodgement & Action',
+    description: 'Lawyer compiles report with other evidence, submits to insurer/SIRA',
+    complete: false,
+    tasks: []
+  },
+  {
+    title: 'Outcome & Review',
+    description: 'Claimant notified of decision, may request appeal, follow-up or rehab plan',
+    complete: false,
+    tasks: []
+  }
+];
+
+// Role-specific tasks for each stage
+const getTasksForStage = (stageIndex: number, userRole: string) => {
+  switch(userRole) {
+    case 'victim':
+      switch(stageIndex) {
+        case 0: // Intake & Triage
+          return [
+            { description: 'Complete signup form', complete: true },
+            { description: 'Fill out symptom screener', complete: true },
+            { description: 'Upload incident report', complete: true }
+          ];
+        case 1: // Legal & Clinical Review
+          return [
+            { description: 'Attend initial consultation', complete: true },
+            { description: 'Sign consent forms', complete: true }
+          ];
+        case 2: // Assessment Phase
+          return [
+            { description: 'Complete PCL-5 assessment', complete: true },
+            { description: 'Attend psychological interview', complete: false },
+            { description: 'Provide GP contact details', complete: true }
+          ];
+        case 3: // Report Preparation
+          return [
+            { description: 'Review draft report for accuracy', complete: false }
+          ];
+        case 4: // Lodgement & Action
+          return [
+            { description: 'Sign final documents', complete: false }
+          ];
+        case 5: // Outcome & Review
+          return [
+            { description: 'Complete feedback survey', complete: false },
+            { description: 'Schedule follow-up appointment', complete: false }
+          ];
+        default:
+          return [];
+      }
+    case 'lawyer':
+      switch(stageIndex) {
+        case 0: // Intake & Triage
+          return [
+            { description: 'Review client intake form', complete: true },
+            { description: 'Assess case eligibility', complete: true }
+          ];
+        case 1: // Legal & Clinical Review
+          return [
+            { description: 'Create case silo', complete: true },
+            { description: 'Request medical records', complete: true },
+            { description: 'Document initial legal advice', complete: true }
+          ];
+        case 2: // Assessment Phase
+          return [
+            { description: 'Review preliminary assessment', complete: false },
+            { description: 'Request additional evidence if needed', complete: true }
+          ];
+        case 3: // Report Preparation
+          return [
+            { description: 'Review psychological report', complete: false },
+            { description: 'Prepare legal summary', complete: false }
+          ];
+        case 4: // Lodgement & Action
+          return [
+            { description: 'Compile all evidence', complete: false },
+            { description: 'Submit claim to insurer/SIRA', complete: false }
+          ];
+        case 5: // Outcome & Review
+          return [
+            { description: 'Analyze decision', complete: false },
+            { description: 'Advise client on next steps', complete: false }
+          ];
+        default:
+          return [];
+      }
+    case 'psychologist':
+      switch(stageIndex) {
+        case 0: // Intake & Triage
+          return [
+            { description: 'Review symptom screener', complete: true }
+          ];
+        case 1: // Legal & Clinical Review
+          return [
+            { description: 'Plan assessment approach', complete: true },
+            { description: 'Schedule initial consultation', complete: true }
+          ];
+        case 2: // Assessment Phase
+          return [
+            { description: 'Assign psychological assessments', complete: true },
+            { description: 'Conduct clinical interview', complete: false },
+            { description: 'Analyze assessment results', complete: false }
+          ];
+        case 3: // Report Preparation
+          return [
+            { description: 'Draft psychological assessment report', complete: false },
+            { description: 'Document capacity evaluation', complete: false },
+            { description: 'Finalize report', complete: false }
+          ];
+        case 4: // Lodgement & Action
+          return [
+            { description: 'Provide expert testimony if required', complete: false }
+          ];
+        case 5: // Outcome & Review
+          return [
+            { description: 'Plan rehabilitation strategy', complete: false },
+            { description: 'Schedule follow-up assessment', complete: false }
+          ];
+        default:
+          return [];
+      }
+    default:
+      return [];
+  }
+};
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
@@ -42,6 +198,7 @@ const Dashboard = () => {
           title: 'Work Injury Compensation',
           status: 'active',
           progress: 65,
+          currentStage: 2, // Assessment Phase (0-indexed)
           type: 'Workplace Injury',
           client: 'John Doe',
           updates: [
@@ -73,6 +230,7 @@ const Dashboard = () => {
           title: 'Car Accident Claim',
           status: 'pending',
           progress: 30,
+          currentStage: 1, // Legal & Clinical Review (0-indexed)
           type: 'Motor Vehicle Accident',
           client: 'Jane Smith',
           updates: [
@@ -145,7 +303,7 @@ const Dashboard = () => {
                     {renderStatusIcon(c.status)}
                     <span className="text-sm font-medium">{c.title}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">{c.progress}%</span>
+                  <span className="text-xs text-muted-foreground">Stage {c.currentStage + 1}</span>
                 </div>
               ))}
             </div>
@@ -201,6 +359,27 @@ const Dashboard = () => {
         </Card>
       </div>
       
+      {cases.length > 0 && (
+        <div className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Claim Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {cases.length > 0 && (
+                <SegmentedProgress 
+                  stages={progressStages.map((stage, index) => ({
+                    ...stage,
+                    tasks: getTasksForStage(index, 'victim')
+                  }))}
+                  currentStage={cases[0].currentStage}
+                />
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+      
       <div className="mt-6">
         <Card>
           <CardHeader>
@@ -244,7 +423,7 @@ const Dashboard = () => {
                     {renderStatusIcon(c.status)}
                     <span className="text-sm font-medium">{c.title}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">{c.client}</span>
+                  <span className="text-xs text-muted-foreground">{c.client} • Stage {c.currentStage + 1}</span>
                 </div>
               ))}
             </div>
@@ -309,21 +488,21 @@ const Dashboard = () => {
             <Tabs defaultValue="case1">
               <TabsList className="mb-4">
                 {cases.map(c => (
-                  <TabsTrigger key={c.id} value={`case${c.id}`}>{c.title}</TabsTrigger>
+                  <TabsTrigger key={c.id} value={`case${c.id}`}>{c.client} - {c.title}</TabsTrigger>
                 ))}
               </TabsList>
               {cases.map(c => (
                 <TabsContent key={c.id} value={`case${c.id}`}>
                   <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium">Case Progress</span>
-                        <span className="text-sm">{c.progress}%</span>
-                      </div>
-                      <Progress value={c.progress} />
-                    </div>
+                    <SegmentedProgress 
+                      stages={progressStages.map((stage, index) => ({
+                        ...stage,
+                        tasks: getTasksForStage(index, 'lawyer')
+                      }))}
+                      currentStage={c.currentStage}
+                    />
                     
-                    <div className="space-y-3 mt-4">
+                    <div className="space-y-3 mt-6">
                       <h4 className="text-sm font-medium">Recent Updates:</h4>
                       {c.updates.map(update => (
                         <div key={update.id} className="flex items-start gap-3">
@@ -388,23 +567,23 @@ const Dashboard = () => {
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <div className="text-sm font-medium">John Doe - Work Injury Report</div>
-                  <div className="text-xs">80%</div>
+                  <div className="text-xs">Stage 3 of 6</div>
                 </div>
-                <Progress value={80} className="h-2" />
+                <Progress value={50} className="h-2" />
               </div>
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <div className="text-sm font-medium">Jane Smith - MVA Report</div>
-                  <div className="text-xs">45%</div>
+                  <div className="text-xs">Stage 2 of 6</div>
                 </div>
-                <Progress value={45} className="h-2" />
+                <Progress value={33} className="h-2" />
               </div>
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <div className="text-sm font-medium">Robert Brown - Workplace Stress</div>
-                  <div className="text-xs">20%</div>
+                  <div className="text-xs">Stage 1 of 6</div>
                 </div>
-                <Progress value={20} className="h-2" />
+                <Progress value={16} className="h-2" />
               </div>
             </div>
           </CardContent>
@@ -432,6 +611,34 @@ const Dashboard = () => {
                 <div className="text-sm text-muted-foreground">April 20, 2023 - 10:00 AM</div>
               </div>
             </div>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <div className="mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Case Progress</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="case1">
+              <TabsList className="mb-4">
+                {cases.map(c => (
+                  <TabsTrigger key={c.id} value={`case${c.id}`}>{c.client} - {c.title}</TabsTrigger>
+                ))}
+              </TabsList>
+              {cases.map(c => (
+                <TabsContent key={c.id} value={`case${c.id}`}>
+                  <SegmentedProgress 
+                    stages={progressStages.map((stage, index) => ({
+                      ...stage,
+                      tasks: getTasksForStage(index, 'psychologist')
+                    }))}
+                    currentStage={c.currentStage}
+                  />
+                </TabsContent>
+              ))}
+            </Tabs>
           </CardContent>
         </Card>
       </div>
