@@ -1,14 +1,16 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FileText, Clock, AlertCircle, Plus, Filter, Calendar } from 'lucide-react';
+import { FileText, Clock, AlertCircle, Plus, Calendar } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { CaseSilo as CaseSiloType, CaseSiloStatus } from '@/types';
+import { useAuth } from '@/contexts/AuthContext';
 
 const CaseSilo = () => {
+  const { currentUser } = useAuth();
   const [caseSilos, setCaseSilos] = useState<CaseSiloType[]>([
     {
       id: '1',
@@ -88,13 +90,13 @@ const CaseSilo = () => {
     },
     {
       id: '2',
-      claimantName: 'Jane Smith',
+      claimantName: 'John Doe',
       caseType: 'Car Accident',
       status: 'active',
       createdDate: '2023-04-10',
       expiryDate: '2023-10-10',
       participants: {
-        claimantId: 'victim-2',
+        claimantId: 'victim-1',
         lawyerId: 'lawyer-1',
         psychologistId: 'psych-1'
       },
@@ -143,10 +145,43 @@ const CaseSilo = () => {
   
   const [filter, setFilter] = useState<CaseSiloStatus | 'all'>('all');
   const [selectedSilo, setSelectedSilo] = useState<CaseSiloType | null>(null);
+  const [filteredSilos, setFilteredSilos] = useState<CaseSiloType[]>([]);
 
-  const filteredSilos = filter === 'all' 
-    ? caseSilos 
-    : caseSilos.filter(silo => silo.status === filter);
+  // Filter silos based on current user and selected filter
+  useEffect(() => {
+    if (currentUser) {
+      // Filter silos based on user role
+      let userSilos: CaseSiloType[];
+      
+      if (currentUser.role === 'victim') {
+        // For victims/claimants, only show cases where they are the claimant
+        userSilos = caseSilos.filter(silo => 
+          silo.participants.claimantId === currentUser.id || 
+          // For demo purposes, also show cases where claimantName matches user name
+          silo.claimantName === currentUser.name
+        );
+      } else if (currentUser.role === 'lawyer') {
+        // For lawyers, show cases where they are assigned
+        userSilos = caseSilos.filter(silo => 
+          silo.participants.lawyerId === currentUser.id
+        );
+      } else if (currentUser.role === 'psychologist') {
+        // For psychologists, show cases where they are assigned
+        userSilos = caseSilos.filter(silo => 
+          silo.participants.psychologistId === currentUser.id
+        );
+      } else {
+        userSilos = [];
+      }
+
+      // Apply status filter
+      const statusFiltered = filter === 'all' 
+        ? userSilos 
+        : userSilos.filter(silo => silo.status === filter);
+        
+      setFilteredSilos(statusFiltered);
+    }
+  }, [currentUser, caseSilos, filter]);
 
   const handleSelectSilo = (silo: CaseSiloType) => {
     setSelectedSilo(silo);
@@ -170,7 +205,7 @@ const CaseSilo = () => {
     
     const daysRemaining = calculateDaysRemaining(expiryDate);
     if (daysRemaining <= 30) {
-      return <Badge variant="warning" className="bg-amber-500">Expires in {daysRemaining} days</Badge>;
+      return <Badge variant="secondary" className="bg-amber-500">Expires in {daysRemaining} days</Badge>;
     }
     
     return <Badge variant="default" className="bg-emerald-600">Active</Badge>;
@@ -197,40 +232,46 @@ const CaseSilo = () => {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filteredSilos.map(silo => (
-          <Card 
-            key={silo.id} 
-            className={`cursor-pointer transition-all hover:shadow-md ${silo.status === 'expired' ? 'opacity-75' : ''}`}
-            onClick={() => handleSelectSilo(silo)}
-          >
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle>{silo.claimantName}</CardTitle>
-                  <CardDescription>{silo.caseType}</CardDescription>
+        {filteredSilos.length === 0 ? (
+          <div className="col-span-full text-center py-12 text-muted-foreground">
+            No case silos found. {filter !== 'all' && "Try changing your filter."}
+          </div>
+        ) : (
+          filteredSilos.map(silo => (
+            <Card 
+              key={silo.id} 
+              className={`cursor-pointer transition-all hover:shadow-md ${silo.status === 'expired' ? 'opacity-75' : ''}`}
+              onClick={() => handleSelectSilo(silo)}
+            >
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle>{currentUser?.role === 'victim' ? "My Case" : silo.claimantName}</CardTitle>
+                    <CardDescription>{silo.caseType}</CardDescription>
+                  </div>
+                  {renderStatusBadge(silo.status, silo.expiryDate)}
                 </div>
-                {renderStatusBadge(silo.status, silo.expiryDate)}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-sm text-muted-foreground flex items-center">
-                <Calendar className="w-4 h-4 mr-1" />
-                Created: {formatDate(silo.createdDate)}
-              </div>
-              <div className="text-sm text-muted-foreground mt-1 flex items-center">
-                <Clock className="w-4 h-4 mr-1" />
-                {silo.status === 'expired' 
-                  ? `Expired: ${formatDate(silo.expiryDate)}`
-                  : `Expires: ${formatDate(silo.expiryDate)}`}
-              </div>
-              <div className="mt-4 flex justify-between text-sm">
-                <div>Documents: {silo.documents.length}</div>
-                <div>Assessments: {silo.assessments.length}</div>
-                <div>Reports: {silo.reports.length}</div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardHeader>
+              <CardContent>
+                <div className="text-sm text-muted-foreground flex items-center">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  Created: {formatDate(silo.createdDate)}
+                </div>
+                <div className="text-sm text-muted-foreground mt-1 flex items-center">
+                  <Clock className="w-4 h-4 mr-1" />
+                  {silo.status === 'expired' 
+                    ? `Expired: ${formatDate(silo.expiryDate)}`
+                    : `Expires: ${formatDate(silo.expiryDate)}`}
+                </div>
+                <div className="mt-4 flex justify-between text-sm">
+                  <div>Documents: {silo.documents.length}</div>
+                  <div>Assessments: {silo.assessments.length}</div>
+                  <div>Reports: {silo.reports.length}</div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </>
   );
@@ -248,7 +289,9 @@ const CaseSilo = () => {
             <Button variant="ghost" size="sm" onClick={handleBackToList} className="mb-2">
               &larr; Back to Case Silos
             </Button>
-            <h1 className="text-3xl font-bold">{selectedSilo.claimantName}</h1>
+            <h1 className="text-3xl font-bold">
+              {currentUser?.role === 'victim' ? "My Case" : selectedSilo.claimantName}
+            </h1>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-muted-foreground">{selectedSilo.caseType}</span>
               {renderStatusBadge(selectedSilo.status, selectedSilo.expiryDate)}
@@ -269,7 +312,7 @@ const CaseSilo = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex flex-col">
                 <span className="text-sm text-muted-foreground">Claimant</span>
-                <span className="font-medium">{selectedSilo.claimantName}</span>
+                <span className="font-medium">{currentUser?.role === 'victim' ? "Me" : selectedSilo.claimantName}</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-muted-foreground">Case Type</span>
@@ -299,7 +342,9 @@ const CaseSilo = () => {
             <TabsTrigger value="assessments">Assessments</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
             <TabsTrigger value="notes">Case Notes</TabsTrigger>
-            <TabsTrigger value="external">External Uploads</TabsTrigger>
+            {currentUser?.role !== 'victim' && (
+              <TabsTrigger value="external">External Uploads</TabsTrigger>
+            )}
           </TabsList>
           
           <TabsContent value="documents">
@@ -349,7 +394,7 @@ const CaseSilo = () => {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Assessments</CardTitle>
-                  {!isExpired && (
+                  {!isExpired && currentUser?.role === 'psychologist' && (
                     <Button size="sm">
                       <Plus className="w-4 h-4 mr-1" /> Assign Assessment
                     </Button>
@@ -392,7 +437,7 @@ const CaseSilo = () => {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Reports</CardTitle>
-                  {!isExpired && (
+                  {!isExpired && currentUser?.role === 'psychologist' && (
                     <Button size="sm">
                       <Plus className="w-4 h-4 mr-1" /> Create Report
                     </Button>
@@ -466,47 +511,49 @@ const CaseSilo = () => {
             </Card>
           </TabsContent>
           
-          <TabsContent value="external">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>External Uploads</CardTitle>
-                  {!isExpired && (
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-1" /> Send Upload Link
-                    </Button>
-                  )}
-                </div>
-                <CardDescription>Files uploaded by external contributors (not visible to claimant)</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {selectedSilo.externalUploads.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No external uploads have been received yet.
+          {currentUser?.role !== 'victim' && (
+            <TabsContent value="external">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>External Uploads</CardTitle>
+                    {!isExpired && (
+                      <Button size="sm">
+                        <Plus className="w-4 h-4 mr-1" /> Send Upload Link
+                      </Button>
+                    )}
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {selectedSilo.externalUploads.map(doc => (
-                      <div key={doc.id} className="flex items-center justify-between p-3 bg-muted/40 rounded-md">
-                        <div className="flex items-center">
-                          <div className="p-2 bg-amber-100 rounded-md mr-3">
-                            <FileText className="h-5 w-5 text-amber-600" />
-                          </div>
-                          <div>
-                            <div className="font-medium">{doc.name}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {doc.type} • {doc.size} • Uploaded by {doc.uploadedBy} on {formatDate(doc.uploadDate)}
+                  <CardDescription>Files uploaded by external contributors (not visible to claimant)</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {selectedSilo.externalUploads.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No external uploads have been received yet.
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {selectedSilo.externalUploads.map(doc => (
+                        <div key={doc.id} className="flex items-center justify-between p-3 bg-muted/40 rounded-md">
+                          <div className="flex items-center">
+                            <div className="p-2 bg-amber-100 rounded-md mr-3">
+                              <FileText className="h-5 w-5 text-amber-600" />
+                            </div>
+                            <div>
+                              <div className="font-medium">{doc.name}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {doc.type} • {doc.size} • Uploaded by {doc.uploadedBy} on {formatDate(doc.uploadDate)}
+                              </div>
                             </div>
                           </div>
+                          <Button variant="ghost" size="sm">View</Button>
                         </div>
-                        <Button variant="ghost" size="sm">View</Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
         </Tabs>
       </>
     );
