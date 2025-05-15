@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,6 +9,7 @@ import { CaseSilo as CaseSiloType, CaseSiloStatus } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/components/ui/use-toast';
 import ShareDialog from '@/components/ShareDialog';
+import InterviewStatus from '@/components/InterviewStatus';
 
 const CaseSilo = () => {
   const { currentUser } = useAuth();
@@ -205,6 +205,34 @@ const CaseSilo = () => {
   const [selectedSilo, setSelectedSilo] = useState<CaseSiloType | null>(null);
   const [filteredSilos, setFilteredSilos] = useState<CaseSiloType[]>([]);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
+
+  // Add interview status mock data
+  const mockInterviewStatuses = {
+    '1': {
+      isStarted: true,
+      isCompleted: false,
+      progressPercentage: 57,
+      lastUpdated: '2023-04-05 14:30'
+    },
+    '2': {
+      isStarted: false,
+      isCompleted: false,
+      progressPercentage: 0,
+      lastUpdated: ''
+    },
+    '3': {
+      isStarted: true,
+      isCompleted: true,
+      progressPercentage: 100,
+      lastUpdated: '2023-02-10 09:15'
+    },
+    '4': {
+      isStarted: true,
+      isCompleted: false,
+      progressPercentage: 28,
+      lastUpdated: '2023-03-01 16:45'
+    }
+  };
 
   // Filter silos based on current user and selected filter
   useEffect(() => {
@@ -435,6 +463,38 @@ const CaseSilo = () => {
             </div>
           </CardContent>
         </Card>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="md:col-span-2">
+            <InterviewStatus 
+              caseId={selectedSilo.id}
+              interviewStatus={mockInterviewStatuses[selectedSilo.id] || {
+                isStarted: false,
+                isCompleted: false,
+                progressPercentage: 0,
+                lastUpdated: ''
+              }}
+            />
+          </div>
+          <div className="md:col-span-1">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Case Status</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isExpired ? (
+                  <div className="flex items-center text-destructive">
+                    <AlertCircle className="w-4 h-4 mr-2" /> Expired on {formatDate(selectedSilo.expiryDate)}
+                  </div>
+                ) : (
+                  <div className="flex items-center text-emerald-600">
+                    <Clock className="w-4 h-4 mr-2" /> {daysRemaining} days remaining
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
 
         <Tabs defaultValue="documents" className="w-full">
           <TabsList className="mb-4">

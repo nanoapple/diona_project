@@ -1,4 +1,6 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,19 +9,89 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Mic, Type, Save, ArrowLeft, ArrowRight, AlertCircle } from 'lucide-react';
+import { Mic, Type, Save, ArrowLeft, ArrowRight, AlertCircle, Calendar, Clock, Lock } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { Badge } from '@/components/ui/badge';
+
+// Mock function to get case details - in a real app, this would fetch from API
+const getCaseDetails = (caseId: string) => {
+  return {
+    id: caseId,
+    claimantName: "John Doe",
+    caseType: "Workplace Injury",
+    status: "active",
+    createdDate: "2023-03-15",
+    expiryDate: "2023-09-15",
+  };
+};
+
+// Mock function to get interview data - in a real app, this would fetch from API
+const getInterviewData = (caseId: string) => {
+  // Return mock interview data based on case ID
+  return {
+    caseId,
+    isStarted: caseId === '1' || caseId === '3' || caseId === '4',
+    isCompleted: caseId === '3',
+    lastUpdated: caseId === '1' ? '2023-04-05 14:30' : 
+                caseId === '3' ? '2023-02-10 09:15' : 
+                caseId === '4' ? '2023-03-01 16:45' : '',
+    answers: {},
+    completedSections: caseId === '1' ? [0, 1, 2] : 
+                       caseId === '3' ? [0, 1, 2, 3, 4, 5, 6] : 
+                       caseId === '4' ? [0] : [],
+  };
+};
 
 const Interview = () => {
+  const { caseId } = useParams<{ caseId: string }>();
+  const navigate = useNavigate();
   const { toast } = useToast();
+  const { currentUser } = useAuth();
+  const isClaimant = currentUser?.role === 'victim';
+  
+  const [caseDetails, setCaseDetails] = useState<any>(null);
   const [currentSection, setCurrentSection] = useState(0);
   const [activeRecordingId, setActiveRecordingId] = useState<string | null>(null);
-  const { currentUser } = useAuth();
+  const [interviewData, setInterviewData] = useState<any>(null);
+  const [isReadOnly, setIsReadOnly] = useState(false);
   
   // State for interview answers and input methods
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [questionInputMethods, setQuestionInputMethods] = useState<Record<string, 'text' | 'voice'>>({});
+
+  useEffect(() => {
+    if (caseId) {
+      // In a real app, these would be API calls
+      const details = getCaseDetails(caseId);
+      const interview = getInterviewData(caseId);
+      
+      setCaseDetails(details);
+      setInterviewData(interview);
+      
+      // Set read-only mode if user is not the claimant or if interview is completed
+      if (!isClaimant || interview.isCompleted) {
+        setIsReadOnly(true);
+      }
+      
+      // If the interview was started, load the last section they were working on
+      if (interview.isStarted && interview.completedSections.length > 0) {
+        const nextSectionIndex = Math.min(
+          interview.completedSections.length,
+          interviewSections.length - 1
+        );
+        setCurrentSection(nextSectionIndex);
+      }
+      
+      // Load saved answers if they exist
+      if (interview.answers) {
+        setAnswers(interview.answers);
+      }
+    } else {
+      // If no case ID is provided, redirect to case silos
+      navigate('/case-silo');
+    }
+  }, [caseId, isClaimant, navigate]);
 
   // Interview sections with their questions
   const interviewSections = [
@@ -236,6 +308,8 @@ const Interview = () => {
 
   // Set input method for a specific question
   const setInputMethod = (questionId: string, method: 'text' | 'voice') => {
+    if (isReadOnly) return;
+    
     setQuestionInputMethods(prev => ({
       ...prev,
       [questionId]: method
@@ -243,6 +317,8 @@ const Interview = () => {
   };
 
   const handleInputChange = (questionId: string, value: any) => {
+    if (isReadOnly) return;
+    
     setAnswers(prev => ({
       ...prev,
       [questionId]: value
@@ -253,6 +329,8 @@ const Interview = () => {
   };
 
   const startRecording = (questionId: string) => {
+    if (isReadOnly) return;
+    
     // If this question is already recording, stop it
     if (activeRecordingId === questionId) {
       stopRecording();
@@ -295,6 +373,8 @@ const Interview = () => {
   };
 
   const saveProgress = (isAutoSave = false) => {
+    if (isReadOnly) return;
+    
     // In a real application, this would send the data to your backend
     console.log("Saving progress:", answers);
     
@@ -304,9 +384,23 @@ const Interview = () => {
         description: "Your answers have been saved"
       });
     }
+    
+    // Update interview data with completed sections
+    if (interviewData) {
+      const updatedInterviewData = {
+        ...interviewData,
+        isStarted: true,
+        answers: answers,
+        completedSections: Array.from(new Set([...interviewData.completedSections, currentSection])),
+        lastUpdated: new Date().toLocaleString()
+      };
+      setInterviewData(updatedInterviewData);
+    }
   };
 
   const goToNextSection = () => {
+    if (isReadOnly) return;
+    
     if (currentSection < interviewSections.length - 1) {
       saveProgress();
       setCurrentSection(currentSection + 1);
@@ -315,6 +409,8 @@ const Interview = () => {
   };
 
   const goToPreviousSection = () => {
+    if (isReadOnly) return;
+    
     if (currentSection > 0) {
       saveProgress();
       setCurrentSection(currentSection - 1);
@@ -323,13 +419,30 @@ const Interview = () => {
   };
 
   const submitInterview = () => {
+    if (isReadOnly) return;
+    
     saveProgress();
+    
+    // Mark the interview as completed
+    if (interviewData) {
+      const updatedInterviewData = {
+        ...interviewData,
+        isCompleted: true,
+        lastUpdated: new Date().toLocaleString()
+      };
+      setInterviewData(updatedInterviewData);
+    }
+    
     toast({
       title: "Interview submitted",
       description: "Thank you for completing your interview"
     });
+    
     // In a real application, this would finalize the submission
     // and perhaps redirect the user or show a completion screen
+    setTimeout(() => {
+      navigate(`/case-silo`);
+    }, 2000);
   };
 
   const renderQuestion = (question: any) => {
@@ -338,6 +451,38 @@ const Interview = () => {
     const isRecording = activeRecordingId === question.id;
     
     const renderInputField = () => {
+      if (isReadOnly) {
+        // In read-only mode, just show the answer or "Not answered" text
+        if (!value) {
+          return <div className="text-muted-foreground italic mt-1">Not answered</div>;
+        }
+        
+        switch (question.type) {
+          case 'select':
+          case 'radio':
+          case 'text':
+          case 'textarea':
+            return <div className="mt-1 p-2 bg-muted/40 rounded">{value}</div>;
+          case 'range':
+            return (
+              <div className="mt-4">
+                <div className="flex justify-between text-xs mb-1">
+                  {[...Array(10)].map((_, i) => (
+                    <span key={i} className={value && i + 1 <= parseInt(value) ? "font-bold" : ""}>{i + 1}</span>
+                  ))}
+                </div>
+                <Progress value={(parseInt(value) / 10) * 100} className="h-2" />
+                <div className="flex justify-between text-xs mt-1">
+                  <span>Not ready</span>
+                  <span>Very ready</span>
+                </div>
+              </div>
+            );
+          default:
+            return <div className="mt-1 p-2 bg-muted/40 rounded">{value}</div>;
+        }
+      }
+      
       if (inputMethod === 'voice') {
         return (
           <div className="mt-1 flex items-center gap-2">
@@ -346,6 +491,7 @@ const Interview = () => {
               onClick={() => startRecording(question.id)} 
               variant={isRecording ? "destructive" : "secondary"}
               className="flex items-center gap-2"
+              disabled={isReadOnly}
             >
               <Mic size={16} />
               {isRecording ? 'Stop Recording' : 'Record Answer'}
@@ -361,12 +507,12 @@ const Interview = () => {
 
       switch (question.type) {
         case 'text':
-          return <Input value={value} onChange={e => handleInputChange(question.id, e.target.value)} className="mt-1" />;
+          return <Input value={value} onChange={e => handleInputChange(question.id, e.target.value)} className="mt-1" disabled={isReadOnly} />;
         case 'textarea':
-          return <Textarea value={value} onChange={e => handleInputChange(question.id, e.target.value)} className="mt-1" rows={4} />;
+          return <Textarea value={value} onChange={e => handleInputChange(question.id, e.target.value)} className="mt-1" rows={4} disabled={isReadOnly} />;
         case 'select':
           return (
-            <Select value={value} onValueChange={val => handleInputChange(question.id, val)}>
+            <Select value={value} onValueChange={val => handleInputChange(question.id, val)} disabled={isReadOnly}>
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Select an option" />
               </SelectTrigger>
@@ -392,6 +538,7 @@ const Interview = () => {
                 value={value || 5}
                 onChange={e => handleInputChange(question.id, e.target.value)}
                 className="w-full"
+                disabled={isReadOnly}
               />
               <div className="flex justify-between text-xs mt-1">
                 <span>Not ready</span>
@@ -401,17 +548,17 @@ const Interview = () => {
           );
         case 'radio':
           return (
-            <RadioGroup value={value} onValueChange={val => handleInputChange(question.id, val)} className="mt-3">
+            <RadioGroup value={value} onValueChange={val => handleInputChange(question.id, val)} className="mt-3" disabled={isReadOnly}>
               {question.options?.map((option: string) => (
                 <div className="flex items-center space-x-2 mt-1" key={option}>
-                  <RadioGroupItem value={option} id={`${question.id}-${option}`} />
+                  <RadioGroupItem value={option} id={`${question.id}-${option}`} disabled={isReadOnly} />
                   <Label htmlFor={`${question.id}-${option}`}>{option}</Label>
                 </div>
               ))}
             </RadioGroup>
           );
         default:
-          return <Input value={value} onChange={e => handleInputChange(question.id, e.target.value)} className="mt-1" />;
+          return <Input value={value} onChange={e => handleInputChange(question.id, e.target.value)} className="mt-1" disabled={isReadOnly} />;
       }
     };
 
@@ -419,48 +566,101 @@ const Interview = () => {
       <div key={question.id} className="mb-6 border p-4 rounded-md bg-card">
         <div className="flex justify-between mb-2">
           <Label className="text-md font-medium">{question.text}</Label>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              size="sm"
-              variant={inputMethod === 'text' ? 'default' : 'outline'}
-              className="h-8 px-2"
-              onClick={() => setInputMethod(question.id, 'text')}
-            >
-              <Type size={14} className="mr-1" /> Text
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant={inputMethod === 'voice' ? 'default' : 'outline'}
-              className="h-8 px-2" 
-              onClick={() => setInputMethod(question.id, 'voice')}
-              disabled={activeRecordingId !== null && activeRecordingId !== question.id}
-            >
-              <Mic size={14} className="mr-1" /> Voice
-            </Button>
-          </div>
+          {!isReadOnly && (
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant={inputMethod === 'text' ? 'default' : 'outline'}
+                className="h-8 px-2"
+                onClick={() => setInputMethod(question.id, 'text')}
+                disabled={isReadOnly}
+              >
+                <Type size={14} className="mr-1" /> Text
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={inputMethod === 'voice' ? 'default' : 'outline'}
+                className="h-8 px-2" 
+                onClick={() => setInputMethod(question.id, 'voice')}
+                disabled={(activeRecordingId !== null && activeRecordingId !== question.id) || isReadOnly}
+              >
+                <Mic size={14} className="mr-1" /> Voice
+              </Button>
+            </div>
+          )}
         </div>
         {renderInputField()}
       </div>
     );
   };
+  
+  if (!caseDetails) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
 
   return (
     <div className="max-w-4xl mx-auto pb-12">
-      <h1 className="text-3xl font-bold mb-1">Self-Guided Interview</h1>
-      <p className="text-muted-foreground mb-6">
-        This information will help your case assessment.
-      </p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+        <div>
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/case-silo')} 
+            className="mb-2 p-0 h-auto"
+          >
+            &larr; Back to Case Silos
+          </Button>
+          <h1 className="text-3xl font-bold mb-1">Self-Guided Interview</h1>
+          <p className="text-muted-foreground">
+            {isClaimant ? 
+              "This information will help your case assessment." : 
+              `Viewing ${caseDetails.claimantName}'s interview responses.`}
+          </p>
+        </div>
+        <div className="mt-4 md:mt-0">
+          <Card className="p-3 flex flex-col gap-1">
+            <div className="text-sm">
+              <span className="text-muted-foreground mr-1">Case:</span>
+              {caseDetails.caseType}
+            </div>
+            <div className="flex gap-3 text-sm">
+              <div>
+                <Calendar className="h-4 w-4 inline mr-1" />
+                <span className="text-muted-foreground">Created:</span> {caseDetails.createdDate}
+              </div>
+              <div>
+                <Clock className="h-4 w-4 inline mr-1" />
+                <span className="text-muted-foreground">Expires:</span> {caseDetails.expiryDate}
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+      
+      {isReadOnly && (
+        <div className="mb-6 bg-muted/40 p-3 rounded-md border border-muted flex items-center gap-2">
+          <Lock className="h-4 w-4 text-muted-foreground" />
+          <span>You are viewing this interview in read-only mode.</span>
+          {interviewData && interviewData.isCompleted && (
+            <Badge variant="outline" className="ml-auto">Completed</Badge>
+          )}
+          {interviewData && interviewData.isStarted && !interviewData.isCompleted && (
+            <Badge variant="outline" className="ml-auto bg-amber-100 text-amber-800 border-amber-300">In Progress</Badge>
+          )}
+        </div>
+      )}
       
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
           <div className="text-sm">
             Step {currentSection + 1} of {interviewSections.length}: <span className="font-medium">{currentSectionData.title}</span>
           </div>
-          <div className="text-sm text-muted-foreground">
-            Auto-saving enabled
-          </div>
+          {!isReadOnly && (
+            <div className="text-sm text-muted-foreground">
+              Auto-saving enabled
+            </div>
+          )}
         </div>
         <Progress value={(currentSection / (interviewSections.length - 1)) * 100} className="h-2" />
       </div>
@@ -483,24 +683,26 @@ const Interview = () => {
             type="button" 
             onClick={goToPreviousSection}
             variant="outline"
-            disabled={currentSection === 0}
+            disabled={currentSection === 0 || isReadOnly}
             className="flex items-center gap-2"
           >
             <ArrowLeft size={16} />
             Previous Section
           </Button>
 
-          <Button 
-            type="button" 
-            onClick={() => saveProgress()}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <Save size={16} />
-            Save Progress
-          </Button>
+          {!isReadOnly && (
+            <Button 
+              type="button" 
+              onClick={() => saveProgress()}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Save size={16} />
+              Save Progress
+            </Button>
+          )}
           
-          {currentSection < interviewSections.length - 1 ? (
+          {!isReadOnly && currentSection < interviewSections.length - 1 ? (
             <Button 
               type="button" 
               onClick={goToNextSection}
@@ -509,7 +711,7 @@ const Interview = () => {
               Next Section
               <ArrowRight size={16} />
             </Button>
-          ) : (
+          ) : !isReadOnly ? (
             <Button 
               type="button" 
               onClick={submitInterview}
@@ -517,14 +719,32 @@ const Interview = () => {
             >
               Submit Interview
             </Button>
+          ) : (
+            // If read-only, show navigation buttons
+            <Button 
+              type="button" 
+              variant="outline"
+              onClick={() => {
+                if (currentSection < interviewSections.length - 1) {
+                  setCurrentSection(currentSection + 1);
+                }
+              }}
+              disabled={currentSection === interviewSections.length - 1}
+              className="flex items-center gap-2"
+            >
+              Next Section
+              <ArrowRight size={16} />
+            </Button>
           )}
         </CardFooter>
       </Card>
 
-      <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-        <AlertCircle size={16} />
-        <span>If you need to take a break, click Save Progress. You can continue later.</span>
-      </div>
+      {!isReadOnly && (
+        <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <AlertCircle size={16} />
+          <span>If you need to take a break, click Save Progress. You can continue later.</span>
+        </div>
+      )}
     </div>
   );
 };
