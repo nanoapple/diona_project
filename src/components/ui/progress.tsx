@@ -60,41 +60,47 @@ const SegmentedProgress = ({
   return (
     <div className="space-y-8">
       <div className="flex items-center w-full justify-between">
-        {stages.map((stage, index) => {
-          const isComplete = index < currentStage;
-          const isActive = index === currentStage;
+        <div className="w-full flex items-center justify-between relative">
+          {/* Horizontal line connecting all stages */}
+          <div className="absolute h-0.5 bg-gray-300 left-0 right-0 top-5"></div>
           
-          return (
-            <div key={index} className="flex flex-col items-center relative">
-              <div 
-                className={cn(
-                  "w-10 h-10 rounded-full flex items-center justify-center text-white",
-                  isComplete ? "bg-green-600" : isActive ? "bg-blue-600" : "bg-gray-300"
-                )}
-              >
-                {isComplete ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 6L9 17l-5-5"/>
-                  </svg>
-                ) : (
-                  <span>{index + 1}</span>
-                )}
-              </div>
-              <div className="text-xs text-center mt-2 font-medium max-w-[80px]">
-                {stage.title}
-              </div>
-              {index < stages.length - 1 && (
+          {/* Stage circles */}
+          {stages.map((stage, index) => {
+            const isComplete = index < currentStage;
+            const isActive = index === currentStage;
+            
+            return (
+              <div key={index} className="flex flex-col items-center relative z-10">
                 <div 
                   className={cn(
-                    "absolute h-0.5 top-5 -right-full w-full",
-                    isComplete ? "bg-green-600" : "bg-gray-300"
+                    "w-10 h-10 rounded-full flex items-center justify-center text-white",
+                    isComplete ? "bg-green-600" : isActive ? "bg-blue-600" : "bg-gray-300"
                   )}
-                  style={{ width: "calc(100% - 10px)", left: "calc(50% + 5px)" }}
-                />
-              )}
-            </div>
-          );
-        })}
+                >
+                  {isComplete ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                  ) : (
+                    <span>{index + 1}</span>
+                  )}
+                </div>
+                <div className="text-xs text-center mt-2 font-medium max-w-[80px]">
+                  {stage.title}
+                </div>
+              </div>
+            );
+          })}
+          
+          {/* Progress line overlay */}
+          <div 
+            className="absolute h-0.5 bg-green-600 left-0 top-5 transition-all"
+            style={{ 
+              width: `${(currentStage / (stages.length - 1)) * 100}%`,
+              maxWidth: currentStage === 0 ? '5%' : '100%'
+            }}
+          ></div>
+        </div>
       </div>
       
       <div className="space-y-4">
