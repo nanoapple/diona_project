@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,12 +14,12 @@ import { useAuth } from '../contexts/AuthContext';
 const Interview = () => {
   const { toast } = useToast();
   const [currentSection, setCurrentSection] = useState(0);
-  const [isRecording, setIsRecording] = useState(false);
-  const [answerMethod, setAnswerMethod] = useState<'text' | 'voice'>('text');
+  const [activeRecordingId, setActiveRecordingId] = useState<string | null>(null);
   const { currentUser } = useAuth();
   
-  // State for interview answers
+  // State for interview answers and input methods
   const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [questionInputMethods, setQuestionInputMethods] = useState<Record<string, 'text' | 'voice'>>({});
 
   // Interview sections with their questions
   const interviewSections = [
@@ -230,6 +229,19 @@ const Interview = () => {
 
   const currentSectionData = interviewSections[currentSection];
 
+  // Get input method for a specific question
+  const getInputMethod = (questionId: string): 'text' | 'voice' => {
+    return questionInputMethods[questionId] || 'text';
+  };
+
+  // Set input method for a specific question
+  const setInputMethod = (questionId: string, method: 'text' | 'voice') => {
+    setQuestionInputMethods(prev => ({
+      ...prev,
+      [questionId]: method
+    }));
+  };
+
   const handleInputChange = (questionId: string, value: any) => {
     setAnswers(prev => ({
       ...prev,
@@ -241,12 +253,19 @@ const Interview = () => {
   };
 
   const startRecording = (questionId: string) => {
-    if (isRecording) {
+    // If this question is already recording, stop it
+    if (activeRecordingId === questionId) {
       stopRecording();
       return;
     }
+    
+    // If any other question is currently recording, stop it first
+    if (activeRecordingId) {
+      stopRecording();
+    }
 
-    setIsRecording(true);
+    // Start recording for this question
+    setActiveRecordingId(questionId);
     toast({
       title: "Recording started",
       description: "Speak clearly into your microphone"
@@ -260,7 +279,7 @@ const Interview = () => {
         title: "Recording complete",
         description: "Your answer has been transcribed"
       });
-      setIsRecording(false);
+      setActiveRecordingId(null);
       
       // Simulate a transcribed response
       const simulatedResponse = "This is a simulated transcribed response for demonstration purposes.";
@@ -269,7 +288,7 @@ const Interview = () => {
   };
 
   const stopRecording = () => {
-    setIsRecording(false);
+    setActiveRecordingId(null);
     toast({
       title: "Recording stopped"
     });
@@ -315,9 +334,11 @@ const Interview = () => {
 
   const renderQuestion = (question: any) => {
     const value = answers[question.id] || '';
+    const inputMethod = getInputMethod(question.id);
+    const isRecording = activeRecordingId === question.id;
     
     const renderInputField = () => {
-      if (answerMethod === 'voice') {
+      if (inputMethod === 'voice') {
         return (
           <div className="mt-1 flex items-center gap-2">
             <Button 
@@ -402,18 +423,19 @@ const Interview = () => {
             <Button
               type="button"
               size="sm"
-              variant={answerMethod === 'text' ? 'default' : 'outline'}
+              variant={inputMethod === 'text' ? 'default' : 'outline'}
               className="h-8 px-2"
-              onClick={() => setAnswerMethod('text')}
+              onClick={() => setInputMethod(question.id, 'text')}
             >
               <Type size={14} className="mr-1" /> Text
             </Button>
             <Button
               type="button"
               size="sm"
-              variant={answerMethod === 'voice' ? 'default' : 'outline'}
+              variant={inputMethod === 'voice' ? 'default' : 'outline'}
               className="h-8 px-2" 
-              onClick={() => setAnswerMethod('voice')}
+              onClick={() => setInputMethod(question.id, 'voice')}
+              disabled={activeRecordingId !== null && activeRecordingId !== question.id}
             >
               <Mic size={14} className="mr-1" /> Voice
             </Button>
