@@ -12,7 +12,7 @@ const Index = () => {
           <div className="flex justify-between h-16 items-center">
             <div className="flex-shrink-0 flex items-center">
               <h1 className="text-xl font-bold">
-                <span className="text-gradient">Claim</span>Collab
+                <span className="text-gradient">Affirm</span>Claim
               </h1>
             </div>
             <div className="hidden md:block">
@@ -35,11 +35,11 @@ const Index = () => {
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
             <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-6">
-                Streamline Your <span className="text-gradient">Injury Claims</span> Process
+                <span className="text-blue-500">Affirm</span> and Clarify the Collaborative Path to Your <span className="text-blue-500">Claim</span>
               </h1>
               <p className="mt-3 text-lg text-muted-foreground">
-                ClaimCollab connects victims, lawyers, and psychologists on a single platform
-                to facilitate compensation claims for work injuries and car accidents.
+                AffirmClaim connects claimants, lawyers, and psychologists on a single platform to streamline 
+                personal injury, workplace, and insurance-related compensation claims.
               </p>
               <div className="mt-8 sm:mx-auto sm:max-w-lg sm:flex sm:justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
                 <Link to="/register">
@@ -111,7 +111,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} ClaimCollab. All rights reserved.
+              &copy; {new Date().getFullYear()} AffirmClaim. All rights reserved.
             </p>
           </div>
         </div>

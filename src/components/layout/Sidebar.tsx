@@ -101,7 +101,7 @@ const Sidebar = () => {
       <div className="flex items-center justify-between p-4 border-b border-border">
         {!collapsed && (
           <div className="font-semibold text-xl">
-            <span className="text-gradient">Claim</span>Collab
+            <span className="text-gradient">Affirm</span>Claim
           </div>
         )}
         <Button 
@@ -125,7 +125,10 @@ const Sidebar = () => {
           <div className="text-xs text-muted-foreground">
             {currentUser?.role && (
               <div className="flex items-center gap-2">
-                <span className="bg-primary/20 text-primary text-xs px-2 py-0.5 rounded-full capitalize">
+                <span className="bg-primary/20 text-primary text-sm px-3 py-1 rounded-full capitalize flex items-center">
+                  {currentUser.role === 'lawyer' && <Briefcase className="mr-1 h-5 w-5" />}
+                  {currentUser.role === 'psychologist' && <Book className="mr-1 h-5 w-5" />}
+                  {currentUser.role === 'victim' && <User className="mr-1 h-5 w-5" />}
                   {currentUser.role}
                 </span>
               </div>
