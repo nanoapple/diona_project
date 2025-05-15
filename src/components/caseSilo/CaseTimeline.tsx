@@ -12,19 +12,39 @@ interface CaseTimelineProps {
 }
 
 const CaseTimeline = ({ documents, assessments, reports, notes, externalUploads }: CaseTimelineProps) => {
-  // Combine all items into a single array with type indicators
+  // Combine all items into a single array with type indicators and normalized date fields
   const allItems = [
-    ...documents.map(doc => ({ ...doc, itemType: 'document' })),
-    ...assessments.map(assessment => ({ ...assessment, itemType: 'assessment' })),
-    ...reports.map(report => ({ ...report, itemType: 'report' })),
-    ...notes.map(note => ({ ...note, itemType: 'note' })),
-    ...externalUploads.map(doc => ({ ...doc, itemType: 'external' }))
+    ...documents.map(doc => ({ 
+      ...doc, 
+      itemType: 'document',
+      itemDate: doc.uploadDate 
+    })),
+    ...assessments.map(assessment => ({ 
+      ...assessment, 
+      itemType: 'assessment',
+      itemDate: assessment.date 
+    })),
+    ...reports.map(report => ({ 
+      ...report, 
+      itemType: 'report',
+      itemDate: report.lastEdited 
+    })),
+    ...notes.map(note => ({ 
+      ...note, 
+      itemType: 'note',
+      itemDate: note.createdAt 
+    })),
+    ...externalUploads.map(doc => ({ 
+      ...doc, 
+      itemType: 'external',
+      itemDate: doc.uploadDate 
+    }))
   ];
   
   // Sort items by date (newest first)
   const sortedItems = allItems.sort((a, b) => {
-    const dateA = new Date(a.uploadDate || a.date || a.createdAt || a.lastEdited);
-    const dateB = new Date(b.uploadDate || b.date || b.createdAt || b.lastEdited);
+    const dateA = new Date(a.itemDate);
+    const dateB = new Date(b.itemDate);
     return dateB.getTime() - dateA.getTime();
   });
   
@@ -79,7 +99,7 @@ const CaseTimeline = ({ documents, assessments, reports, notes, externalUploads 
     };
     
     const getDate = () => {
-      return formatDate(item.uploadDate || item.date || item.createdAt || item.lastEdited);
+      return formatDate(item.itemDate);
     };
     
     return (

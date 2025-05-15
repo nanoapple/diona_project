@@ -1,3 +1,4 @@
+
 // User types
 export type UserRole = 'victim' | 'lawyer' | 'psychologist';
 
@@ -31,8 +32,8 @@ export interface Assessment {
 }
 
 // Report status and type enums
-export type ReportStatus = 'draft' | 'completed';
-export type ReportType = 'workers_comp' | 'medico_legal';
+export type ReportStatus = 'draft' | 'for_review' | 'completed';
+export type ReportType = 'workers_comp' | 'medico_legal' | 'vocational' | 'capacity';
 
 // Report interface
 export interface Report {
@@ -51,13 +52,24 @@ export interface Report {
 }
 
 // Case Silo types
-export type CaseSiloStatus = 'active' | 'expired';
+export type CaseSiloStatus = 'active' | 'expiring_soon' | 'expired';
 export type CaseType = 'Workplace Injury' | 'Car Accident' | 'Public Liability' | 'Medical Negligence';
+export type ClaimStage = 
+  'Intake & Triage' | 
+  'Legal Review' | 
+  'Assessment' | 
+  'Report' | 
+  'Lodgement' | 
+  'Outcome';
 
 export interface CaseSilo {
   id: string;
   claimantName: string;
   caseType: CaseType;
+  claimNumber?: string;
+  referralSource?: string;
+  injuryDate?: string;
+  currentStage: ClaimStage;
   status: CaseSiloStatus;
   createdDate: string;
   expiryDate: string;
@@ -71,6 +83,19 @@ export interface CaseSilo {
   reports: Report[];
   notes: CaseNote[];
   externalUploads: CaseDocument[];
+  infoRequests: InfoRequest[];
+  completedStages: ClaimStage[];
+}
+
+export interface InfoRequest {
+  id: string;
+  title: string;
+  questions: string[];
+  answers?: string[];
+  requestedBy: string;
+  requestedAt: string;
+  completedAt?: string;
+  status: 'pending' | 'completed';
 }
 
 export interface CaseDocument {
@@ -78,6 +103,7 @@ export interface CaseDocument {
   name: string;
   type: string;
   uploadedBy: string;
+  uploadRole?: 'lawyer' | 'claimant' | 'psychologist' | 'external';
   uploadDate: string;
   url: string;
   size: string;
@@ -89,5 +115,7 @@ export interface CaseNote {
   content: string;
   createdBy: string;
   createdAt: string;
+  isPrivate?: boolean;
   isExternal?: boolean;
+  visibleTo?: ('lawyer' | 'claimant' | 'psychologist')[];
 }
