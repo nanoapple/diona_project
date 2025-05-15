@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Archive, Search, User, FileText, ClipboardCheck, Book, Plus } from "lucide-react";
 import { formatDate } from '@/lib/utils';
 import { useAuth } from '../contexts/AuthContext';
-import { CaseSilo, CaseDocument, Assessment, Report } from '@/types';
+import { CaseSilo, CaseDocument, Assessment, Report, CaseNote } from '@/types';
 
 const CaseSiloPage = () => {
   const { currentUser } = useAuth();
@@ -25,151 +25,161 @@ const CaseSiloPage = () => {
   useEffect(() => {
     // Fetch mock case silos
     const fetchData = async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-      
-      // Mock data
-      const mockCaseSilos: CaseSilo[] = [
-        {
-          id: "1",
-          claimantName: "John Doe",
-          caseType: "Workplace Injury",
-          status: "active",
-          createdDate: "2023-03-15",
-          expiryDate: "2023-09-15",
-          participants: {
-            claimantId: "user1",
-            lawyerId: "user2",
-            psychologistId: "user3",
-          },
-          documents: [
-            {
-              id: "doc1",
-              name: "Initial Assessment Report.pdf",
-              type: "application/pdf",
-              uploadedBy: "Dr. Smith",
-              uploadDate: "2023-03-20",
-              url: "#",
-              size: "1.2 MB"
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+        
+        // Mock data
+        const mockCaseSilos: CaseSilo[] = [
+          {
+            id: "1",
+            claimantName: "John Doe",
+            caseType: "Workplace Injury",
+            status: "active",
+            createdDate: "2023-03-15",
+            expiryDate: "2023-09-15",
+            participants: {
+              claimantId: "user1",
+              lawyerId: "user2",
+              psychologistId: "user3",
             },
-            {
-              id: "doc2",
-              name: "Medical Records.pdf",
-              type: "application/pdf",
-              uploadedBy: "Dr. Johnson",
-              uploadDate: "2023-03-25",
-              url: "#",
-              size: "3.4 MB"
-            }
-          ],
-          assessments: [
-            {
-              id: "assess1",
-              title: "Psychological Assessment",
-              description: "Initial psychological evaluation",
-              status: "completed",
-              completionPercentage: 100,
-              date: "2023-04-05",
-              assignedTo: "John Doe"
-            },
-            {
-              id: "assess2",
-              title: "Follow-up Assessment",
-              description: "30-day follow-up evaluation",
-              status: "in_progress",
-              completionPercentage: 60,
-              date: "2023-05-05",
-              assignedTo: "John Doe"
-            }
-          ],
-          reports: [
-            {
-              id: "report1",
-              title: "Initial Psychological Report",
-              patientName: "John Doe",
-              date: "2023-04-15",
-              type: "workers_comp",
-              status: "completed",
-              content: {
-                overview: "Patient exhibits symptoms consistent with adjustment disorder following workplace injury.",
-                findings: [
-                  "Moderate anxiety symptoms",
-                  "Sleep disturbances",
-                  "Reduced concentration"
-                ],
-                recommendations: "Cognitive behavioral therapy, 10 sessions"
+            documents: [
+              {
+                id: "doc1",
+                name: "Initial Assessment Report.pdf",
+                type: "application/pdf",
+                uploadedBy: "Dr. Smith",
+                uploadDate: "2023-03-20",
+                url: "#",
+                size: "1.2 MB"
               },
-              lastEdited: "2023-04-14"
-            }
-          ],
-          notes: [
-            {
-              id: "note1",
-              content: "Client reported improvement in sleep patterns after beginning medication.",
-              createdBy: "Dr. Smith",
-              createdAt: "2023-04-20"
-            },
-            {
-              id: "note2",
-              content: "Discussed potential return to work strategies and accommodations.",
-              createdBy: "Dr. Smith",
-              createdAt: "2023-05-02"
-            }
-          ],
-          externalUploads: []
-        },
-        {
-          id: "2",
-          claimantName: "Jane Smith",
-          caseType: "Car Accident",
-          status: "active",
-          createdDate: "2023-02-10",
-          expiryDate: "2023-08-10",
-          participants: {
-            claimantId: "user4",
-            lawyerId: "user5",
-            psychologistId: "user3",
+              {
+                id: "doc2",
+                name: "Medical Records.pdf",
+                type: "application/pdf",
+                uploadedBy: "Dr. Johnson",
+                uploadDate: "2023-03-25",
+                url: "#",
+                size: "3.4 MB"
+              }
+            ],
+            assessments: [
+              {
+                id: "assess1",
+                title: "Psychological Assessment",
+                description: "Initial psychological evaluation",
+                status: "completed",
+                completionPercentage: 100,
+                date: "2023-04-05",
+                assignedTo: "John Doe"
+              },
+              {
+                id: "assess2",
+                title: "Follow-up Assessment",
+                description: "30-day follow-up evaluation",
+                status: "in_progress",
+                completionPercentage: 60,
+                date: "2023-05-05",
+                assignedTo: "John Doe"
+              }
+            ],
+            reports: [
+              {
+                id: "report1",
+                title: "Initial Psychological Report",
+                patientName: "John Doe",
+                date: "2023-04-15",
+                type: "workers_comp",
+                status: "completed",
+                content: {
+                  overview: "Patient exhibits symptoms consistent with adjustment disorder following workplace injury.",
+                  findings: [
+                    "Moderate anxiety symptoms",
+                    "Sleep disturbances",
+                    "Reduced concentration"
+                  ],
+                  recommendations: "Cognitive behavioral therapy, 10 sessions"
+                },
+                lastEdited: "2023-04-14"
+              }
+            ],
+            notes: [
+              {
+                id: "note1",
+                content: "Client reported improvement in sleep patterns after beginning medication.",
+                createdBy: "Dr. Smith",
+                createdAt: "2023-04-20"
+              },
+              {
+                id: "note2",
+                content: "Discussed potential return to work strategies and accommodations.",
+                createdBy: "Dr. Smith",
+                createdAt: "2023-05-02"
+              }
+            ],
+            externalUploads: []
           },
-          documents: [
-            {
-              id: "doc3",
-              name: "Accident Report.pdf",
-              type: "application/pdf",
-              uploadedBy: "Officer Miller",
-              uploadDate: "2023-02-11",
-              url: "#",
-              size: "2.7 MB"
-            }
-          ],
-          assessments: [
-            {
-              id: "assess3",
-              title: "PTSD Screening",
-              description: "Initial trauma assessment",
-              status: "completed",
-              completionPercentage: 100,
-              date: "2023-02-25",
-              assignedTo: "Jane Smith"
-            }
-          ],
-          reports: [],
-          notes: [
-            {
-              id: "note3",
-              content: "Client shows signs of post-traumatic stress. Recommended weekly therapy sessions.",
-              createdBy: "Dr. Johnson",
-              createdAt: "2023-02-28"
-            }
-          ],
-          externalUploads: []
-        }
-      ];
-      
-      setCaseSilos(mockCaseSilos);
-      setIsLoading(false);
+          {
+            id: "2",
+            claimantName: "Jane Smith",
+            caseType: "Car Accident",
+            status: "active",
+            createdDate: "2023-02-10",
+            expiryDate: "2023-08-10",
+            participants: {
+              claimantId: "user4",
+              lawyerId: "user5",
+              psychologistId: "user3",
+            },
+            documents: [
+              {
+                id: "doc3",
+                name: "Accident Report.pdf",
+                type: "application/pdf",
+                uploadedBy: "Officer Miller",
+                uploadDate: "2023-02-11",
+                url: "#",
+                size: "2.7 MB"
+              }
+            ],
+            assessments: [
+              {
+                id: "assess3",
+                title: "PTSD Screening",
+                description: "Initial trauma assessment",
+                status: "completed",
+                completionPercentage: 100,
+                date: "2023-02-25",
+                assignedTo: "Jane Smith"
+              }
+            ],
+            reports: [],
+            notes: [
+              {
+                id: "note3",
+                content: "Client shows signs of post-traumatic stress. Recommended weekly therapy sessions.",
+                createdBy: "Dr. Johnson",
+                createdAt: "2023-02-28"
+              }
+            ],
+            externalUploads: []
+          }
+        ];
+        
+        setCaseSilos(mockCaseSilos);
+      } catch (error) {
+        console.error("Error fetching case data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load case data. Please try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     };
     
     fetchData();
-  }, []);
+  }, [toast]);
 
   const filteredCaseSilos = caseSilos.filter(caseSilo => 
     caseSilo.claimantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -184,7 +194,7 @@ const CaseSiloPage = () => {
   };
 
   // Handle new document/assessment/report creation
-  const handleCreateItem = (type: 'document' | 'assessment' | 'report') => {
+  const handleCreateItem = (type: 'document' | 'assessment' | 'report' | 'note') => {
     if (!selectedCaseId) return;
     
     toast({
@@ -397,7 +407,7 @@ const CaseSiloPage = () => {
             <TabsContent value="notes" className="mt-0 space-y-4">
               <div className="flex justify-between">
                 <h3 className="text-lg font-medium">Notes</h3>
-                <Button size="sm">
+                <Button size="sm" onClick={() => handleCreateItem('note')}>
                   <Plus className="w-4 h-4 mr-1" /> Add Note
                 </Button>
               </div>
