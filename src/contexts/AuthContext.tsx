@@ -1,7 +1,6 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
-export type UserRole = 'victim' | 'lawyer' | 'psychologist';
+import { UserRole } from '../types/index';
 
 interface User {
   id: string;
@@ -62,7 +61,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       // Demo users for testing different roles
       const demoUsers = [
-        { id: '1', name: 'John Victim', email: 'victim@example.com', password: 'password', role: 'victim' as UserRole },
+        { id: '1', name: 'John Claimant', email: 'claimant@example.com', password: 'password', role: 'claimant' as UserRole },
         { id: '2', name: 'Jane Lawyer', email: 'lawyer@example.com', password: 'password', role: 'lawyer' as UserRole },
         { id: '3', name: 'Dr. Smith', email: 'psychologist@example.com', password: 'password', role: 'psychologist' as UserRole }
       ];

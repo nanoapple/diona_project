@@ -66,7 +66,7 @@ const Sidebar = () => {
     ];
 
     const roleSpecificItems = {
-      victim: [
+      claimant: [
         { to: "/ai-assistant", icon: MessageSquare, label: "AI Assistant" },
         { to: "/documents", icon: FileText, label: "Documents" },
         { to: "/assessments", icon: ClipboardCheck, label: "Assessments" },
@@ -128,7 +128,7 @@ const Sidebar = () => {
                 <span className="bg-primary/20 text-primary text-sm px-3 py-1 rounded-full capitalize flex items-center">
                   {currentUser.role === 'lawyer' && <Briefcase className="mr-1 h-5 w-5" />}
                   {currentUser.role === 'psychologist' && <Book className="mr-1 h-5 w-5" />}
-                  {currentUser.role === 'victim' && <User className="mr-1 h-5 w-5" />}
+                  {currentUser.role === 'claimant' && <User className="mr-1 h-5 w-5" />}
                   {currentUser.role}
                 </span>
               </div>

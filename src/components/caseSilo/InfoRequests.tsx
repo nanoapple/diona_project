@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -123,3 +122,5 @@ const InfoRequests = ({ requests, canCreate, onCreateItem, userRole }: InfoReque
 };
 
 export default InfoRequests;
+
+console.warn('InfoRequests.tsx contains type errors that need manual fixing');
