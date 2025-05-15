@@ -1,5 +1,6 @@
+
 // User types
-export type UserRole = 'victim' | 'lawyer' | 'psychologist';
+export type UserRole = 'claimant' | 'lawyer' | 'psychologist';
 
 export interface User {
   id: string;

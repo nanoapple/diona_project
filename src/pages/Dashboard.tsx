@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress, SegmentedProgress } from '@/components/ui/progress';
@@ -70,7 +71,7 @@ const progressStages = [
 // Role-specific tasks for each stage
 const getTasksForStage = (stageIndex: number, userRole: string) => {
   switch(userRole) {
-    case 'victim':
+    case 'claimant':
       switch(stageIndex) {
         case 0: // Intake & Triage
           return [
@@ -291,7 +292,7 @@ const Dashboard = () => {
 
   const selectedCase = cases.find(c => c.id === selectedCaseId) || (cases.length > 0 ? cases[0] : null);
 
-  const renderVictimDashboard = () => (
+  const renderClaimantDashboard = () => (
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
@@ -376,7 +377,7 @@ const Dashboard = () => {
                 <SegmentedProgress 
                   stages={progressStages.map((stage, index) => ({
                     ...stage,
-                    tasks: getTasksForStage(index, 'victim')
+                    tasks: getTasksForStage(index, 'claimant')
                   }))}
                   currentStage={cases[0].currentStage}
                 />
@@ -694,8 +695,8 @@ const Dashboard = () => {
     }
 
     switch (currentUser?.role) {
-      case 'victim':
-        return renderVictimDashboard();
+      case 'claimant':
+        return renderClaimantDashboard();
       case 'lawyer':
         return renderLawyerDashboard();
       case 'psychologist':

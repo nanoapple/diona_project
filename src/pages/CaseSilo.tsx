@@ -270,7 +270,7 @@ const CaseSiloPage = () => {
         // Filter cases based on user role
         // If user is a claimant, only show cases where they are the claimant
         let filteredSilos = mockCaseSilos;
-        if (currentUser?.role === 'victim') {
+        if (currentUser?.role === 'claimant') {
           filteredSilos = mockCaseSilos.filter(caseSilo => 
             caseSilo.participants.claimantId === currentUser.id
           );
@@ -601,7 +601,7 @@ const CaseSiloPage = () => {
         <>
           <h1 className="text-3xl font-bold mb-1">Case Silo</h1>
           <p className="text-muted-foreground mb-6">
-            Access all information related to your {currentUser?.role === 'victim' ? '' : 'clients\''} cases in one secure location
+            Access all information related to your {currentUser?.role === 'claimant' ? '' : 'clients\''} cases in one secure location
           </p>
           
           <div className="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between">
