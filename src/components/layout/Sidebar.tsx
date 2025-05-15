@@ -14,7 +14,8 @@ import {
   Menu,
   X,
   Users,
-  Archive
+  Archive,
+  Mic
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -56,6 +57,7 @@ const Sidebar = () => {
         { to: "/ai-assistant", icon: MessageSquare, label: "AI Assistant" },
         { to: "/documents", icon: FileText, label: "Documents" },
         { to: "/assessments", icon: ClipboardCheck, label: "Assessments" },
+        { to: "/interview", icon: Mic, label: "Interview" },
       ],
       lawyer: [
         { to: "/ai-assistant", icon: MessageSquare, label: "AI Assistant" },

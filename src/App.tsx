@@ -16,6 +16,7 @@ import Reports from "./pages/Reports";
 import Clients from "./pages/Clients";
 import CaseSilo from "./pages/CaseSilo";
 import Profile from "./pages/Profile";
+import Interview from "./pages/Interview";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/reports" element={<Reports />} />
               <Route path="/clients" element={<Clients />} />
               <Route path="/case-silo" element={<CaseSilo />} />
+              <Route path="/interview" element={<Interview />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
             <Route path="*" element={<NotFound />} />
