@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/toast';
+import { useToast } from '@/hooks/use-toast';
 import { Mic, Type, Save, ArrowLeft, ArrowRight, AlertCircle } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '../contexts/AuthContext';
@@ -470,7 +470,7 @@ const Interview = () => {
 
           <Button 
             type="button" 
-            onClick={saveProgress}
+            onClick={() => saveProgress()}
             variant="outline"
             className="flex items-center gap-2"
           >
