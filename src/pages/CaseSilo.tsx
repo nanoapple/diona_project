@@ -31,7 +31,7 @@ import {
   Assessment, 
   Report, 
   CaseNote, 
-  CaseSiloStatus, 
+  CaseSiloStatus,
   InfoRequest,
   ClaimStage
 } from '@/types';
@@ -267,7 +267,22 @@ const CaseSiloPage = () => {
           }
         ];
         
-        setCaseSilos(mockCaseSilos);
+        // Filter cases based on user role
+        // If user is a claimant, only show cases where they are the claimant
+        let filteredSilos = mockCaseSilos;
+        if (currentUser?.role === 'victim') {
+          filteredSilos = mockCaseSilos.filter(caseSilo => 
+            caseSilo.participants.claimantId === currentUser.id
+          );
+          
+          // For demo purposes, if no cases match the current user's ID, just show the first case
+          // In a real app, this would be removed and only the user's actual cases would be shown
+          if (filteredSilos.length === 0 && mockCaseSilos.length > 0) {
+            filteredSilos = [mockCaseSilos[0]];
+          }
+        }
+        
+        setCaseSilos(filteredSilos);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching case data:", error);
@@ -282,7 +297,7 @@ const CaseSiloPage = () => {
     };
     
     fetchData();
-  }, []);
+  }, [currentUser]);
 
   const filteredCaseSilos = caseSilos.filter(caseSilo => 
     caseSilo.claimantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -586,7 +601,7 @@ const CaseSiloPage = () => {
         <>
           <h1 className="text-3xl font-bold mb-1">Case Silo</h1>
           <p className="text-muted-foreground mb-6">
-            Access all information related to your cases in one secure location
+            Access all information related to your {currentUser?.role === 'victim' ? '' : 'clients\''} cases in one secure location
           </p>
           
           <div className="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between">
