@@ -1,153 +1,136 @@
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { 
-  FileText, 
-  ClipboardCheck, 
-  Book, 
-  MessageSquare, 
-  Archive,
-  AlertCircle,
-  Clock
-} from "lucide-react";
-import { CaseSilo, CaseSiloStatus } from "@/types";
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Calendar, User, Clock, AlertCircle } from 'lucide-react';
+import { CaseSilo } from '@/types';
 import { formatDate } from '@/lib/utils';
 
 interface CaseSiloListProps {
   caseSilos: CaseSilo[];
-  searchTerm: string;
   onSelectCase: (id: string) => void;
+  searchTerm: string;
 }
 
-const CaseSiloList = ({ caseSilos, searchTerm, onSelectCase }: CaseSiloListProps) => {
-  const getCaseProgress = (caseData: CaseSilo) => {
-    // Calculate progress based on completed stages
-    const allStages = [
-      'Intake & Triage', 
-      'Legal Review', 
-      'Assessment', 
-      'Report', 
-      'Lodgement', 
-      'Outcome'
-    ];
-    
-    const completedCount = caseData.completedStages?.length || 0;
-    return Math.round((completedCount / allStages.length) * 100);
+const CaseSiloList: React.FC<CaseSiloListProps> = ({ caseSilos, onSelectCase, searchTerm }) => {
+  // Calculate days until expiry for a case
+  const getDaysUntilExpiry = (expiryDate: string) => {
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const diffTime = expiry.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
-  // Get status display details
-  const getStatusDetails = (status: CaseSiloStatus) => {
+  // Get badge variant based on status
+  const getStatusBadgeVariant = (status: string) => {
     switch(status) {
       case 'active':
-        return {
-          label: "Active",
-          variant: "default" as const,
-          icon: null
-        };
+        return 'default';
       case 'expiring_soon':
-        return {
-          label: "Expiring Soon",
-          variant: "warning" as const,
-          icon: <Clock className="w-3 h-3 mr-1" />
-        };
+        return 'secondary'; // Using secondary instead of warning (which doesn't exist in the badge component)
       case 'expired':
-        return {
-          label: "Expired",
-          variant: "destructive" as const,
-          icon: <AlertCircle className="w-3 h-3 mr-1" />
-        };
+        return 'destructive';
+      default:
+        return 'secondary';
     }
   };
 
-  if (caseSilos.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <Archive className="h-12 w-12 mx-auto text-muted-foreground" />
-        <h3 className="mt-4 text-lg font-medium">No cases found</h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          {searchTerm ? "Try adjusting your search terms" : "No cases are available at this time"}
-        </p>
-      </div>
-    );
-  }
+  // Get status label
+  const getStatusLabel = (status: string, expiryDate: string) => {
+    const daysLeft = getDaysUntilExpiry(expiryDate);
+    
+    switch(status) {
+      case 'active':
+        return `Active (Expires in ${daysLeft} days)`;
+      case 'expiring_soon':
+        return `Expiring Soon (${daysLeft} days left)`;
+      case 'expired':
+        return 'Expired (Read Only)';
+      default:
+        return status;
+    }
+  };
 
   return (
-    <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-      {caseSilos.map(caseSilo => {
-        const statusDetails = getStatusDetails(caseSilo.status);
-        
-        return (
+    <div className="space-y-4">
+      {caseSilos.length === 0 ? (
+        <Card>
+          <CardContent className="text-center py-8">
+            {searchTerm ? (
+              <>
+                <AlertCircle className="mx-auto h-8 w-8 text-muted-foreground mb-3" />
+                <h3 className="text-lg font-medium">No matching cases</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  No cases match your search term "{searchTerm}"
+                </p>
+              </>
+            ) : (
+              <>
+                <AlertCircle className="mx-auto h-8 w-8 text-muted-foreground mb-3" />
+                <h3 className="text-lg font-medium">No cases available</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  You don't have any cases in your silo yet
+                </p>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        caseSilos.map((caseSilo) => (
           <Card 
-            key={caseSilo.id} 
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            key={caseSilo.id}
+            className="cursor-pointer hover:bg-muted/30 transition-colors"
             onClick={() => onSelectCase(caseSilo.id)}
           >
-            <CardHeader className="pb-2">
-              <div className="flex justify-between">
-                <CardTitle className="flex-1 truncate">{caseSilo.claimantName}</CardTitle>
-                <Badge variant={statusDetails.variant} className="flex items-center whitespace-nowrap ml-2">
-                  {statusDetails.icon}
-                  {statusDetails.label}
-                </Badge>
-              </div>
-              <CardDescription className="flex flex-col">
-                <span>{caseSilo.caseType}</span>
-                {caseSilo.claimNumber && (
-                  <span className="text-xs">Claim #{caseSilo.claimNumber}</span>
-                )}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-2">
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Created:</span>
-                  <span>{formatDate(caseSilo.createdDate)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Current Stage:</span>
-                  <span>{caseSilo.currentStage}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Expires:</span>
-                  <span>{formatDate(caseSilo.expiryDate)}</span>
-                </div>
-                
-                <div className="mt-3 mb-1">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span>Progress</span>
-                    <span>{getCaseProgress(caseSilo)}%</span>
+            <CardContent className="p-5">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-lg font-medium">{caseSilo.claimantName}</h3>
+                    <Badge variant={getStatusBadgeVariant(caseSilo.status)}>
+                      {caseSilo.status === 'active' ? 'Active' : 
+                       caseSilo.status === 'expiring_soon' ? 'Expiring Soon' : 
+                       'Expired'}
+                    </Badge>
                   </div>
-                  <div className="w-full bg-muted h-1.5 rounded-full">
-                    <div 
-                      className="bg-primary h-1.5 rounded-full" 
-                      style={{ width: `${getCaseProgress(caseSilo)}%` }}
-                    ></div>
+                  
+                  <div className="text-muted-foreground">
+                    {caseSilo.caseType}
+                    {caseSilo.claimNumber && ` • Claim #${caseSilo.claimNumber}`}
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-4 mt-3 text-sm text-muted-foreground">
+                    <div className="flex items-center">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      Created {formatDate(caseSilo.createdDate)}
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="w-4 h-4 mr-1" />
+                      {getStatusLabel(caseSilo.status, caseSilo.expiryDate)}
+                    </div>
+                    {caseSilo.injuryDate && (
+                      <div className="flex items-center">
+                        <AlertCircle className="w-4 h-4 mr-1" />
+                        Injury Date: {formatDate(caseSilo.injuryDate)}
+                      </div>
+                    )}
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-2 mt-3">
-                  <div className="flex flex-col items-center p-1 bg-muted/30 rounded">
-                    <FileText className="w-4 h-4 text-muted-foreground mb-1" />
-                    <span className="text-xs">{caseSilo.documents.length} docs</span>
-                  </div>
-                  <div className="flex flex-col items-center p-1 bg-muted/30 rounded">
-                    <ClipboardCheck className="w-4 h-4 text-muted-foreground mb-1" />
-                    <span className="text-xs">{caseSilo.assessments.length} assess.</span>
-                  </div>
-                  <div className="flex flex-col items-center p-1 bg-muted/30 rounded">
-                    <Book className="w-4 h-4 text-muted-foreground mb-1" />
-                    <span className="text-xs">{caseSilo.reports.length} reports</span>
-                  </div>
-                  <div className="flex flex-col items-center p-1 bg-muted/30 rounded">
-                    <MessageSquare className="w-4 h-4 text-muted-foreground mb-1" />
-                    <span className="text-xs">{caseSilo.notes.length} notes</span>
-                  </div>
+                <div>
+                  <Button variant="outline" size="sm" onClick={(e) => {
+                    e.stopPropagation();
+                    onSelectCase(caseSilo.id);
+                  }}>
+                    View Case
+                  </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
-        );
-      })}
+        ))
+      )}
     </div>
   );
 };

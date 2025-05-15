@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,7 +32,8 @@ import {
   Report, 
   CaseNote, 
   CaseSiloStatus, 
-  InfoRequest 
+  InfoRequest,
+  ClaimStage
 } from '@/types';
 import CaseOverview from '@/components/caseSilo/CaseOverview';
 import CaseDocuments from '@/components/caseSilo/CaseDocuments';
@@ -357,7 +357,7 @@ const CaseSiloPage = () => {
       case 'expiring_soon':
         return {
           label: "Expiring Soon",
-          variant: "warning" as const,
+          variant: "secondary" as const,
           message: `Expires in ${daysLeft} days`
         };
       case 'expired':
@@ -497,74 +497,74 @@ const CaseSiloPage = () => {
                   <TabsTrigger value="external">External Uploads</TabsTrigger>
                 </TabsList>
               </div>
+              <CardContent className="pt-4">
+                <TabsContent value="overview" className="mt-0">
+                  <CaseOverview caseData={selectedCase} />
+                </TabsContent>
+                
+                <TabsContent value="documents" className="mt-0">
+                  <CaseDocuments 
+                    documents={selectedCase.documents} 
+                    canUpload={canUploadDocuments() && canEdit(selectedCase.status)} 
+                    onCreateItem={() => handleCreateItem('document')} 
+                  />
+                </TabsContent>
+                
+                <TabsContent value="assessments" className="mt-0">
+                  <CaseAssessments 
+                    assessments={selectedCase.assessments} 
+                    canAdd={canAddAssessments() && canEdit(selectedCase.status)} 
+                    onCreateItem={() => handleCreateItem('assessment')} 
+                  />
+                </TabsContent>
+                
+                <TabsContent value="reports" className="mt-0">
+                  <CaseReports 
+                    reports={selectedCase.reports} 
+                    canEdit={canEditReports() && canEdit(selectedCase.status)} 
+                    onCreateItem={() => handleCreateItem('report')} 
+                  />
+                </TabsContent>
+                
+                <TabsContent value="notes" className="mt-0">
+                  <CaseNotes 
+                    notes={selectedCase.notes} 
+                    canView={canViewInternalNotes()} 
+                    canCreate={canViewInternalNotes() && canEdit(selectedCase.status)}
+                    onCreateItem={() => handleCreateItem('note')} 
+                    currentUserRole={currentUser?.role}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="timeline" className="mt-0">
+                  <CaseTimeline 
+                    documents={selectedCase.documents}
+                    assessments={selectedCase.assessments}
+                    reports={selectedCase.reports}
+                    notes={selectedCase.notes}
+                    externalUploads={selectedCase.externalUploads}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="info-requests" className="mt-0">
+                  <InfoRequests 
+                    requests={selectedCase.infoRequests} 
+                    canCreate={canCreateInfoRequests() && canEdit(selectedCase.status)}
+                    onCreateItem={() => handleCreateItem('info-request')}
+                    userRole={currentUser?.role}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="external" className="mt-0">
+                  <ExternalUploads 
+                    uploads={selectedCase.externalUploads} 
+                    canShare={canShareAccess() && canEdit(selectedCase.status)} 
+                    onCreateItem={() => handleCreateItem('external')} 
+                  />
+                </TabsContent>
+              </CardContent>
             </Tabs>
           </CardHeader>
-          <CardContent className="pt-4">
-            <TabsContent value="overview" className="mt-0">
-              <CaseOverview caseData={selectedCase} />
-            </TabsContent>
-            
-            <TabsContent value="documents" className="mt-0">
-              <CaseDocuments 
-                documents={selectedCase.documents} 
-                canUpload={canUploadDocuments() && canEdit(selectedCase.status)} 
-                onCreateItem={() => handleCreateItem('document')} 
-              />
-            </TabsContent>
-            
-            <TabsContent value="assessments" className="mt-0">
-              <CaseAssessments 
-                assessments={selectedCase.assessments} 
-                canAdd={canAddAssessments() && canEdit(selectedCase.status)} 
-                onCreateItem={() => handleCreateItem('assessment')} 
-              />
-            </TabsContent>
-            
-            <TabsContent value="reports" className="mt-0">
-              <CaseReports 
-                reports={selectedCase.reports} 
-                canEdit={canEditReports() && canEdit(selectedCase.status)} 
-                onCreateItem={() => handleCreateItem('report')} 
-              />
-            </TabsContent>
-            
-            <TabsContent value="notes" className="mt-0">
-              <CaseNotes 
-                notes={selectedCase.notes} 
-                canView={canViewInternalNotes()} 
-                canCreate={canViewInternalNotes() && canEdit(selectedCase.status)}
-                onCreateItem={() => handleCreateItem('note')} 
-                currentUserRole={currentUser?.role}
-              />
-            </TabsContent>
-            
-            <TabsContent value="timeline" className="mt-0">
-              <CaseTimeline 
-                documents={selectedCase.documents}
-                assessments={selectedCase.assessments}
-                reports={selectedCase.reports}
-                notes={selectedCase.notes}
-                externalUploads={selectedCase.externalUploads}
-              />
-            </TabsContent>
-            
-            <TabsContent value="info-requests" className="mt-0">
-              <InfoRequests 
-                requests={selectedCase.infoRequests} 
-                canCreate={canCreateInfoRequests() && canEdit(selectedCase.status)}
-                onCreateItem={() => handleCreateItem('info-request')}
-                userRole={currentUser?.role}
-              />
-            </TabsContent>
-            
-            <TabsContent value="external" className="mt-0">
-              <ExternalUploads 
-                uploads={selectedCase.externalUploads} 
-                canShare={canShareAccess() && canEdit(selectedCase.status)} 
-                onCreateItem={() => handleCreateItem('external')} 
-              />
-            </TabsContent>
-          </CardContent>
         </Card>
       </div>
     );

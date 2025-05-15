@@ -1,4 +1,3 @@
-
 // User types
 export type UserRole = 'victim' | 'lawyer' | 'psychologist';
 
@@ -54,13 +53,7 @@ export interface Report {
 // Case Silo types
 export type CaseSiloStatus = 'active' | 'expiring_soon' | 'expired';
 export type CaseType = 'Workplace Injury' | 'Car Accident' | 'Public Liability' | 'Medical Negligence';
-export type ClaimStage = 
-  'Intake & Triage' | 
-  'Legal Review' | 
-  'Assessment' | 
-  'Report' | 
-  'Lodgement' | 
-  'Outcome';
+export type ClaimStage = 'Intake & Triage' | 'Legal Review' | 'Assessment' | 'Report' | 'Lodgement' | 'Outcome';
 
 export interface CaseSilo {
   id: string;
