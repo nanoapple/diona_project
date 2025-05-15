@@ -1,738 +1,478 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { FileText, Clock, AlertCircle, Plus, Calendar, Share2 } from 'lucide-react';
-import { formatDate } from '@/lib/utils';
-import { CaseSilo as CaseSiloType, CaseSiloStatus } from '@/types';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from '@/components/ui/use-toast';
-import ShareDialog from '@/components/ShareDialog';
-import InterviewStatus from '@/components/InterviewStatus';
 
-const CaseSilo = () => {
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { Archive, Search, User, FileText, ClipboardCheck, Book, Plus } from "lucide-react";
+import { formatDate } from '@/lib/utils';
+import { useAuth } from '../contexts/AuthContext';
+import { CaseSilo, CaseDocument, Assessment, Report } from '@/types';
+
+const CaseSiloPage = () => {
   const { currentUser } = useAuth();
-  const [caseSilos, setCaseSilos] = useState<CaseSiloType[]>([
-    {
-      id: '1',
-      claimantName: 'John Doe',
-      caseType: 'Workplace Injury',
-      status: 'active',
-      createdDate: '2023-03-15',
-      expiryDate: '2023-09-15',
-      participants: {
-        claimantId: 'victim-1',
-        lawyerId: 'lawyer-1',
-        psychologistId: 'psych-1'
-      },
-      documents: [
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [caseSilos, setCaseSilos] = useState<CaseSilo[]>([]);
+  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTab, setSelectedTab] = useState<'documents' | 'assessments' | 'reports' | 'notes'>('documents');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch mock case silos
+    const fetchData = async () => {
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+      
+      // Mock data
+      const mockCaseSilos: CaseSilo[] = [
         {
-          id: 'doc-1',
-          name: 'Medical Report',
-          type: 'PDF',
-          uploadedBy: 'Dr. Smith',
-          uploadDate: '2023-04-01',
-          url: '#',
-          size: '1.2 MB'
+          id: "1",
+          claimantName: "John Doe",
+          caseType: "Workplace Injury",
+          status: "active",
+          createdDate: "2023-03-15",
+          expiryDate: "2023-09-15",
+          participants: {
+            claimantId: "user1",
+            lawyerId: "user2",
+            psychologistId: "user3",
+          },
+          documents: [
+            {
+              id: "doc1",
+              name: "Initial Assessment Report.pdf",
+              type: "application/pdf",
+              uploadedBy: "Dr. Smith",
+              uploadDate: "2023-03-20",
+              url: "#",
+              size: "1.2 MB"
+            },
+            {
+              id: "doc2",
+              name: "Medical Records.pdf",
+              type: "application/pdf",
+              uploadedBy: "Dr. Johnson",
+              uploadDate: "2023-03-25",
+              url: "#",
+              size: "3.4 MB"
+            }
+          ],
+          assessments: [
+            {
+              id: "assess1",
+              title: "Psychological Assessment",
+              description: "Initial psychological evaluation",
+              status: "completed",
+              completionPercentage: 100,
+              date: "2023-04-05",
+              assignedTo: "John Doe"
+            },
+            {
+              id: "assess2",
+              title: "Follow-up Assessment",
+              description: "30-day follow-up evaluation",
+              status: "in_progress",
+              completionPercentage: 60,
+              date: "2023-05-05",
+              assignedTo: "John Doe"
+            }
+          ],
+          reports: [
+            {
+              id: "report1",
+              title: "Initial Psychological Report",
+              patientName: "John Doe",
+              date: "2023-04-15",
+              type: "workers_comp",
+              status: "completed",
+              content: {
+                overview: "Patient exhibits symptoms consistent with adjustment disorder following workplace injury.",
+                findings: [
+                  "Moderate anxiety symptoms",
+                  "Sleep disturbances",
+                  "Reduced concentration"
+                ],
+                recommendations: "Cognitive behavioral therapy, 10 sessions"
+              },
+              lastEdited: "2023-04-14"
+            }
+          ],
+          notes: [
+            {
+              id: "note1",
+              content: "Client reported improvement in sleep patterns after beginning medication.",
+              createdBy: "Dr. Smith",
+              createdAt: "2023-04-20"
+            },
+            {
+              id: "note2",
+              content: "Discussed potential return to work strategies and accommodations.",
+              createdBy: "Dr. Smith",
+              createdAt: "2023-05-02"
+            }
+          ],
+          externalUploads: []
         },
         {
-          id: 'doc-2',
-          name: 'Incident Report',
-          type: 'DOCX',
-          uploadedBy: 'John Doe',
-          uploadDate: '2023-03-16',
-          url: '#',
-          size: '850 KB'
+          id: "2",
+          claimantName: "Jane Smith",
+          caseType: "Car Accident",
+          status: "active",
+          createdDate: "2023-02-10",
+          expiryDate: "2023-08-10",
+          participants: {
+            claimantId: "user4",
+            lawyerId: "user5",
+            psychologistId: "user3",
+          },
+          documents: [
+            {
+              id: "doc3",
+              name: "Accident Report.pdf",
+              type: "application/pdf",
+              uploadedBy: "Officer Miller",
+              uploadDate: "2023-02-11",
+              url: "#",
+              size: "2.7 MB"
+            }
+          ],
+          assessments: [
+            {
+              id: "assess3",
+              title: "PTSD Screening",
+              description: "Initial trauma assessment",
+              status: "completed",
+              completionPercentage: 100,
+              date: "2023-02-25",
+              assignedTo: "Jane Smith"
+            }
+          ],
+          reports: [],
+          notes: [
+            {
+              id: "note3",
+              content: "Client shows signs of post-traumatic stress. Recommended weekly therapy sessions.",
+              createdBy: "Dr. Johnson",
+              createdAt: "2023-02-28"
+            }
+          ],
+          externalUploads: []
         }
-      ],
-      assessments: [
-        {
-          id: 'a-1',
-          title: 'Initial Psychological Assessment',
-          description: 'Evaluate psychological impact of workplace injury',
-          status: 'completed',
-          completionPercentage: 100,
-          date: '2023-04-05',
-          assignedTo: 'John Doe'
-        }
-      ],
-      reports: [
-        {
-          id: 'r-1',
-          title: 'Psychological Impact Report',
-          patientName: 'John Doe',
-          date: '2023-04-10',
-          type: 'workers_comp',
-          status: 'completed',
-          content: 'Report content here',
-          lastEdited: '2023-04-08'
-        }
-      ],
-      notes: [
-        {
-          id: 'note-1',
-          content: 'Client reported increased pain levels during yesterday\'s session',
-          createdBy: 'Dr. Smith',
-          createdAt: '2023-04-02'
-        }
-      ],
-      externalUploads: [
-        {
-          id: 'ext-1',
-          name: 'GP Medical Certificate',
-          type: 'PDF',
-          uploadedBy: 'Dr. Johnson (GP)',
-          uploadDate: '2023-03-20',
-          url: '#',
-          size: '500 KB',
-          isExternal: true
-        }
-      ]
-    },
-    {
-      id: '2',
-      claimantName: 'John Doe',
-      caseType: 'Car Accident',
-      status: 'active',
-      createdDate: '2023-04-10',
-      expiryDate: '2023-10-10',
-      participants: {
-        claimantId: 'victim-1',
-        lawyerId: 'lawyer-1',
-        psychologistId: 'psych-1'
-      },
-      documents: [
-        {
-          id: 'doc-3',
-          name: 'Police Report',
-          type: 'PDF',
-          uploadedBy: 'Jane Smith',
-          uploadDate: '2023-04-11',
-          url: '#',
-          size: '1.5 MB'
-        }
-      ],
-      assessments: [],
-      reports: [],
-      notes: [
-        {
-          id: 'note-2',
-          content: 'Initial consultation scheduled for next week',
-          createdBy: 'Legal Team',
-          createdAt: '2023-04-12'
-        }
-      ],
-      externalUploads: []
-    },
-    {
-      id: '3',
-      claimantName: 'Robert Brown',
-      caseType: 'Workplace Injury',
-      status: 'expired',
-      createdDate: '2022-10-15',
-      expiryDate: '2023-04-15',
-      participants: {
-        claimantId: 'victim-3',
-        lawyerId: 'lawyer-2',
-        psychologistId: 'psych-1'
-      },
-      documents: [],
-      assessments: [],
-      reports: [],
-      notes: [],
-      externalUploads: []
-    },
-    {
-      id: '4',
-      claimantName: 'Sarah Johnson',
-      caseType: 'Medical Negligence',
-      status: 'active',
-      createdDate: '2023-02-20',
-      expiryDate: '2023-08-20',
-      participants: {
-        claimantId: 'victim-4',
-        lawyerId: 'lawyer-1',
-        psychologistId: 'psych-1'
-      },
-      documents: [
-        {
-          id: 'doc-4',
-          name: 'Hospital Records',
-          type: 'PDF',
-          uploadedBy: 'Sarah Johnson',
-          uploadDate: '2023-02-22',
-          url: '#',
-          size: '3.2 MB'
-        }
-      ],
-      assessments: [
-        {
-          id: 'a-2',
-          title: 'Trauma Assessment',
-          description: 'Evaluate psychological impact of medical procedure',
-          status: 'in_progress',
-          completionPercentage: 60,
-          date: '2023-03-10',
-          assignedTo: 'Sarah Johnson'
-        }
-      ],
-      reports: [],
-      notes: [
-        {
-          id: 'note-3',
-          content: 'Client has provided all requested medical documentation',
-          createdBy: 'Dr. Smith',
-          createdAt: '2023-03-05'
-        }
-      ],
-      externalUploads: [
-        {
-          id: 'ext-2',
-          name: 'Specialist Consultation Notes',
-          type: 'PDF',
-          uploadedBy: 'Dr. Williams (Specialist)',
-          uploadDate: '2023-03-01',
-          url: '#',
-          size: '1.1 MB',
-          isExternal: true
-        }
-      ]
-    }
-  ]);
-  
-  const [filter, setFilter] = useState<CaseSiloStatus | 'all'>('all');
-  const [selectedSilo, setSelectedSilo] = useState<CaseSiloType | null>(null);
-  const [filteredSilos, setFilteredSilos] = useState<CaseSiloType[]>([]);
-  const [shareDialogOpen, setShareDialogOpen] = useState(false);
-
-  // Add interview status mock data
-  const mockInterviewStatuses = {
-    '1': {
-      isStarted: true,
-      isCompleted: false,
-      progressPercentage: 57,
-      lastUpdated: '2023-04-05 14:30'
-    },
-    '2': {
-      isStarted: false,
-      isCompleted: false,
-      progressPercentage: 0,
-      lastUpdated: ''
-    },
-    '3': {
-      isStarted: true,
-      isCompleted: true,
-      progressPercentage: 100,
-      lastUpdated: '2023-02-10 09:15'
-    },
-    '4': {
-      isStarted: true,
-      isCompleted: false,
-      progressPercentage: 28,
-      lastUpdated: '2023-03-01 16:45'
-    }
-  };
-
-  // Filter silos based on current user and selected filter
-  useEffect(() => {
-    if (currentUser) {
-      // Filter silos based on user role
-      let userSilos: CaseSiloType[];
+      ];
       
-      if (currentUser.role === 'victim') {
-        // For victims/claimants, only show cases where they are the claimant
-        userSilos = caseSilos.filter(silo => 
-          silo.participants.claimantId === currentUser.id || 
-          // For demo purposes, also show cases where claimantName matches John Doe (for demo victim account)
-          silo.claimantName === 'John Doe'
-        );
-      } else if (currentUser.role === 'lawyer') {
-        // For lawyers, show cases where they are assigned
-        userSilos = caseSilos.filter(silo => 
-          silo.participants.lawyerId === currentUser.id ||
-          // For demo purposes, include cases assigned to lawyer-1
-          silo.participants.lawyerId === 'lawyer-1'
-        );
-      } else if (currentUser.role === 'psychologist') {
-        // For psychologists, show cases where they are assigned
-        userSilos = caseSilos.filter(silo => 
-          silo.participants.psychologistId === currentUser.id ||
-          // For demo purposes, include cases assigned to psych-1
-          silo.participants.psychologistId === 'psych-1'
-        );
-      } else {
-        userSilos = [];
-      }
-
-      // Apply status filter
-      const statusFiltered = filter === 'all' 
-        ? userSilos 
-        : userSilos.filter(silo => silo.status === filter);
-        
-      setFilteredSilos(statusFiltered);
-      
-      // For demonstration purposes, show a toast notification about the available cases
-      if (userSilos.length > 0 && !selectedSilo) {
-        const roleText = currentUser.role === 'victim' ? 'your' : 'assigned';
-        toast({
-          title: `${userSilos.length} case silo${userSilos.length > 1 ? 's' : ''} available`,
-          description: `You can view ${roleText} case silos and access shared information.`,
-          duration: 5000,
-        });
-      }
-    }
-  }, [currentUser, caseSilos, filter, selectedSilo]);
-
-  const handleSelectSilo = (silo: CaseSiloType) => {
-    setSelectedSilo(silo);
-  };
-
-  const handleBackToList = () => {
-    setSelectedSilo(null);
-  };
-
-  const handleShareSilo = () => {
-    if (!selectedSilo) return;
+      setCaseSilos(mockCaseSilos);
+      setIsLoading(false);
+    };
     
-    // Only allow lawyers and psychologists to share
-    if (currentUser?.role !== 'lawyer' && currentUser?.role !== 'psychologist') {
-      toast({
-        title: "Permission denied",
-        description: "Only lawyers and psychologists can share case silos.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    setShareDialogOpen(true);
-  };
+    fetchData();
+  }, []);
 
-  const calculateDaysRemaining = (expiryDate: string): number => {
-    const today = new Date();
-    const expiry = new Date(expiryDate);
-    const diffTime = expiry.getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
-
-  const renderStatusBadge = (status: CaseSiloStatus, expiryDate: string) => {
-    if (status === 'expired') {
-      return <Badge variant="destructive">Expired</Badge>;
-    }
-    
-    const daysRemaining = calculateDaysRemaining(expiryDate);
-    if (daysRemaining <= 30) {
-      return <Badge variant="secondary" className="bg-amber-500">Expires in {daysRemaining} days</Badge>;
-    }
-    
-    return <Badge variant="default" className="bg-emerald-600">Active</Badge>;
-  };
-
-  const renderSiloList = () => (
-    <>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Case Silos</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => setFilter('all')}>
-            All
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setFilter('active')}>
-            Active
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setFilter('expired')}>
-            Expired
-          </Button>
-          <Button size="sm">
-            <Plus className="w-4 h-4 mr-1" /> New Silo
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filteredSilos.length === 0 ? (
-          <div className="col-span-full text-center py-12 text-muted-foreground">
-            No case silos found. {filter !== 'all' && "Try changing your filter."}
-          </div>
-        ) : (
-          filteredSilos.map(silo => (
-            <Card 
-              key={silo.id} 
-              className={`cursor-pointer transition-all hover:shadow-md ${silo.status === 'expired' ? 'opacity-75' : ''}`}
-              onClick={() => handleSelectSilo(silo)}
-            >
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle>{currentUser?.role === 'victim' ? "My Case" : silo.claimantName}</CardTitle>
-                    <CardDescription>{silo.caseType}</CardDescription>
-                  </div>
-                  {renderStatusBadge(silo.status, silo.expiryDate)}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-sm text-muted-foreground flex items-center">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  Created: {formatDate(silo.createdDate)}
-                </div>
-                <div className="text-sm text-muted-foreground mt-1 flex items-center">
-                  <Clock className="w-4 h-4 mr-1" />
-                  {silo.status === 'expired' 
-                    ? `Expired: ${formatDate(silo.expiryDate)}`
-                    : `Expires: ${formatDate(silo.expiryDate)}`}
-                </div>
-                <div className="mt-4 flex justify-between text-sm">
-                  <div>Documents: {silo.documents.length}</div>
-                  <div>Assessments: {silo.assessments.length}</div>
-                  <div>Reports: {silo.reports.length}</div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
-    </>
+  const filteredCaseSilos = caseSilos.filter(caseSilo => 
+    caseSilo.claimantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    caseSilo.caseType.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const renderSiloDetail = () => {
-    if (!selectedSilo) return null;
+  const selectedCase = selectedCaseId ? caseSilos.find(cs => cs.id === selectedCaseId) : null;
+
+  // Handle navigation to interview
+  const handleInterviewClick = (caseId: string) => {
+    navigate(`/interview/${caseId}`);
+  };
+
+  // Handle new document/assessment/report creation
+  const handleCreateItem = (type: 'document' | 'assessment' | 'report') => {
+    if (!selectedCaseId) return;
     
-    const isExpired = selectedSilo.status === 'expired';
-    const daysRemaining = calculateDaysRemaining(selectedSilo.expiryDate);
-    const canShare = !isExpired && (currentUser?.role === 'lawyer' || currentUser?.role === 'psychologist');
-    
+    toast({
+      title: `New ${type} created`,
+      description: `A new ${type} has been added to the case.`,
+    });
+
+    // In a real app, you would create the item and update the state
+    // For demonstration purposes, we'll just show a toast
+  };
+
+  const renderCaseGrid = () => {
     return (
-      <>
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <Button variant="ghost" size="sm" onClick={handleBackToList} className="mb-2">
-              &larr; Back to Case Silos
-            </Button>
-            <h1 className="text-3xl font-bold">
-              {currentUser?.role === 'victim' ? "My Case" : selectedSilo.claimantName}
-            </h1>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-muted-foreground">{selectedSilo.caseType}</span>
-              {renderStatusBadge(selectedSilo.status, selectedSilo.expiryDate)}
-            </div>
-          </div>
-          <div className="flex flex-col items-end">
-            {canShare && (
-              <Button 
-                variant="outline"
-                size="sm"
-                className="mb-2"
-                onClick={handleShareSilo}
-              >
-                <Share2 className="h-4 w-4 mr-1" /> Share
-              </Button>
-            )}
-            <div className="text-sm text-muted-foreground">Created on {formatDate(selectedSilo.createdDate)}</div>
-            <div className="text-sm text-muted-foreground">
-              {isExpired 
-                ? `Expired on ${formatDate(selectedSilo.expiryDate)}`
-                : `Expires on ${formatDate(selectedSilo.expiryDate)}`}
-            </div>
-          </div>
-        </div>
-
-        <Card className="mb-6">
-          <CardContent className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex flex-col">
-                <span className="text-sm text-muted-foreground">Claimant</span>
-                <span className="font-medium">{currentUser?.role === 'victim' ? "Me" : selectedSilo.claimantName}</span>
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {filteredCaseSilos.map(caseSilo => (
+          <Card 
+            key={caseSilo.id} 
+            className="cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => setSelectedCaseId(caseSilo.id)}
+          >
+            <CardHeader className="pb-2">
+              <div className="flex justify-between">
+                <CardTitle>{caseSilo.claimantName}</CardTitle>
+                <Badge variant={caseSilo.status === "active" ? "default" : "outline"}>
+                  {caseSilo.status === "active" ? "Active" : "Expired"}
+                </Badge>
               </div>
-              <div className="flex flex-col">
-                <span className="text-sm text-muted-foreground">Case Type</span>
-                <span className="font-medium">{selectedSilo.caseType}</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-sm text-muted-foreground">Status</span>
-                <div className="font-medium flex items-center">
-                  {isExpired ? (
-                    <span className="flex items-center text-destructive">
-                      <AlertCircle className="w-4 h-4 mr-1" /> Expired
-                    </span>
-                  ) : (
-                    <span className="flex items-center text-emerald-600">
-                      <Clock className="w-4 h-4 mr-1" /> {daysRemaining} days remaining
-                    </span>
-                  )}
+              <CardDescription>{caseSilo.caseType}</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-2">
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Created:</span>
+                  <span>{formatDate(caseSilo.createdDate)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Expires:</span>
+                  <span>{formatDate(caseSilo.expiryDate)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Documents:</span>
+                  <span>{caseSilo.documents.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Assessments:</span>
+                  <span>{caseSilo.assessments.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Reports:</span>
+                  <span>{caseSilo.reports.length}</span>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="md:col-span-2">
-            <InterviewStatus 
-              caseId={selectedSilo.id}
-              interviewStatus={mockInterviewStatuses[selectedSilo.id] || {
-                isStarted: false,
-                isCompleted: false,
-                progressPercentage: 0,
-                lastUpdated: ''
-              }}
-            />
-          </div>
-          <div className="md:col-span-1">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Case Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isExpired ? (
-                  <div className="flex items-center text-destructive">
-                    <AlertCircle className="w-4 h-4 mr-2" /> Expired on {formatDate(selectedSilo.expiryDate)}
-                  </div>
-                ) : (
-                  <div className="flex items-center text-emerald-600">
-                    <Clock className="w-4 h-4 mr-2" /> {daysRemaining} days remaining
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        <Tabs defaultValue="documents" className="w-full">
-          <TabsList className="mb-4">
-            <TabsTrigger value="documents">Documents</TabsTrigger>
-            <TabsTrigger value="assessments">Assessments</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
-            <TabsTrigger value="notes">Case Notes</TabsTrigger>
-            {currentUser?.role !== 'victim' && (
-              <TabsTrigger value="external">External Uploads</TabsTrigger>
-            )}
-          </TabsList>
-          
-          <TabsContent value="documents">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Documents</CardTitle>
-                  {!isExpired && (
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-1" /> Upload Document
-                    </Button>
-                  )}
-                </div>
-                <CardDescription>Documents shared within this case silo</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {selectedSilo.documents.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No documents have been uploaded to this case silo yet.
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {selectedSilo.documents.map(doc => (
-                      <div key={doc.id} className="flex items-center justify-between p-3 bg-muted/40 rounded-md">
-                        <div className="flex items-center">
-                          <div className="p-2 bg-primary/10 rounded-md mr-3">
-                            <FileText className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <div className="font-medium">{doc.name}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {doc.type} • {doc.size} • Uploaded by {doc.uploadedBy} on {formatDate(doc.uploadDate)}
-                            </div>
-                          </div>
-                        </div>
-                        <Button variant="ghost" size="sm">View</Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="assessments">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Assessments</CardTitle>
-                  {!isExpired && currentUser?.role === 'psychologist' && (
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-1" /> Assign Assessment
-                    </Button>
-                  )}
-                </div>
-                <CardDescription>Psychological assessments related to this case</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {selectedSilo.assessments.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No assessments have been assigned for this case yet.
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {selectedSilo.assessments.map(assessment => (
-                      <div key={assessment.id} className="p-3 bg-muted/40 rounded-md">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="font-medium">{assessment.title}</div>
-                            <div className="text-sm text-muted-foreground">{assessment.description}</div>
-                          </div>
-                          <Badge variant={assessment.status === 'completed' ? 'default' : 'outline'}>
-                            {assessment.status === 'completed' ? 'Completed' : 
-                             assessment.status === 'in_progress' ? 'In Progress' : 'Pending'}
-                          </Badge>
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-2">
-                          Assigned to: {assessment.assignedTo} • Date: {formatDate(assessment.date)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="reports">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Reports</CardTitle>
-                  {!isExpired && currentUser?.role === 'psychologist' && (
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-1" /> Create Report
-                    </Button>
-                  )}
-                </div>
-                <CardDescription>Case-related reports and assessments</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {selectedSilo.reports.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No reports have been created for this case yet.
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {selectedSilo.reports.map(report => (
-                      <div key={report.id} className="p-3 bg-muted/40 rounded-md">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="font-medium">{report.title}</div>
-                            <div className="text-sm text-muted-foreground">
-                              Patient: {report.patientName} • Type: {report.type === 'workers_comp' ? 'Workers Compensation' : 'Medico-Legal'}
-                            </div>
-                          </div>
-                          <Badge variant={report.status === 'completed' ? 'default' : 'outline'}>
-                            {report.status === 'completed' ? 'Completed' : 'Draft'}
-                          </Badge>
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-2">
-                          Created: {formatDate(report.date)} • Last edited: {formatDate(report.lastEdited)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="notes">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Case Notes</CardTitle>
-                  {!isExpired && (
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-1" /> Add Note
-                    </Button>
-                  )}
-                </div>
-                <CardDescription>Chronological notes visible to all participants</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {selectedSilo.notes.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No case notes have been added yet.
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {selectedSilo.notes.map(note => (
-                      <div key={note.id} className="p-3 bg-muted/40 rounded-md">
-                        <div className="flex justify-between">
-                          <div className="font-medium">{note.createdBy}</div>
-                          <div className="text-xs text-muted-foreground">{formatDate(note.createdAt)}</div>
-                        </div>
-                        <div className="text-sm mt-1">{note.content}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          {currentUser?.role !== 'victim' && (
-            <TabsContent value="external">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>External Uploads</CardTitle>
-                    {!isExpired && (
-                      <Button size="sm">
-                        <Plus className="w-4 h-4 mr-1" /> Send Upload Link
-                      </Button>
-                    )}
-                  </div>
-                  <CardDescription>Files uploaded by external contributors (not visible to claimant)</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {selectedSilo.externalUploads.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      No external uploads have been received yet.
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {selectedSilo.externalUploads.map(doc => (
-                        <div key={doc.id} className="flex items-center justify-between p-3 bg-muted/40 rounded-md">
-                          <div className="flex items-center">
-                            <div className="p-2 bg-amber-100 rounded-md mr-3">
-                              <FileText className="h-5 w-5 text-amber-600" />
-                            </div>
-                            <div>
-                              <div className="font-medium">{doc.name}</div>
-                              <div className="text-xs text-muted-foreground">
-                                {doc.type} • {doc.size} • Uploaded by {doc.uploadedBy} on {formatDate(doc.uploadDate)}
-                              </div>
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm">View</Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          )}
-        </Tabs>
-        
-        {selectedSilo && (
-          <ShareDialog 
-            open={shareDialogOpen}
-            onOpenChange={setShareDialogOpen}
-            siloName={selectedSilo.claimantName}
-            siloType={selectedSilo.caseType}
-          />
-        )}
-      </>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     );
   };
 
+  const renderCaseDetail = () => {
+    if (!selectedCase) return null;
+
+    return (
+      <div>
+        <Button variant="ghost" onClick={() => setSelectedCaseId(null)} className="mb-4">
+          &larr; Back to Cases
+        </Button>
+        
+        <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
+          <div>
+            <h1 className="text-2xl font-bold">{selectedCase.claimantName}</h1>
+            <p className="text-muted-foreground">{selectedCase.caseType}</p>
+          </div>
+          
+          <div className="flex flex-col gap-2">
+            <Badge variant={selectedCase.status === "active" ? "default" : "outline"} className="mb-2">
+              {selectedCase.status === "active" ? "Active" : "Expired"}
+            </Badge>
+            
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="flex items-center gap-2"
+              onClick={() => handleInterviewClick(selectedCase.id)}
+            >
+              <User className="w-4 h-4" /> View Interview
+            </Button>
+          </div>
+        </div>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <Tabs defaultValue="documents" value={selectedTab} onValueChange={(value) => setSelectedTab(value as any)}>
+              <TabsList>
+                <TabsTrigger value="documents" className="flex items-center gap-1">
+                  <FileText className="w-4 h-4" /> Documents
+                </TabsTrigger>
+                <TabsTrigger value="assessments" className="flex items-center gap-1">
+                  <ClipboardCheck className="w-4 h-4" /> Assessments
+                </TabsTrigger>
+                <TabsTrigger value="reports" className="flex items-center gap-1">
+                  <Book className="w-4 h-4" /> Reports
+                </TabsTrigger>
+                <TabsTrigger value="notes" className="flex items-center gap-1">
+                  <FileText className="w-4 h-4" /> Notes
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <TabsContent value="documents" className="mt-0 space-y-4">
+              <div className="flex justify-between">
+                <h3 className="text-lg font-medium">Documents</h3>
+                <Button size="sm" onClick={() => handleCreateItem('document')}>
+                  <Plus className="w-4 h-4 mr-1" /> Add Document
+                </Button>
+              </div>
+              
+              <div className="space-y-2">
+                {selectedCase.documents.length === 0 ? (
+                  <p className="text-muted-foreground">No documents available</p>
+                ) : (
+                  selectedCase.documents.map(doc => (
+                    <div key={doc.id} className="p-3 border rounded-md flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">{doc.name}</p>
+                        <div className="text-sm text-muted-foreground">
+                          Uploaded by {doc.uploadedBy} on {formatDate(doc.uploadDate)}
+                        </div>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {doc.size}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="assessments" className="mt-0 space-y-4">
+              <div className="flex justify-between">
+                <h3 className="text-lg font-medium">Assessments</h3>
+                <Button size="sm" onClick={() => handleCreateItem('assessment')}>
+                  <Plus className="w-4 h-4 mr-1" /> Add Assessment
+                </Button>
+              </div>
+              
+              <div className="space-y-2">
+                {selectedCase.assessments.length === 0 ? (
+                  <p className="text-muted-foreground">No assessments available</p>
+                ) : (
+                  selectedCase.assessments.map(assessment => (
+                    <div key={assessment.id} className="p-3 border rounded-md">
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium">{assessment.title}</p>
+                        <Badge variant={assessment.status === "completed" ? "default" : "outline"}>
+                          {assessment.status === "completed" ? "Completed" : "In Progress"}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">{assessment.description}</p>
+                      <div className="mt-2 text-sm">
+                        <div className="bg-muted h-2 rounded-full mt-1">
+                          <div 
+                            className="bg-primary h-2 rounded-full" 
+                            style={{ width: `${assessment.completionPercentage}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between mt-1 text-xs text-muted-foreground">
+                          <span>Completion: {assessment.completionPercentage}%</span>
+                          <span>Date: {formatDate(assessment.date)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="reports" className="mt-0 space-y-4">
+              <div className="flex justify-between">
+                <h3 className="text-lg font-medium">Reports</h3>
+                <Button size="sm" onClick={() => handleCreateItem('report')}>
+                  <Plus className="w-4 h-4 mr-1" /> Add Report
+                </Button>
+              </div>
+              
+              <div className="space-y-2">
+                {selectedCase.reports.length === 0 ? (
+                  <p className="text-muted-foreground">No reports available</p>
+                ) : (
+                  selectedCase.reports.map(report => (
+                    <div key={report.id} className="p-3 border rounded-md">
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium">{report.title}</p>
+                        <Badge variant={report.status === "completed" ? "default" : "outline"}>
+                          {report.status === "completed" ? "Completed" : "Draft"}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        <div>Patient: {report.patientName}</div>
+                        <div>Date: {formatDate(report.date)}</div>
+                        <div>Last edited: {formatDate(report.lastEdited)}</div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="notes" className="mt-0 space-y-4">
+              <div className="flex justify-between">
+                <h3 className="text-lg font-medium">Notes</h3>
+                <Button size="sm">
+                  <Plus className="w-4 h-4 mr-1" /> Add Note
+                </Button>
+              </div>
+              
+              <div className="space-y-2">
+                {selectedCase.notes.length === 0 ? (
+                  <p className="text-muted-foreground">No notes available</p>
+                ) : (
+                  selectedCase.notes.map(note => (
+                    <div key={note.id} className="p-3 border rounded-md">
+                      <p className="whitespace-pre-wrap">{note.content}</p>
+                      <div className="mt-2 text-sm text-muted-foreground">
+                        <span>{note.createdBy} - {formatDate(note.createdAt)}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </TabsContent>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (selectedCaseId) {
+    return renderCaseDetail();
+  }
+
   return (
     <div>
-      {selectedSilo ? renderSiloDetail() : renderSiloList()}
+      <h1 className="text-3xl font-bold mb-1">Case Silo</h1>
+      <p className="text-muted-foreground mb-6">
+        Access all information related to your cases in one secure location
+      </p>
+      
+      <div className="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between">
+        <div className="relative w-full md:w-96">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search cases..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-8"
+          />
+        </div>
+        
+        {currentUser?.role === 'lawyer' && (
+          <Button>
+            <Plus className="w-4 h-4 mr-1" /> Create New Case
+          </Button>
+        )}
+      </div>
+      
+      {filteredCaseSilos.length === 0 ? (
+        <div className="text-center py-12">
+          <Archive className="h-12 w-12 mx-auto text-muted-foreground" />
+          <h3 className="mt-4 text-lg font-medium">No cases found</h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            {searchTerm ? "Try adjusting your search terms" : "No cases are available at this time"}
+          </p>
+        </div>
+      ) : (
+        renderCaseGrid()
+      )}
     </div>
   );
 };
 
-export default CaseSilo;
+export default CaseSiloPage;
