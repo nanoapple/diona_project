@@ -1,4 +1,3 @@
-
 // User types
 export type UserRole = 'victim' | 'lawyer' | 'psychologist';
 
@@ -31,10 +30,11 @@ export interface Assessment {
   questions?: AssessmentQuestion[];
 }
 
-// Report types
+// Report status and type enums
 export type ReportStatus = 'draft' | 'completed';
 export type ReportType = 'workers_comp' | 'medico_legal';
 
+// Report interface
 export interface Report {
   id: string;
   title: string;
@@ -42,7 +42,11 @@ export interface Report {
   date: string;
   type: ReportType;
   status: ReportStatus;
-  content: any;
+  content: {
+    overview: string;
+    findings: string[];
+    recommendations: string;
+  };
   lastEdited: string;
 }
 
