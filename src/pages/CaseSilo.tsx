@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { 
   Archive, 
   Search, 
@@ -25,12 +25,21 @@ import {
 } from "lucide-react";
 import { formatDate } from '@/lib/utils';
 import { useAuth } from '../contexts/AuthContext';
-import { CaseSilo as CaseSiloType, CaseDocument, Assessment, Report, CaseNote, CaseSiloStatus, CaseType } from '@/types';
+import { CaseSilo as CaseSiloType, CaseDocument, Assessment, Report, CaseNote, CaseSiloStatus } from '@/types';
+import CaseOverview from '@/components/caseSilo/CaseOverview';
+import CaseDocuments from '@/components/caseSilo/CaseDocuments';
+import CaseAssessments from '@/components/caseSilo/CaseAssessments';
+import CaseReports from '@/components/caseSilo/CaseReports';
+import CaseNotes from '@/components/caseSilo/CaseNotes';
+import CaseTimeline from '@/components/caseSilo/CaseTimeline';
+import ExternalUploads from '@/components/caseSilo/ExternalUploads';
+import CaseSiloList from '@/components/caseSilo/CaseSiloList';
+import ErrorDisplay from '@/components/ErrorDisplay';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 const CaseSiloPage = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [caseSilos, setCaseSilos] = useState<CaseSiloType[]>([]);
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -209,7 +218,7 @@ const CaseSiloPage = () => {
     };
     
     fetchData();
-  }, [toast]);
+  }, []);
 
   const filteredCaseSilos = caseSilos.filter(caseSilo => 
     caseSilo.claimantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -233,135 +242,6 @@ const CaseSiloPage = () => {
     });
   };
 
-  const renderStatusIcon = (status: CaseSiloStatus) => {
-    switch (status) {
-      case 'active':
-        return <ClockIcon className="w-4 h-4 text-blue-500" />;
-      case 'expired':
-        return <AlertCircle className="w-4 h-4 text-yellow-500" />;
-      default:
-        return <ClockIcon className="w-4 h-4 text-gray-500" />;
-    }
-  };
-
-  const getCaseProgress = (caseData: CaseSiloType) => {
-    // Calculate progress based on documents, assessments and reports
-    const totalItems = 
-      caseData.documents.length + 
-      caseData.assessments.length + 
-      caseData.reports.length;
-    
-    // Count completed items
-    const completedAssessments = caseData.assessments.filter(a => a.status === 'completed').length;
-    const completedReports = caseData.reports.filter(r => r.status === 'completed').length;
-    
-    // Documents are always considered "completed" once uploaded
-    const completedItems = caseData.documents.length + completedAssessments + completedReports;
-    
-    return totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
-  };
-
-  const renderTimelineItem = (item: any, type: string) => {
-    const getIcon = () => {
-      switch (type) {
-        case 'document': return <FileText className="w-4 h-4" />;
-        case 'assessment': return <ClipboardCheck className="w-4 h-4" />;
-        case 'report': return <Book className="w-4 h-4" />;
-        case 'note': return <MessageSquare className="w-4 h-4" />;
-        default: return <FileText className="w-4 h-4" />;
-      }
-    };
-
-    return (
-      <div key={item.id} className="flex gap-3 mb-4 relative">
-        <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 shrink-0">
-          {getIcon()}
-        </div>
-        <div className="relative pb-8 border-l border-muted ml-4 pl-4 -mt-2">
-          <h4 className="text-sm font-medium">{type === 'note' ? 'Case Note Added' : item.name || item.title}</h4>
-          <p className="text-xs text-muted-foreground">
-            {type === 'document' || type === 'external' 
-              ? `Uploaded by ${item.uploadedBy}`
-              : type === 'note' 
-                ? item.content.substring(0, 50) + (item.content.length > 50 ? '...' : '')
-                : item.description || ''}
-          </p>
-          <span className="text-xs text-muted-foreground absolute top-0 right-0">
-            {formatDate(item.uploadDate || item.date || item.createdAt)}
-          </span>
-        </div>
-      </div>
-    );
-  };
-
-  const renderCaseGrid = () => {
-    return (
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {filteredCaseSilos.map(caseSilo => (
-          <Card 
-            key={caseSilo.id} 
-            className="cursor-pointer hover:shadow-md transition-shadow"
-            onClick={() => setSelectedCaseId(caseSilo.id)}
-          >
-            <CardHeader className="pb-2">
-              <div className="flex justify-between">
-                <CardTitle>{caseSilo.claimantName}</CardTitle>
-                <Badge variant={caseSilo.status === "active" ? "default" : "outline"}>
-                  {caseSilo.status === "active" ? "Active" : "Expired"}
-                </Badge>
-              </div>
-              <CardDescription>{caseSilo.caseType}</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-2">
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Created:</span>
-                  <span>{formatDate(caseSilo.createdDate)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Expires:</span>
-                  <span>{formatDate(caseSilo.expiryDate)}</span>
-                </div>
-                
-                <div className="mt-3 mb-1">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span>Progress</span>
-                    <span>{getCaseProgress(caseSilo)}%</span>
-                  </div>
-                  <div className="w-full bg-muted h-1.5 rounded-full">
-                    <div 
-                      className="bg-primary h-1.5 rounded-full" 
-                      style={{ width: `${getCaseProgress(caseSilo)}%` }}
-                    ></div>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-2 mt-3">
-                  <div className="flex flex-col items-center p-1 bg-muted/30 rounded">
-                    <FileText className="w-4 h-4 text-muted-foreground mb-1" />
-                    <span className="text-xs">{caseSilo.documents.length} docs</span>
-                  </div>
-                  <div className="flex flex-col items-center p-1 bg-muted/30 rounded">
-                    <ClipboardCheck className="w-4 h-4 text-muted-foreground mb-1" />
-                    <span className="text-xs">{caseSilo.assessments.length} assess.</span>
-                  </div>
-                  <div className="flex flex-col items-center p-1 bg-muted/30 rounded">
-                    <Book className="w-4 h-4 text-muted-foreground mb-1" />
-                    <span className="text-xs">{caseSilo.reports.length} reports</span>
-                  </div>
-                  <div className="flex flex-col items-center p-1 bg-muted/30 rounded">
-                    <MessageSquare className="w-4 h-4 text-muted-foreground mb-1" />
-                    <span className="text-xs">{caseSilo.notes.length} notes</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  };
-
   // Role-specific permission checks
   const canViewInternalNotes = () => currentUser?.role === 'lawyer' || currentUser?.role === 'psychologist';
   const canAddAssessments = () => currentUser?.role === 'psychologist';
@@ -371,7 +251,20 @@ const CaseSiloPage = () => {
   const canUploadDocuments = () => true; // All roles can upload
 
   const renderCaseDetail = () => {
-    if (!selectedCase) return null;
+    if (!selectedCase) {
+      return (
+        <div className="text-center py-12">
+          <AlertCircle className="h-12 w-12 mx-auto text-destructive opacity-50" />
+          <h3 className="mt-4 text-lg font-medium">Case Not Found</h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            The selected case could not be found
+          </p>
+          <Button className="mt-4" onClick={() => setSelectedCaseId(null)}>
+            Back to Cases
+          </Button>
+        </div>
+      );
+    }
 
     return (
       <div>
@@ -438,403 +331,58 @@ const CaseSiloPage = () => {
             </Tabs>
           </CardHeader>
           <CardContent className="pt-4">
-            <TabsContent value="overview" className="mt-0 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Case Summary</h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between p-2 bg-muted/20 rounded-md">
-                      <span className="font-medium">Case Type</span>
-                      <span>{selectedCase.caseType}</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-muted/20 rounded-md">
-                      <span className="font-medium">Status</span>
-                      <Badge variant={selectedCase.status === "active" ? "default" : "outline"}>
-                        {selectedCase.status === "active" ? "Active" : "Expired"}
-                      </Badge>
-                    </div>
-                    <div className="flex justify-between p-2 bg-muted/20 rounded-md">
-                      <span className="font-medium">Created</span>
-                      <span>{formatDate(selectedCase.createdDate)}</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-muted/20 rounded-md">
-                      <span className="font-medium">Expiry</span>
-                      <span>{formatDate(selectedCase.expiryDate)}</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-muted/20 rounded-md">
-                      <span className="font-medium">Case Progress</span>
-                      <span>{getCaseProgress(selectedCase)}%</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-medium mb-3">Key Participants</h3>
-                  <div className="space-y-3">
-                    <div className="p-3 border rounded-md">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">C</div>
-                        <div>
-                          <p className="font-medium">{selectedCase.claimantName}</p>
-                          <p className="text-xs text-muted-foreground">Claimant</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="p-3 border rounded-md">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">L</div>
-                        <div>
-                          <p className="font-medium">Lawyer Name</p>
-                          <p className="text-xs text-muted-foreground">Legal Representative</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="p-3 border rounded-md">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">P</div>
-                        <div>
-                          <p className="font-medium">Psychologist Name</p>
-                          <p className="text-xs text-muted-foreground">Clinical Psychologist</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-6">
-                <h3 className="text-lg font-medium mb-3">Case Activity</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Card>
-                    <CardHeader className="py-3">
-                      <CardTitle className="text-sm flex items-center">
-                        <FileText className="w-4 h-4 mr-1" /> Documents
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pb-3 pt-0">
-                      <div className="text-2xl font-bold">{selectedCase.documents.length}</div>
-                      <p className="text-xs text-muted-foreground">files uploaded</p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader className="py-3">
-                      <CardTitle className="text-sm flex items-center">
-                        <ClipboardCheck className="w-4 h-4 mr-1" /> Assessments
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pb-3 pt-0">
-                      <div className="text-2xl font-bold">{selectedCase.assessments.length}</div>
-                      <p className="text-xs text-muted-foreground">
-                        {selectedCase.assessments.filter(a => a.status === 'completed').length} completed
-                      </p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader className="py-3">
-                      <CardTitle className="text-sm flex items-center">
-                        <Book className="w-4 h-4 mr-1" /> Reports
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pb-3 pt-0">
-                      <div className="text-2xl font-bold">{selectedCase.reports.length}</div>
-                      <p className="text-xs text-muted-foreground">
-                        {selectedCase.reports.filter(r => r.status === 'completed').length} finalized
-                      </p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader className="py-3">
-                      <CardTitle className="text-sm flex items-center">
-                        <MessageSquare className="w-4 h-4 mr-1" /> Notes
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pb-3 pt-0">
-                      <div className="text-2xl font-bold">{selectedCase.notes.length}</div>
-                      <p className="text-xs text-muted-foreground">case notes</p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-              
-              <div className="mt-4">
-                <h3 className="text-lg font-medium mb-3">Recent Activity</h3>
-                <div className="space-y-4">
-                  {selectedCase.notes.length > 0 && renderTimelineItem(selectedCase.notes[0], 'note')}
-                  {selectedCase.documents.length > 0 && renderTimelineItem(selectedCase.documents[0], 'document')}
-                  {selectedCase.assessments.length > 0 && renderTimelineItem(selectedCase.assessments[0], 'assessment')}
-                </div>
-              </div>
+            <TabsContent value="overview" className="mt-0">
+              <CaseOverview caseData={selectedCase} />
             </TabsContent>
             
-            <TabsContent value="documents" className="mt-0 space-y-4">
-              <div className="flex justify-between">
-                <h3 className="text-lg font-medium">Documents</h3>
-                {canUploadDocuments() && (
-                  <Button size="sm" onClick={() => handleCreateItem('document')}>
-                    <Plus className="w-4 h-4 mr-1" /> Add Document
-                  </Button>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                {selectedCase.documents.length === 0 ? (
-                  <div className="text-center py-8">
-                    <FileText className="h-8 w-8 mx-auto text-muted-foreground opacity-40" />
-                    <h3 className="mt-3 text-lg font-medium">No documents</h3>
-                    <p className="text-sm text-muted-foreground mt-1 max-w-xs mx-auto">
-                      {canUploadDocuments() 
-                        ? "Upload documents related to this case"
-                        : "No documents have been uploaded yet"
-                      }
-                    </p>
-                    {canUploadDocuments() && (
-                      <Button className="mt-4" size="sm" variant="outline" onClick={() => handleCreateItem('document')}>
-                        <Upload className="w-4 h-4 mr-1" /> Upload Document
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  selectedCase.documents.map(doc => (
-                    <div key={doc.id} className="p-3 border rounded-md flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded bg-muted flex items-center justify-center">
-                          <FileText className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                        <div>
-                          <p className="font-medium">{doc.name}</p>
-                          <div className="text-sm text-muted-foreground">
-                            Uploaded by {doc.uploadedBy} on {formatDate(doc.uploadDate)}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {doc.size}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
+            <TabsContent value="documents" className="mt-0">
+              <CaseDocuments 
+                documents={selectedCase.documents} 
+                canUpload={canUploadDocuments()} 
+                onCreateItem={() => handleCreateItem('document')} 
+              />
             </TabsContent>
             
-            <TabsContent value="assessments" className="mt-0 space-y-4">
-              <div className="flex justify-between">
-                <h3 className="text-lg font-medium">Assessments</h3>
-                {canAddAssessments() && (
-                  <Button size="sm" onClick={() => handleCreateItem('assessment')}>
-                    <Plus className="w-4 h-4 mr-1" /> Add Assessment
-                  </Button>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                {selectedCase.assessments.length === 0 ? (
-                  <div className="text-center py-8">
-                    <ClipboardCheck className="h-8 w-8 mx-auto text-muted-foreground opacity-40" />
-                    <h3 className="mt-3 text-lg font-medium">No assessments</h3>
-                    <p className="text-sm text-muted-foreground mt-1 max-w-xs mx-auto">
-                      {canAddAssessments() 
-                        ? "Create assessments for the client to complete"
-                        : "No assessments have been assigned yet"
-                      }
-                    </p>
-                    {canAddAssessments() && (
-                      <Button className="mt-4" size="sm" variant="outline" onClick={() => handleCreateItem('assessment')}>
-                        <Plus className="w-4 h-4 mr-1" /> Create Assessment
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  selectedCase.assessments.map(assessment => (
-                    <div key={assessment.id} className="p-3 border rounded-md">
-                      <div className="flex items-center justify-between">
-                        <p className="font-medium">{assessment.title}</p>
-                        <Badge variant={assessment.status === "completed" ? "default" : "outline"}>
-                          {assessment.status === "completed" ? "Completed" : "In Progress"}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{assessment.description}</p>
-                      <div className="mt-2 text-sm">
-                        <div className="bg-muted h-2 rounded-full mt-1">
-                          <div 
-                            className="bg-primary h-2 rounded-full" 
-                            style={{ width: `${assessment.completionPercentage}%` }}
-                          />
-                        </div>
-                        <div className="flex justify-between mt-1 text-xs text-muted-foreground">
-                          <span>Completion: {assessment.completionPercentage}%</span>
-                          <span>Date: {formatDate(assessment.date)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
+            <TabsContent value="assessments" className="mt-0">
+              <CaseAssessments 
+                assessments={selectedCase.assessments} 
+                canAdd={canAddAssessments()} 
+                onCreateItem={() => handleCreateItem('assessment')} 
+              />
             </TabsContent>
             
-            <TabsContent value="reports" className="mt-0 space-y-4">
-              <div className="flex justify-between">
-                <h3 className="text-lg font-medium">Reports</h3>
-                {canEditReports() && (
-                  <Button size="sm" onClick={() => handleCreateItem('report')}>
-                    <Plus className="w-4 h-4 mr-1" /> Add Report
-                  </Button>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                {selectedCase.reports.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Book className="h-8 w-8 mx-auto text-muted-foreground opacity-40" />
-                    <h3 className="mt-3 text-lg font-medium">No reports</h3>
-                    <p className="text-sm text-muted-foreground mt-1 max-w-xs mx-auto">
-                      {canEditReports() 
-                        ? "Create reports based on assessments and interviews"
-                        : "No reports have been created yet"
-                      }
-                    </p>
-                    {canEditReports() && (
-                      <Button className="mt-4" size="sm" variant="outline" onClick={() => handleCreateItem('report')}>
-                        <Plus className="w-4 h-4 mr-1" /> Create Report
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  selectedCase.reports.map(report => (
-                    <div key={report.id} className="p-3 border rounded-md">
-                      <div className="flex items-center justify-between">
-                        <p className="font-medium">{report.title}</p>
-                        <Badge variant={report.status === "completed" ? "default" : "outline"}>
-                          {report.status === "completed" ? "Completed" : "Draft"}
-                        </Badge>
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        <div>Patient: {report.patientName}</div>
-                        <div>Date: {formatDate(report.date)}</div>
-                        <div>Last edited: {formatDate(report.lastEdited)}</div>
-                      </div>
-                      {report.status === "completed" && (
-                        <div className="mt-2 flex gap-2">
-                          <Button size="sm" variant="outline">
-                            <FileText className="w-3 h-3 mr-1" /> View
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <User className="w-3 h-3 mr-1" /> Share
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
+            <TabsContent value="reports" className="mt-0">
+              <CaseReports 
+                reports={selectedCase.reports} 
+                canEdit={canEditReports()} 
+                onCreateItem={() => handleCreateItem('report')} 
+              />
             </TabsContent>
             
-            <TabsContent value="notes" className="mt-0 space-y-4">
-              <div className="flex justify-between">
-                <h3 className="text-lg font-medium">Case Notes</h3>
-                {canViewInternalNotes() && (
-                  <Button size="sm" onClick={() => handleCreateItem('note')}>
-                    <Plus className="w-4 h-4 mr-1" /> Add Note
-                  </Button>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                {selectedCase.notes.length === 0 ? (
-                  <div className="text-center py-8">
-                    <MessageSquare className="h-8 w-8 mx-auto text-muted-foreground opacity-40" />
-                    <h3 className="mt-3 text-lg font-medium">No case notes</h3>
-                    <p className="text-sm text-muted-foreground mt-1 max-w-xs mx-auto">
-                      {canViewInternalNotes() 
-                        ? "Add notes to track important case information"
-                        : "No notes have been added yet"
-                      }
-                    </p>
-                    {canViewInternalNotes() && (
-                      <Button className="mt-4" size="sm" variant="outline" onClick={() => handleCreateItem('note')}>
-                        <Plus className="w-4 h-4 mr-1" /> Add Note
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  selectedCase.notes.map(note => (
-                    <div key={note.id} className="p-3 border rounded-md">
-                      <p className="whitespace-pre-wrap">{note.content}</p>
-                      <div className="mt-2 text-sm text-muted-foreground">
-                        <span>{note.createdBy} - {formatDate(note.createdAt)}</span>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
+            <TabsContent value="notes" className="mt-0">
+              <CaseNotes 
+                notes={selectedCase.notes} 
+                canView={canViewInternalNotes()} 
+                onCreateItem={() => handleCreateItem('note')} 
+              />
             </TabsContent>
             
             <TabsContent value="timeline" className="mt-0">
-              <h3 className="text-lg font-medium mb-4">Case Timeline</h3>
-              
-              <div className="relative pb-4">
-                {selectedCase.documents.map(doc => renderTimelineItem(doc, 'document'))}
-                {selectedCase.assessments.map(assessment => renderTimelineItem(assessment, 'assessment'))}
-                {selectedCase.reports.map(report => renderTimelineItem(report, 'report'))}
-                {selectedCase.notes.map(note => renderTimelineItem(note, 'note'))}
-              </div>
+              <CaseTimeline 
+                documents={selectedCase.documents}
+                assessments={selectedCase.assessments}
+                reports={selectedCase.reports}
+                notes={selectedCase.notes}
+                externalUploads={selectedCase.externalUploads}
+              />
             </TabsContent>
             
-            <TabsContent value="external" className="mt-0 space-y-4">
-              <div className="flex justify-between">
-                <h3 className="text-lg font-medium">External Uploads</h3>
-                {canShareAccess() && (
-                  <Button size="sm" onClick={() => handleCreateItem('external')}>
-                    <Plus className="w-4 h-4 mr-1" /> Request External Upload
-                  </Button>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                {selectedCase.externalUploads.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Upload className="h-8 w-8 mx-auto text-muted-foreground opacity-40" />
-                    <h3 className="mt-3 text-lg font-medium">No external uploads</h3>
-                    <p className="text-sm text-muted-foreground mt-1 max-w-xs mx-auto">
-                      {canShareAccess() 
-                        ? "Request documents from external parties like a GP or rehab provider"
-                        : "No external party uploads available"
-                      }
-                    </p>
-                    {canShareAccess() && (
-                      <Button className="mt-4" size="sm" variant="outline" onClick={() => handleCreateItem('external')}>
-                        <Plus className="w-4 h-4 mr-1" /> Request Upload
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  selectedCase.externalUploads.map(doc => (
-                    <div key={doc.id} className="p-3 border rounded-md flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded bg-blue-50 flex items-center justify-center">
-                          <FileText className="h-5 w-5 text-blue-500" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium">{doc.name}</p>
-                            <Badge variant="outline" className="text-xs">External</Badge>
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            Uploaded by {doc.uploadedBy} on {formatDate(doc.uploadDate)}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {doc.size}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
+            <TabsContent value="external" className="mt-0">
+              <ExternalUploads 
+                uploads={selectedCase.externalUploads} 
+                canShare={canShareAccess()} 
+                onCreateItem={() => handleCreateItem('external')} 
+              />
             </TabsContent>
           </CardContent>
         </Card>
@@ -843,67 +391,48 @@ const CaseSiloPage = () => {
   };
 
   if (error) {
-    return (
-      <div className="text-center py-12">
-        <AlertCircle className="h-12 w-12 mx-auto text-destructive opacity-50" />
-        <h3 className="mt-4 text-lg font-medium">Error Loading Case Data</h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          {error}
-        </p>
-        <Button className="mt-4" onClick={() => window.location.reload()}>
-          Try Again
-        </Button>
-      </div>
-    );
+    return <ErrorDisplay message={error} onRetry={() => window.location.reload()} />;
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (selectedCaseId) {
-    return renderCaseDetail();
+    return <LoadingSpinner />;
   }
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-1">Case Silo</h1>
-      <p className="text-muted-foreground mb-6">
-        Access all information related to your cases in one secure location
-      </p>
-      
-      <div className="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between">
-        <div className="relative w-full md:w-96">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search cases..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8"
-          />
-        </div>
-        
-        {canCreateSilo() && (
-          <Button>
-            <Plus className="w-4 h-4 mr-1" /> Create New Case
-          </Button>
-        )}
-      </div>
-      
-      {filteredCaseSilos.length === 0 ? (
-        <div className="text-center py-12">
-          <Archive className="h-12 w-12 mx-auto text-muted-foreground" />
-          <h3 className="mt-4 text-lg font-medium">No cases found</h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            {searchTerm ? "Try adjusting your search terms" : "No cases are available at this time"}
-          </p>
-        </div>
+      {selectedCaseId ? (
+        renderCaseDetail()
       ) : (
-        renderCaseGrid()
+        <>
+          <h1 className="text-3xl font-bold mb-1">Case Silo</h1>
+          <p className="text-muted-foreground mb-6">
+            Access all information related to your cases in one secure location
+          </p>
+          
+          <div className="flex flex-col md:flex-row gap-4 mb-6 items-center justify-between">
+            <div className="relative w-full md:w-96">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search cases..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-8"
+              />
+            </div>
+            
+            {canCreateSilo() && (
+              <Button>
+                <Plus className="w-4 h-4 mr-1" /> Create New Case
+              </Button>
+            )}
+          </div>
+          
+          <CaseSiloList 
+            caseSilos={filteredCaseSilos} 
+            onSelectCase={setSelectedCaseId} 
+            searchTerm={searchTerm}
+          />
+        </>
       )}
     </div>
   );
