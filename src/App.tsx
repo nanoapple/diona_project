@@ -19,6 +19,8 @@ import Profile from "./pages/Profile";
 import Interview from "./pages/Interview";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import ClientDetails from "./pages/ClientDetails";
+import LegalTasks from "./pages/LegalTasks";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,9 @@ const App = () => (
               <Route path="/assessments" element={<Assessments />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/clients" element={<Clients />} />
+              <Route path="/client-details/:clientId" element={<ClientDetails />} />
+              <Route path="/legal-tasks" element={<LegalTasks />} />
+              <Route path="/legal-tasks/:taskId" element={<LegalTasks />} />
               <Route path="/case-silo" element={<CaseSilo />} />
               <Route path="/interview/:caseId" element={<Interview />} />
               <Route path="/profile" element={<Profile />} />

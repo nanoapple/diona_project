@@ -15,7 +15,9 @@ import {
   X,
   Users,
   Archive,
-  Mic
+  Mic,
+  Briefcase,
+  ClipboardList
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -33,7 +35,9 @@ const Sidebar = () => {
 
   const NavItem = ({ to, icon: Icon, label }: { to: string, icon: any, label: string }) => {
     const isActive = location.pathname === to || 
-                    (to.includes('/interview') && location.pathname.includes('/interview'));
+                    (to.includes('/interview') && location.pathname.includes('/interview')) ||
+                    (to.includes('/clients') && location.pathname.includes('/client-details')) ||
+                    (to.includes('/legal-tasks') && location.pathname.includes('/legal-tasks'));
     
     return (
       <Link to={to}>
@@ -69,6 +73,8 @@ const Sidebar = () => {
         { to: `/interview/${defaultCaseId}`, icon: Mic, label: "Interview" },
       ],
       lawyer: [
+        { to: "/clients", icon: Users, label: "Clients" },
+        { to: "/legal-tasks", icon: ClipboardList, label: "Legal Tasks" },
         { to: "/ai-assistant", icon: MessageSquare, label: "AI Assistant" },
         { to: "/documents", icon: FileText, label: "Documents" },
       ],
