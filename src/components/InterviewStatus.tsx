@@ -27,7 +27,7 @@ const InterviewStatus = ({ caseId, interviewStatus }: InterviewStatusProps) => {
         <CardTitle className="text-lg flex items-center justify-between">
           <span>Self-Guided Interview</span>
           {interviewStatus.isCompleted && (
-            <Badge variant="success" className="bg-emerald-600">
+            <Badge variant="default" className="bg-emerald-600">
               <CheckCircle className="h-3 w-3 mr-1" /> Completed
             </Badge>
           )}
@@ -74,20 +74,22 @@ const InterviewStatus = ({ caseId, interviewStatus }: InterviewStatusProps) => {
         <div className="mt-4 flex justify-end">
           {isClaimant ? (
             <Button 
-              as={Link} 
-              to={`/interview/${caseId}`}
               className="flex items-center gap-2"
+              asChild
             >
-              {interviewStatus.isStarted ? "Continue Interview" : "Start Interview"}
-              <ArrowRight className="h-4 w-4" />
+              <Link to={`/interview/${caseId}`}>
+                {interviewStatus.isStarted ? "Continue Interview" : "Start Interview"}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </Button>
           ) : (
             <Button 
-              as={Link} 
-              to={`/interview/${caseId}`}
               variant="outline"
+              asChild
             >
-              View Interview
+              <Link to={`/interview/${caseId}`}>
+                View Interview
+              </Link>
             </Button>
           )}
         </div>

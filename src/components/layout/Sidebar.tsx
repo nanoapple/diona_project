@@ -25,8 +25,15 @@ const Sidebar = () => {
 
   const toggleSidebar = () => setCollapsed(!collapsed);
 
+  // Get default case ID for interview link (in real app, this would be fetched from API)
+  const getDefaultCaseId = () => {
+    // Use "1" as the default case ID for demonstration purposes
+    return "1";
+  };
+
   const NavItem = ({ to, icon: Icon, label }: { to: string, icon: any, label: string }) => {
-    const isActive = location.pathname === to;
+    const isActive = location.pathname === to || 
+                    (to.includes('/interview') && location.pathname.includes('/interview'));
     
     return (
       <Link to={to}>
@@ -46,6 +53,8 @@ const Sidebar = () => {
 
   // Define navigation items based on user role
   const getNavItems = () => {
+    const defaultCaseId = getDefaultCaseId();
+    
     const commonItems = [
       { to: "/dashboard", icon: CheckSquare, label: "Dashboard" },
       { to: "/case-silo", icon: Archive, label: "Case Silo" },
@@ -57,7 +66,7 @@ const Sidebar = () => {
         { to: "/ai-assistant", icon: MessageSquare, label: "AI Assistant" },
         { to: "/documents", icon: FileText, label: "Documents" },
         { to: "/assessments", icon: ClipboardCheck, label: "Assessments" },
-        { to: "/interview", icon: Mic, label: "Interview" },
+        { to: `/interview/${defaultCaseId}`, icon: Mic, label: "Interview" },
       ],
       lawyer: [
         { to: "/ai-assistant", icon: MessageSquare, label: "AI Assistant" },
