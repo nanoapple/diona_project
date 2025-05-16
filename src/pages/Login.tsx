@@ -106,7 +106,7 @@ const Login = () => {
               <div className="text-center text-sm">
                 <p className="text-muted-foreground">
                   Demo accounts: <br />
-                  <code>victim@example.com</code>, <br />
+                  <code>claimant@example.com</code>, <br />
                   <code>lawyer@example.com</code>, <br />
                   <code>psychologist@example.com</code> <br />
                   Password: <code>password</code>
