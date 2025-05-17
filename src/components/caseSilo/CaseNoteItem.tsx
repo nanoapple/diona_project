@@ -1,6 +1,5 @@
 
-import { useState } from 'react';
-import { CaseNote, UserRole } from "@/types";
+import { CaseNote } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { User, EyeOff, UserCheck, FileText, Eye } from "lucide-react";

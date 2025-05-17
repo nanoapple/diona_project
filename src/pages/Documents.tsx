@@ -23,7 +23,7 @@ interface Document {
   uploadedBy: string;
 }
 
-const DocumentsPage = () => {
+const Documents = () => {
   const { currentUser } = useAuth();
   const { toast } = useToast();
   const [documents, setDocuments] = useState<Document[]>([
@@ -204,7 +204,7 @@ const DocumentsPage = () => {
           </p>
         </div>
         
-        {currentUser?.role !== 'victim' && (
+        {currentUser?.role !== "claimant" && (
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button>
@@ -463,4 +463,4 @@ const DocumentsPage = () => {
   );
 };
 
-export default DocumentsPage;
+export default Documents;

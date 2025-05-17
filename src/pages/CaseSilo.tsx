@@ -43,6 +43,9 @@ import ErrorDisplay from '@/components/ErrorDisplay';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { Progress } from '@/components/ui/progress';
 
+// At the top of the file, add this type declaration
+export type ClaimStage = 'intake' | 'assessment' | 'treatment' | 'report' | 'review' | 'completed';
+
 const CaseSiloPage = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();

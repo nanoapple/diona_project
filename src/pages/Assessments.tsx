@@ -1,416 +1,348 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CheckCircle, ClipboardList, Clock, AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Assessment, AssessmentQuestion, AssessmentStatus } from '@/types';
-import { UserRole } from '@/contexts/AuthContext';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { 
+  ArrowUpRight, 
+  Clock, 
+  CheckCircle, 
+  AlertCircle, 
+  Calendar as CalendarIcon,
+  ChevronRight
+} from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn, formatDate } from "@/lib/utils";
+import { Assessment } from "@/types";
+import { useToast } from "@/components/ui/use-toast";
 
-const mockAssessments: Assessment[] = [
-  {
-    id: "1",
-    title: "Mental Health Assessment",
-    description: "This assessment is designed to evaluate your current mental health state in relation to your workplace injury.",
-    status: "pending",
-    completionPercentage: 0,
-    date: "2023-05-10",
-    assignedTo: "John Doe",
-    questions: [
-      {
-        id: "q1",
-        text: "How often have you felt down, depressed, or hopeless over the last two weeks?",
-        type: "multiple_choice",
-        options: ["Not at all", "Several days", "More than half the days", "Nearly every day"]
-      },
-      {
-        id: "q2",
-        text: "On a scale from 1 to 10, how would you rate your current anxiety level?",
-        type: "scale",
-        options: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
-      },
-      {
-        id: "q3",
-        text: "Please describe how your injury has affected your daily life and routines.",
-        type: "text"
-      }
-    ]
-  },
-  {
-    id: "2",
-    title: "PTSD Screening",
-    description: "Assessment for symptoms of Post-Traumatic Stress Disorder related to your accident.",
-    status: "in_progress",
-    completionPercentage: 60,
-    date: "2023-05-15",
-    assignedTo: "John Doe"
-  },
-  {
-    id: "3",
-    title: "Vocational Assessment",
-    description: "Evaluation of your ability to return to work and any accommodations that may be needed.",
-    status: "completed",
-    completionPercentage: 100,
-    date: "2023-04-20",
-    assignedTo: "John Doe"
-  }
-];
-
-const mockClientAssessments: Assessment[] = [
-  {
-    id: "4",
-    title: "Initial Mental Health Assessment",
-    description: "Comprehensive assessment of mental health status",
-    status: "completed",
-    completionPercentage: 100,
-    date: "2023-05-01",
-    assignedTo: "Jane Smith"
-  },
-  {
-    id: "5",
-    title: "Work Stress Evaluation",
-    description: "Assessment to measure occupational stress levels",
-    status: "in_progress",
-    completionPercentage: 30,
-    date: "2023-05-12",
-    assignedTo: "Robert Johnson"
-  },
-  {
-    id: "6",
-    title: "Return to Work Assessment",
-    description: "Evaluation of readiness to resume work duties",
-    status: "pending",
-    completionPercentage: 0,
-    date: "2023-05-20",
-    assignedTo: "Sarah Williams"
-  }
-];
-
-const AssessmentsPage = () => {
+const Assessments = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const [assessments, setAssessments] = useState<Assessment[]>([]);
-  const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
-  const [selectedTab, setSelectedTab] = useState("pending");
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string | number>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate API call to fetch assessments
-    const fetchAssessments = async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-      
-      if (currentUser?.role === 'victim') {
-        setAssessments(mockAssessments);
-      } else if (currentUser?.role === 'psychologist') {
-        setAssessments(mockClientAssessments);
-      }
-      
-      setIsLoading(false);
-    };
-    
-    fetchAssessments();
-  }, [currentUser?.role]);
-
-  const handleStartAssessment = (assessment: Assessment) => {
-    setSelectedAssessment(assessment);
-  };
-
-  const handleAnswer = (questionId: string, value: string | number) => {
-    setAnswers(prev => ({ ...prev, [questionId]: value }));
-  };
-
-  const handleNextQuestion = () => {
-    if (selectedAssessment?.questions && currentQuestionIndex < selectedAssessment.questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  
+  // Mock data for assessments
+  const mockAssessments: Assessment[] = [
+    {
+      id: "assess1",
+      title: "Anxiety and Depression Scale",
+      patientName: "Sarah Johnson",
+      status: "completed",
+      assignedDate: "2025-04-05T10:30:00",
+      completionDate: "2025-04-10T14:15:00",
+      score: 75,
+      type: "Psychological"
+    },
+    {
+      id: "assess2",
+      title: "PTSD Screening Assessment",
+      patientName: "Michael Brown",
+      status: "in_progress",
+      assignedDate: "2025-04-28T09:00:00",
+      dueDate: "2025-05-12T17:00:00",
+      type: "Trauma"
+    },
+    {
+      id: "assess3",
+      title: "Cognitive Functioning Assessment",
+      patientName: "Emily Zhang",
+      status: "not_started",
+      assignedDate: "2025-05-01T11:30:00",
+      dueDate: "2025-05-20T16:00:00",
+      type: "Neuropsychological"
+    },
+    {
+      id: "assess4",
+      title: "Personality Test Bundle",
+      patientName: "David Wilson",
+      status: "not_started",
+      assignedDate: "2025-05-05T13:45:00",
+      dueDate: "2025-05-25T15:30:00",
+      type: "Personality"
+    },
+    {
+      id: "assess5",
+      title: "WorkCover Injury Assessment",
+      patientName: "Jessica Robinson",
+      status: "completed",
+      assignedDate: "2025-04-15T08:30:00",
+      completionDate: "2025-04-22T10:45:00",
+      score: 62,
+      type: "Occupational"
     }
+  ];
+  
+  // Filter assessments based on status
+  const completedAssessments = mockAssessments.filter(
+    assessment => assessment.status === "completed"
+  );
+  
+  const pendingAssessments = mockAssessments.filter(
+    assessment => assessment.status === "in_progress" || assessment.status === "not_started"
+  );
+  
+  const handleAssessmentClick = (assessmentId: string) => {
+    // In a real app, navigate to the assessment detail page
+    toast({
+      title: "Assessment Selected",
+      description: `Opening assessment ID: ${assessmentId}`,
+    });
   };
 
-  const handlePreviousQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-    }
+  const handleStartAssessment = (assessmentId: string) => {
+    // In a real app, start the assessment
+    toast({
+      title: "Assessment Started",
+      description: `You have started working on the assessment.`,
+    });
   };
 
-  const handleSubmitAssessment = () => {
-    setIsSubmitting(true);
-    
-    // Simulate API call to submit assessment
-    setTimeout(() => {
-      // Update the assessment status in our local state
-      const updatedAssessments = assessments.map(a => 
-        a.id === selectedAssessment?.id 
-          ? { ...a, status: 'completed' as AssessmentStatus, completionPercentage: 100 } 
-          : a
-      );
-      
-      setAssessments(updatedAssessments);
-      setSelectedAssessment(null);
-      setCurrentQuestionIndex(0);
-      setAnswers({});
-      setIsSubmitting(false);
-    }, 1500);
-  };
-
-  const handleBack = () => {
-    setSelectedAssessment(null);
-    setCurrentQuestionIndex(0);
-    setAnswers({});
+  // Calculate the assessment progress percentage (mock data)
+  const getProgress = (assessment: Assessment) => {
+    if (assessment.status === "completed") return 100;
+    if (assessment.status === "not_started") return 0;
+    return 45; // in_progress mock value
   };
   
-  const getFilteredAssessments = () => {
-    return assessments.filter(assessment => assessment.status === selectedTab);
+  // Format due date and determine if it's overdue
+  const formatDueDate = (dueDate?: string) => {
+    if (!dueDate) return { formattedDate: "No due date", isOverdue: false };
+    
+    const due = new Date(dueDate);
+    const today = new Date();
+    const isOverdue = due < today && due.toDateString() !== today.toDateString();
+    
+    return {
+      formattedDate: formatDate(dueDate),
+      isOverdue
+    };
   };
 
-  const renderAssessmentStatusIcon = (status: AssessmentStatus) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case 'in_progress':
-        return <Clock className="w-5 h-5 text-blue-500" />;
-      case 'pending':
-        return <AlertTriangle className="w-5 h-5 text-amber-500" />;
-      default:
-        return <ClipboardList className="w-5 h-5 text-gray-500" />;
-    }
-  };
-
-  const renderAssessmentList = () => {
-    const filteredAssessments = getFilteredAssessments();
-    
-    return (
-      <div className="space-y-4">
-        {filteredAssessments.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            No {selectedTab} assessments found.
-          </div>
-        ) : (
-          filteredAssessments.map(assessment => (
-            <Card key={assessment.id} className="overflow-hidden">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between">
-                  <div>
-                    <CardTitle>{assessment.title}</CardTitle>
-                    <CardDescription>{assessment.description}</CardDescription>
-                  </div>
-                  <div className="flex items-center">
-                    {renderAssessmentStatusIcon(assessment.status)}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col gap-2">
-                  <div className="text-sm text-muted-foreground">
-                    Date: {assessment.date}
-                  </div>
-                  
-                  {assessment.status === 'in_progress' && (
-                    <div className="mt-2">
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>Progress</span>
-                        <span>{assessment.completionPercentage}%</span>
-                      </div>
-                      <Progress value={assessment.completionPercentage} />
-                    </div>
-                  )}
-                  
-                  <div className="flex justify-end mt-2">
-                    {assessment.status === 'pending' && currentUser?.role === 'victim' && (
-                      <Button onClick={() => handleStartAssessment(assessment)}>
-                        Start Assessment
-                      </Button>
-                    )}
-                    
-                    {assessment.status === 'in_progress' && currentUser?.role === 'victim' && (
-                      <Button onClick={() => handleStartAssessment(assessment)}>
-                        Continue Assessment
-                      </Button>
-                    )}
-                    
-                    {assessment.status === 'completed' && (
-                      <Button variant="outline">View Results</Button>
-                    )}
-                    
-                    {currentUser?.role === 'psychologist' && (
-                      <div className="flex gap-2">
-                        <Badge variant="outline">Assigned to: {assessment.assignedTo}</Badge>
-                        <Button variant="outline">View Details</Button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
-    );
-  };
-
-  const renderQuestionComponent = (question: AssessmentQuestion) => {
-    const answer = answers[question.id];
-    
-    switch (question.type) {
-      case 'multiple_choice':
-        return (
-          <RadioGroup value={answer as string} onValueChange={value => handleAnswer(question.id, value)}>
-            <div className="space-y-2">
-              {question.options?.map((option, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <RadioGroupItem value={option} id={`option-${index}`} />
-                  <Label htmlFor={`option-${index}`}>{option}</Label>
-                </div>
-              ))}
-            </div>
-          </RadioGroup>
-        );
-      case 'scale':
-        return (
-          <div className="flex justify-between mt-4">
-            {question.options?.map((option, index) => (
-              <Button
-                key={index}
-                variant={answer === option ? "default" : "outline"}
-                className="w-10 h-10 rounded-full"
-                onClick={() => handleAnswer(question.id, option)}
-              >
-                {option}
-              </Button>
-            ))}
-          </div>
-        );
-      case 'text':
-        return (
-          <textarea
-            className="w-full h-32 p-2 border rounded-md"
-            value={answer as string || ''}
-            onChange={(e) => handleAnswer(question.id, e.target.value)}
-            placeholder="Type your answer here..."
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
-  const renderAssessmentQuestions = () => {
-    if (!selectedAssessment || !selectedAssessment.questions) return null;
-    
-    const currentQuestion = selectedAssessment.questions[currentQuestionIndex];
-    const isLastQuestion = currentQuestionIndex === selectedAssessment.questions.length - 1;
-    const isFirstQuestion = currentQuestionIndex === 0;
-    
-    return (
+  return (
+    <div className="space-y-6">
       <div>
-        <Button variant="ghost" onClick={handleBack} className="mb-4">
-          &larr; Back to Assessments
-        </Button>
-        
-        <Card>
+        <h1 className="text-2xl font-bold tracking-tight">Assessments</h1>
+        <p className="text-muted-foreground">
+          {currentUser?.role === "psychologist" 
+            ? "Manage and conduct psychological assessments for your clients." 
+            : "View and complete your assigned psychological assessments."}
+        </p>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-4">
+        {/* Calendar Widget */}
+        <Card className="w-full md:w-[300px] md:h-fit">
           <CardHeader>
-            <CardTitle>{selectedAssessment.title}</CardTitle>
-            <CardDescription>{selectedAssessment.description}</CardDescription>
-            <div className="w-full bg-slate-200 h-2 rounded-full mt-4">
-              <div 
-                className="bg-primary h-2 rounded-full transition-all" 
-                style={{ width: `${((currentQuestionIndex + 1) / selectedAssessment.questions.length) * 100}%` }}
-              ></div>
-            </div>
-            <div className="text-sm text-muted-foreground mt-1">
-              Question {currentQuestionIndex + 1} of {selectedAssessment.questions.length}
-            </div>
+            <CardTitle>Schedule</CardTitle>
+            <CardDescription>View upcoming assessments</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-lg font-medium mb-4">{currentQuestion.text}</div>
-            
-            {renderQuestionComponent(currentQuestion)}
-            
-            <div className="flex justify-between mt-8">
-              <Button 
-                variant="outline" 
-                onClick={handlePreviousQuestion} 
-                disabled={isFirstQuestion}
-              >
-                Previous
-              </Button>
-              
-              {isLastQuestion ? (
-                <Button 
-                  onClick={handleSubmitAssessment} 
-                  disabled={isSubmitting}
+          <CardContent>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className="w-full justify-start text-left font-normal"
                 >
-                  {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? formatDate(date.toISOString()) : "Select date"}
                 </Button>
-              ) : (
-                <Button 
-                  onClick={handleNextQuestion} 
-                  disabled={!answers[currentQuestion.id]}
-                >
-                  Next
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </CardContent>
+          <CardFooter>
+            <Button variant="outline" className="w-full" onClick={() => {
+              toast({
+                title: "Feature coming soon",
+                description: "Schedule management will be available in a future update.",
+              });
+            }}>
+              View Schedule
+            </Button>
+          </CardFooter>
+        </Card>
+
+        {/* Assessments Tabs */}
+        <Card className="flex-1">
+          <CardHeader>
+            <div className="flex justify-between items-start">
+              <div>
+                <CardTitle>My Assessments</CardTitle>
+                <CardDescription>
+                  {currentUser?.role === "psychologist" 
+                    ? "Assessments for your clients" 
+                    : "Your psychological assessments"}
+                </CardDescription>
+              </div>
+              {currentUser?.role === "psychologist" && (
+                <Button onClick={() => {
+                  toast({
+                    title: "Create Assessment",
+                    description: "This feature is coming soon.",
+                  });
+                }}>
+                  Create Assessment
                 </Button>
               )}
             </div>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="pending">
+              <TabsList className="mb-4">
+                <TabsTrigger value="pending">Pending ({pendingAssessments.length})</TabsTrigger>
+                <TabsTrigger value="completed">Completed ({completedAssessments.length})</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="pending" className="space-y-4">
+                {pendingAssessments.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>No pending assessments found</p>
+                  </div>
+                ) : (
+                  pendingAssessments.map(assessment => {
+                    const { formattedDate, isOverdue } = formatDueDate(assessment.dueDate);
+                    return (
+                      <div 
+                        key={assessment.id}
+                        className="border rounded-md p-4 hover:bg-muted/50 cursor-pointer transition-colors"
+                        onClick={() => handleAssessmentClick(assessment.id)}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h3 className="font-medium">{assessment.title}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              Patient: {assessment.patientName}
+                            </p>
+                          </div>
+                          <Badge 
+                            variant={assessment.status === "in_progress" ? "default" : "outline"}
+                          >
+                            {assessment.status === "in_progress" ? "In Progress" : "Not Started"}
+                          </Badge>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Progress</span>
+                            <span>{getProgress(assessment)}%</span>
+                          </div>
+                          <Progress value={getProgress(assessment)} className="h-2" />
+                          
+                          <div className="flex justify-between items-center mt-4">
+                            <div className="flex items-center text-sm">
+                              <Clock className="mr-1 h-4 w-4 text-muted-foreground" />
+                              <span className={cn(
+                                "text-muted-foreground",
+                                isOverdue && "text-destructive"
+                              )}>
+                                Due: {formattedDate}
+                                {isOverdue && (
+                                  <span className="ml-1 font-medium">(Overdue)</span>
+                                )}
+                              </span>
+                            </div>
+                            
+                            {currentUser?.role === "claimant" && assessment.status === "not_started" && (
+                              <Button size="sm" onClick={(e) => {
+                                e.stopPropagation();
+                                handleStartAssessment(assessment.id);
+                              }}>
+                                Start <ArrowUpRight className="ml-1 h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </TabsContent>
+              
+              <TabsContent value="completed" className="space-y-4">
+                {completedAssessments.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>No completed assessments found</p>
+                  </div>
+                ) : (
+                  completedAssessments.map(assessment => (
+                    <div 
+                      key={assessment.id}
+                      className="border rounded-md p-4 hover:bg-muted/50 cursor-pointer transition-colors flex justify-between items-center"
+                      onClick={() => handleAssessmentClick(assessment.id)}
+                    >
+                      <div>
+                        <div className="flex items-center mb-1">
+                          <h3 className="font-medium mr-2">{assessment.title}</h3>
+                          <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
+                            <CheckCircle className="mr-1 h-3 w-3" /> Completed
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-1">
+                          Patient: {assessment.patientName}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Completed on: {assessment.completionDate && formatDate(assessment.completionDate)}
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        {assessment.score !== undefined && (
+                          <div className="mr-4 text-center">
+                            <div className="text-2xl font-bold">{assessment.score}</div>
+                            <div className="text-xs text-muted-foreground">Score</div>
+                          </div>
+                        )}
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                    </div>
+                  ))
+                )}
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>
-    );
-  };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (selectedAssessment) {
-    return renderAssessmentQuestions();
-  }
-
-  const canCreateAssessments = currentUser?.role === 'psychologist';
-  
-  return (
-    <div>
-      <h1 className="text-3xl font-bold mb-1">Assessments</h1>
-      <p className="text-muted-foreground mb-6">
-        {currentUser?.role === 'victim' 
-          ? 'Complete psychological assessments related to your claim' 
-          : 'Manage client psychological assessments'}
-      </p>
-      
-      <Tabs defaultValue="pending" value={selectedTab} onValueChange={setSelectedTab}>
-        <div className="flex justify-between items-center mb-4">
-          <TabsList>
-            <TabsTrigger value="pending">Pending</TabsTrigger>
-            <TabsTrigger value="in_progress">In Progress</TabsTrigger>
-            <TabsTrigger value="completed">Completed</TabsTrigger>
-          </TabsList>
-          
-          {canCreateAssessments && (
-            <Button>
-              Create Assessment
-            </Button>
-          )}
-        </div>
-        
-        <TabsContent value="pending">
-          {renderAssessmentList()}
-        </TabsContent>
-        <TabsContent value="in_progress">
-          {renderAssessmentList()}
-        </TabsContent>
-        <TabsContent value="completed">
-          {renderAssessmentList()}
-        </TabsContent>
-      </Tabs>
+      {currentUser?.role === "claimant" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Assessment Information</CardTitle>
+            <CardDescription>What to expect from your psychological assessments</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-md border p-4 bg-muted/50">
+              <h3 className="font-medium mb-2 flex items-center">
+                <AlertCircle className="h-5 w-5 mr-2 text-blue-500" />
+                About Psychological Assessments
+              </h3>
+              <p className="text-sm">
+                Psychological assessments help us understand your mental health needs and guide your care. They typically take 30-60 minutes to complete and will ask questions about your thoughts, feelings, and experiences.
+              </p>
+            </div>
+            
+            <div className="rounded-md border p-4 bg-muted/50">
+              <h3 className="font-medium mb-2">Privacy and Confidentiality</h3>
+              <p className="text-sm">
+                Your assessment results are kept confidential and are only shared with your care team. The information will be used solely for treatment planning and to support your insurance claim.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
 
-export default AssessmentsPage;
+export default Assessments;

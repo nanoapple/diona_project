@@ -1,114 +1,75 @@
-// User types
-export type UserRole = 'admin' | 'lawyer' | 'psychologist' | 'claimant';
 
-export interface User {
+import { UserRole } from "../contexts/AuthContext";
+
+// Case types
+export interface Case {
+  id: string;
+  title: string;
+  client: string;
+  status: string;
+  priority: 'low' | 'medium' | 'high';
+  dateCreated: string;
+  lastUpdated: string;
+  assignedTo: string[];
+  description?: string;
+  stage?: string;
+  dueDate?: string;
+  category?: string;
+  tags?: string[];
+}
+
+// Document types
+export interface CaseDocument {
   id: string;
   name: string;
-  email: string;
-  role: UserRole;
+  uploadDate: string;
+  uploadedBy: string;
+  size: string;
+  type?: string;
+  tags?: string[];
+}
+
+// Note types
+export interface CaseNote {
+  id: string;
+  content: string;
+  createdAt: string;
+  createdBy: string;
+  isPrivate?: boolean;
+  visibleTo?: UserRole[];
+  type?: 'Transcribed' | 'Written';
 }
 
 // Assessment types
-export type AssessmentStatus = 'pending' | 'in_progress' | 'completed';
-
-export interface AssessmentQuestion {
-  id: string;
-  text: string;
-  type: 'multiple_choice' | 'scale' | 'text';
-  options?: string[];
-  answer?: string | number;
-}
-
 export interface Assessment {
   id: string;
   title: string;
-  description: string;
-  status: AssessmentStatus;
-  completionPercentage: number;
-  date: string;
-  assignedTo: string;
-  questions?: AssessmentQuestion[];
+  patientName: string;
+  status: 'not_started' | 'in_progress' | 'completed';
+  assignedDate: string;
+  dueDate?: string;
+  completionDate?: string;
+  score?: number;
+  type?: string;
 }
 
-// Report status and type enums
-export type ReportStatus = 'draft' | 'for_review' | 'completed';
-export type ReportType = 'workers_comp' | 'medico_legal' | 'vocational' | 'capacity';
-
-// Report interface
+// Report types
 export interface Report {
   id: string;
   title: string;
   patientName: string;
   date: string;
-  type: ReportType;
-  status: ReportStatus;
-  content: {
-    overview: string;
-    findings: string[];
-    recommendations: string;
-  };
   lastEdited: string;
+  status: 'draft' | 'completed';
+  authorName?: string;
 }
 
-// Case Silo types
-export type CaseSiloStatus = 'active' | 'expiring_soon' | 'expired';
-export type CaseType = 'Workplace Injury' | 'Car Accident' | 'Public Liability' | 'Medical Negligence';
-export type ClaimStage = 'Intake & Triage' | 'Legal Review' | 'Assessment' | 'Report' | 'Lodgement' | 'Outcome';
-
-export interface CaseSilo {
-  id: string;
-  claimantName: string;
-  caseType: CaseType;
-  claimNumber?: string;
-  referralSource?: string;
-  injuryDate?: string;
-  currentStage: ClaimStage;
-  status: CaseSiloStatus;
-  createdDate: string;
-  expiryDate: string;
-  participants: {
-    claimantId: string;
-    lawyerId: string;
-    psychologistId: string;
-  };
-  documents: CaseDocument[];
-  assessments: Assessment[];
-  reports: Report[];
-  notes: CaseNote[];
-  externalUploads: CaseDocument[];
-  infoRequests: InfoRequest[];
-  completedStages: ClaimStage[];
-}
-
-export interface InfoRequest {
+// Timeline item types
+export interface TimelineItem {
   id: string;
   title: string;
-  questions: string[];
-  answers?: string[];
-  requestedBy: string;
-  requestedAt: string;
-  completedAt?: string;
-  status: 'pending' | 'completed';
-}
-
-export interface CaseDocument {
-  id: string;
-  name: string;
-  type: string;
-  uploadedBy: string;
-  uploadRole?: 'lawyer' | 'claimant' | 'psychologist' | 'external';
-  uploadDate: string;
-  url: string;
-  size: string;
-  isExternal?: boolean;
-}
-
-export interface CaseNote {
-  id: string;
-  content: string;
-  createdBy: string;
-  createdAt: string;
-  isPrivate?: boolean;
-  isExternal?: boolean;
-  visibleTo?: ('lawyer' | 'claimant' | 'psychologist')[];
+  date: string;
+  type: 'note' | 'document' | 'assessment' | 'report' | 'meeting' | 'call' | 'email';
+  content?: string;
+  author?: string;
 }
