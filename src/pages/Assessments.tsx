@@ -1,5 +1,5 @@
+
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,23 +11,31 @@ import {
   CheckCircle, 
   AlertCircle, 
   Calendar as CalendarIcon,
-  ChevronRight
+  ChevronRight,
+  Plus
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn, formatDate } from "@/lib/utils";
-import { Assessment } from "@/types";
+import { Assessment, AssessmentResults } from "@/types";
 import { useToast } from "@/components/ui/use-toast";
+import { AddAssessmentDialog } from "@/components/assessments/AddAssessmentDialog";
+import { DASS21Assessment } from "@/components/assessments/DASS21Assessment";
+import { AssessmentResults as AssessmentResultsComponent } from "@/components/assessments/AssessmentResults";
 
 const Assessments = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [activeAssessment, setActiveAssessment] = useState<Assessment | null>(null);
+  const [showResults, setShowResults] = useState(false);
+  const [assessmentResults, setAssessmentResults] = useState<AssessmentResults | null>(null);
   
   // Mock data for assessments
-  const mockAssessments: Assessment[] = [
+  const [assessments, setAssessments] = useState<Assessment[]>([
     {
       id: "assess1",
       title: "Anxiety and Depression Scale",
@@ -45,7 +53,8 @@ const Assessments = () => {
       status: "in_progress",
       assignedDate: "2025-04-28T09:00:00",
       dueDate: "2025-05-12T17:00:00",
-      type: "Trauma"
+      type: "Trauma",
+      completionPercentage: 45
     },
     {
       id: "assess3",
@@ -75,38 +84,91 @@ const Assessments = () => {
       score: 62,
       type: "Occupational"
     }
-  ];
+  ]);
   
   // Filter assessments based on status
-  const completedAssessments = mockAssessments.filter(
+  const completedAssessments = assessments.filter(
     assessment => assessment.status === "completed"
   );
   
-  const pendingAssessments = mockAssessments.filter(
+  const pendingAssessments = assessments.filter(
     assessment => assessment.status === "in_progress" || assessment.status === "not_started"
   );
   
-  const handleAssessmentClick = (assessmentId: string) => {
-    // In a real app, navigate to the assessment detail page
-    toast({
-      title: "Assessment Selected",
-      description: `Opening assessment ID: ${assessmentId}`,
-    });
+  const handleAssessmentClick = (assessment: Assessment) => {
+    // For completed assessments, show results
+    if (assessment.status === "completed") {
+      // In a real app, we would fetch the results from the backend
+      if (assessment.results) {
+        setAssessmentResults(assessment.results);
+        setActiveAssessment(assessment);
+        setShowResults(true);
+      } else {
+        toast({
+          title: "Assessment Results",
+          description: "Results data is not available for this assessment.",
+        });
+      }
+    } else {
+      // For in-progress or not started assessments, open the assessment
+      setActiveAssessment(assessment);
+    }
   };
 
-  const handleStartAssessment = (assessmentId: string) => {
-    // In a real app, start the assessment
-    toast({
-      title: "Assessment Started",
-      description: `You have started working on the assessment.`,
-    });
+  const handleStartAssessment = (assessmentId: string, event?: React.MouseEvent) => {
+    if (event) {
+      event.stopPropagation();
+    }
+    
+    const assessment = assessments.find(a => a.id === assessmentId);
+    if (assessment) {
+      if (assessment.title.includes("DASS-21")) {
+        setActiveAssessment(assessment);
+      } else {
+        toast({
+          title: "Test is currently unavailable",
+          description: "Only DASS-21 is available for demonstration purposes.",
+        });
+      }
+    }
   };
 
-  // Calculate the assessment progress percentage (mock data)
+  const handleAddAssessment = (assessment: Assessment) => {
+    setAssessments([assessment, ...assessments]);
+  };
+
+  const handleAssessmentComplete = (results: AssessmentResults) => {
+    if (activeAssessment) {
+      // Update the assessment with results and mark as completed
+      const updatedAssessment = {
+        ...activeAssessment,
+        status: "completed" as const,
+        completionDate: new Date().toISOString(),
+        completionPercentage: 100,
+        results: results
+      };
+      
+      setAssessments(assessments.map(a => 
+        a.id === activeAssessment.id ? updatedAssessment : a
+      ));
+      
+      // Show results
+      setActiveAssessment(updatedAssessment);
+      setAssessmentResults(results);
+      setShowResults(true);
+      
+      toast({
+        title: "Assessment Completed",
+        description: "The assessment has been completed and results are available.",
+      });
+    }
+  };
+
+  // Calculate the assessment progress percentage
   const getProgress = (assessment: Assessment) => {
     if (assessment.status === "completed") return 100;
     if (assessment.status === "not_started") return 0;
-    return 45; // in_progress mock value
+    return assessment.completionPercentage || 45; // default to 45% if not specified
   };
   
   // Format due date and determine if it's overdue
@@ -187,13 +249,8 @@ const Assessments = () => {
                 </CardDescription>
               </div>
               {currentUser?.role === "psychologist" && (
-                <Button onClick={() => {
-                  toast({
-                    title: "Create Assessment",
-                    description: "This feature is coming soon.",
-                  });
-                }}>
-                  Create Assessment
+                <Button onClick={() => setAddDialogOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" /> Add/Assign Assessment
                 </Button>
               )}
             </div>
@@ -217,7 +274,7 @@ const Assessments = () => {
                       <div 
                         key={assessment.id}
                         className="border rounded-md p-4 hover:bg-muted/50 cursor-pointer transition-colors"
-                        onClick={() => handleAssessmentClick(assessment.id)}
+                        onClick={() => handleAssessmentClick(assessment)}
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div>
@@ -225,6 +282,11 @@ const Assessments = () => {
                             <p className="text-sm text-muted-foreground">
                               Patient: {assessment.patientName}
                             </p>
+                            {assessment.description && (
+                              <p className="text-sm text-muted-foreground">
+                                {assessment.description}
+                              </p>
+                            )}
                           </div>
                           <Badge 
                             variant={assessment.status === "in_progress" ? "default" : "outline"}
@@ -254,11 +316,10 @@ const Assessments = () => {
                               </span>
                             </div>
                             
-                            {currentUser?.role === "claimant" && assessment.status === "not_started" && (
-                              <Button size="sm" onClick={(e) => {
-                                e.stopPropagation();
-                                handleStartAssessment(assessment.id);
-                              }}>
+                            {(currentUser?.role === "claimant" || 
+                             (currentUser?.role === "psychologist" && assessment.title.includes("DASS-21"))) && 
+                             assessment.status === "not_started" && (
+                              <Button size="sm" onClick={(e) => handleStartAssessment(assessment.id, e)}>
                                 Start <ArrowUpRight className="ml-1 h-4 w-4" />
                               </Button>
                             )}
@@ -280,7 +341,7 @@ const Assessments = () => {
                     <div 
                       key={assessment.id}
                       className="border rounded-md p-4 hover:bg-muted/50 cursor-pointer transition-colors flex justify-between items-center"
-                      onClick={() => handleAssessmentClick(assessment.id)}
+                      onClick={() => handleAssessmentClick(assessment)}
                     >
                       <div>
                         <div className="flex items-center mb-1">
@@ -340,6 +401,66 @@ const Assessments = () => {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Add/Assign Assessment Dialog */}
+      <AddAssessmentDialog
+        open={addDialogOpen}
+        onOpenChange={setAddDialogOpen}
+        onAddAssessment={handleAddAssessment}
+        clientName="John Doe"
+        clientInfo={{
+          gender: "Male",
+          age: 42,
+          caseNumber: "WC2023-12345",
+          sessionNumber: 3
+        }}
+      />
+
+      {/* Active Assessment Dialog */}
+      {activeAssessment && !showResults && (
+        <Dialog open={!!activeAssessment} onOpenChange={(open) => !open && setActiveAssessment(null)}>
+          <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Assessment</DialogTitle>
+              <DialogDescription>
+                Complete the assessment questions below.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <DASS21Assessment 
+              assessment={activeAssessment} 
+              onComplete={handleAssessmentComplete}
+              onCancel={() => setActiveAssessment(null)}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Assessment Results Dialog */}
+      {activeAssessment && showResults && assessmentResults && (
+        <Dialog 
+          open={showResults} 
+          onOpenChange={(open) => {
+            if (!open) {
+              setShowResults(false);
+              setActiveAssessment(null);
+              setAssessmentResults(null);
+            }
+          }}
+        >
+          <DialogContent className="sm:max-w-[800px]">
+            <AssessmentResultsComponent 
+              assessment={activeAssessment}
+              results={assessmentResults}
+              onClose={() => {
+                setShowResults(false);
+                setActiveAssessment(null);
+                setAssessmentResults(null);
+              }}
+            />
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

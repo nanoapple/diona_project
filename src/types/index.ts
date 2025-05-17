@@ -20,22 +20,35 @@ export interface Case {
 export type UserRole = 'admin' | 'lawyer' | 'psychologist' | 'claimant';
 
 // Define ClaimStage type for CaseSilo
-export type ClaimStage = 'intake' | 'legal_review' | 'assessment' | 'report' | 'lodgement' | 'outcome';
+export type ClaimStage = 'intake' | 'legal_review' | 'assessment' | 'report' | 'lodgement' | 'outcome' | 'Intake & Triage' | 'Legal Review' | 'Assessment' | 'Report' | 'Lodgement' | 'Outcome';
 
 // CaseSilo types
 export interface CaseSilo {
   id: string;
-  title: string;
-  client: string;
+  claimantName: string;
+  caseType: string;
+  claimNumber?: string;
+  referralSource?: string;
+  injuryDate?: string;
+  currentStage?: string;
   status: CaseSiloStatus;
-  dateCreated: string;
-  lastUpdated: string;
-  assignedTo: string[];
-  stage: ClaimStage;
-  description?: string;
+  createdDate: string;
+  expiryDate: string;
+  participants?: {
+    claimantId: string;
+    lawyerId: string;
+    psychologistId: string;
+  };
+  documents?: CaseDocument[];
+  assessments?: Assessment[];
+  reports?: Report[];
+  notes?: CaseNote[];
+  infoRequests?: InfoRequest[];
+  externalUploads?: CaseDocument[];
+  completedStages?: string[];
 }
 
-export type CaseSiloStatus = 'active' | 'on_hold' | 'closed' | 'pending';
+export type CaseSiloStatus = 'active' | 'on_hold' | 'closed' | 'pending' | 'expiring_soon' | 'expired';
 
 // Info Request type
 export interface InfoRequest {
@@ -46,6 +59,8 @@ export interface InfoRequest {
   status: 'pending' | 'completed';
   dueDate: string;
   assignedTo?: UserRole[];
+  questions?: string[];
+  requestedAt?: string;
 }
 
 // Document types
@@ -57,6 +72,9 @@ export interface CaseDocument {
   size: string;
   type?: string;
   tags?: string[];
+  url?: string;
+  uploadRole?: string;
+  isExternal?: boolean;
 }
 
 // Note types
@@ -74,9 +92,10 @@ export interface CaseNote {
 export interface Assessment {
   id: string;
   title: string;
-  patientName: string;
+  patientName?: string;
+  assignedTo?: string;
   status: 'not_started' | 'in_progress' | 'completed';
-  assignedDate: string;
+  assignedDate?: string;
   dueDate?: string;
   completionDate?: string;
   score?: number;
@@ -84,6 +103,16 @@ export interface Assessment {
   description?: string;
   completionPercentage?: number;
   date?: string;
+  results?: AssessmentResults;
+}
+
+// Assessment Results
+export interface AssessmentResults {
+  depression?: number;
+  anxiety?: number;
+  stress?: number;
+  total?: number;
+  interpretation?: string;
 }
 
 // Report types
@@ -93,15 +122,15 @@ export interface Report {
   patientName: string;
   date: string;
   lastEdited: string;
-  status: 'draft' | 'completed';
+  status: ReportStatus;
   authorName?: string;
-  content?: string;
+  content?: any;
   type?: ReportType;
 }
 
 // Report status and type
-export type ReportStatus = 'draft' | 'completed' | 'submitted' | 'reviewed';
-export type ReportType = 'clinical' | 'assessment' | 'progress' | 'discharge';
+export type ReportStatus = 'draft' | 'completed' | 'submitted' | 'reviewed' | 'for_review';
+export type ReportType = 'clinical' | 'assessment' | 'progress' | 'discharge' | 'workers_comp' | 'vocational' | 'medico_legal';
 
 // Timeline item types
 export interface TimelineItem {
@@ -111,4 +140,27 @@ export interface TimelineItem {
   type: 'note' | 'document' | 'assessment' | 'report' | 'meeting' | 'call' | 'email';
   content?: string;
   author?: string;
+}
+
+// Assessment category and scale types
+export interface AssessmentCategory {
+  id: string;
+  name: string;
+  scales: AssessmentScale[];
+}
+
+export interface AssessmentScale {
+  id: string;
+  name: string;
+  abbreviation: string;
+  description?: string;
+  available: boolean;
+}
+
+// DASS-21 Question type
+export interface DASS21Question {
+  id: number;
+  text: string;
+  category: 'depression' | 'anxiety' | 'stress';
+  answer?: number;
 }
