@@ -1,101 +1,104 @@
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { useAuth } from "@/contexts/AuthContext";
-import { ArrowRight, CheckCircle, Clock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { Circle, CheckCircle, XCircle, HelpCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { UserRole } from '@/contexts/AuthContext';
 
-type InterviewStatusProps = {
-  caseId: string;
-  interviewStatus: {
-    isStarted: boolean;
-    isCompleted: boolean;
-    progressPercentage: number;
-    lastUpdated: string;
-  };
-};
+type Status = 'pending' | 'connecting' | 'active' | 'disconnected' | 'ended';
 
-const InterviewStatus = ({ caseId, interviewStatus }: InterviewStatusProps) => {
+interface InterviewStatusProps {
+  status: Status;
+  onEndInterview?: () => void;
+}
+
+export default function InterviewStatus({ status, onEndInterview }: InterviewStatusProps) {
+  const [currentTime, setCurrentTime] = useState<string>('00:00');
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
   const { currentUser } = useAuth();
-  const isClaimant = currentUser?.role === 'victim';
 
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+    
+    if (status === 'active') {
+      intervalId = setInterval(() => {
+        setElapsedSeconds(prev => prev + 1);
+      }, 1000);
+    }
+    
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [status]);
+  
+  useEffect(() => {
+    const minutes = Math.floor(elapsedSeconds / 60);
+    const seconds = elapsedSeconds % 60;
+    
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+    
+    setCurrentTime(`${formattedMinutes}:${formattedSeconds}`);
+  }, [elapsedSeconds]);
+  
+  const getStatusIndicator = () => {
+    switch (status) {
+      case 'pending':
+        return <Circle className="h-3 w-3 text-yellow-500 animate-pulse" />;
+      case 'connecting':
+        return <Circle className="h-3 w-3 text-blue-500 animate-pulse" />;
+      case 'active':
+        return <Circle className="h-3 w-3 text-green-500 animate-pulse" />;
+      case 'disconnected':
+        return <XCircle className="h-3 w-3 text-red-500" />;
+      case 'ended':
+        return <CheckCircle className="h-3 w-3 text-gray-500" />;
+      default:
+        return <HelpCircle className="h-3 w-3 text-gray-500" />;
+    }
+  };
+  
+  const getStatusText = () => {
+    switch (status) {
+      case 'pending':
+        return 'Waiting for interview to start';
+      case 'connecting':
+        return 'Connecting...';
+      case 'active':
+        return 'Interview in progress';
+      case 'disconnected':
+        return 'Connection lost';
+      case 'ended':
+        return 'Interview ended';
+      default:
+        return 'Unknown status';
+    }
+  };
+  
+  const showEndButton = status === 'active' && onEndInterview && 
+    currentUser?.role === 'psychologist';
+  
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center justify-between">
-          <span>Self-Guided Interview</span>
-          {interviewStatus.isCompleted && (
-            <Badge variant="default" className="bg-emerald-600">
-              <CheckCircle className="h-3 w-3 mr-1" /> Completed
-            </Badge>
-          )}
-          {!interviewStatus.isCompleted && interviewStatus.isStarted && (
-            <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300">
-              In Progress
-            </Badge>
-          )}
-          {!interviewStatus.isStarted && (
-            <Badge variant="outline">Not Started</Badge>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {interviewStatus.isStarted && !interviewStatus.isCompleted && (
-          <div className="mb-4">
-            <div className="flex justify-between text-sm mb-1">
-              <span>Progress</span>
-              <span>{Math.round(interviewStatus.progressPercentage)}%</span>
-            </div>
-            <Progress value={interviewStatus.progressPercentage} className="h-2" />
-            <div className="text-xs text-muted-foreground mt-1">
-              Last updated: {interviewStatus.lastUpdated}
-            </div>
-          </div>
+    <div className="flex items-center justify-between rounded-lg border p-3 text-sm">
+      <div className="flex items-center gap-2">
+        {getStatusIndicator()}
+        <span>{getStatusText()}</span>
+      </div>
+      <div className="flex items-center gap-3">
+        {status === 'active' && (
+          <span className="font-mono">{currentTime}</span>
         )}
-
-        <div className="text-sm">
-          {interviewStatus.isCompleted ? (
-            <p>
-              The interview has been completed and the responses are available for review.
-            </p>
-          ) : interviewStatus.isStarted ? (
-            <p>
-              The interview is in progress. {isClaimant && "You can continue from where you left off."}
-            </p>
-          ) : (
-            <p>
-              {isClaimant ? "You haven't started the self-guided interview yet." : "The claimant hasn't started the self-guided interview yet."}
-            </p>
-          )}
-        </div>
-
-        <div className="mt-4 flex justify-end">
-          {isClaimant ? (
-            <Button 
-              className="flex items-center gap-2"
-              asChild
-            >
-              <Link to={`/interview/${caseId}`}>
-                {interviewStatus.isStarted ? "Continue Interview" : "Start Interview"}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          ) : (
-            <Button 
-              variant="outline"
-              asChild
-            >
-              <Link to={`/interview/${caseId}`}>
-                View Interview
-              </Link>
-            </Button>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+        {showEndButton && (
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="h-7 px-2"
+            onClick={onEndInterview}
+          >
+            End Interview
+          </Button>
+        )}
+      </div>
+    </div>
   );
-};
-
-export default InterviewStatus;
+}

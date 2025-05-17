@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +10,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { FileText, UploadCloud, Download, CheckCircle, X, File } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { formatDate } from '@/lib/utils';
+import { UserRole } from '@/contexts/AuthContext';
 
 interface Document {
   id: string;
@@ -23,7 +23,7 @@ interface Document {
   uploadedBy: string;
 }
 
-const Documents = () => {
+const DocumentsPage = () => {
   const { currentUser } = useAuth();
   const { toast } = useToast();
   const [documents, setDocuments] = useState<Document[]>([
@@ -191,6 +191,8 @@ const Documents = () => {
         );
     }
   };
+
+  const isClaimant = currentUser?.role === 'claimant';
 
   return (
     <div className="container mx-auto max-w-6xl">
@@ -461,4 +463,4 @@ const Documents = () => {
   );
 };
 
-export default Documents;
+export default DocumentsPage;

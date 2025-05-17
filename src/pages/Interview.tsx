@@ -1,750 +1,113 @@
-
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { Mic, Type, Save, ArrowLeft, ArrowRight, AlertCircle, Calendar, Clock, Lock } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import InterviewStatus from '@/components/InterviewStatus';
+import ErrorDisplay from '@/components/ErrorDisplay';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { useAuth } from '@/contexts/AuthContext';
-import { Badge } from '@/components/ui/badge';
-
-// Mock function to get case details - in a real app, this would fetch from API
-const getCaseDetails = (caseId: string) => {
-  return {
-    id: caseId,
-    claimantName: "John Doe",
-    caseType: "Workplace Injury",
-    status: "active",
-    createdDate: "2023-03-15",
-    expiryDate: "2023-09-15",
-  };
-};
-
-// Mock function to get interview data - in a real app, this would fetch from API
-const getInterviewData = (caseId: string) => {
-  // Return mock interview data based on case ID
-  return {
-    caseId,
-    isStarted: caseId === '1' || caseId === '3' || caseId === '4',
-    isCompleted: caseId === '3',
-    lastUpdated: caseId === '1' ? '2023-04-05 14:30' : 
-                caseId === '3' ? '2023-02-10 09:15' : 
-                caseId === '4' ? '2023-03-01 16:45' : '',
-    answers: {},
-    completedSections: caseId === '1' ? [0, 1, 2] : 
-                       caseId === '3' ? [0, 1, 2, 3, 4, 5, 6] : 
-                       caseId === '4' ? [0] : [],
-  };
-};
+import { UserRole } from '@/contexts/AuthContext';
 
 const Interview = () => {
   const { caseId } = useParams<{ caseId: string }>();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const [interviewStatus, setInterviewStatus] = useState<'pending' | 'connecting' | 'active' | 'disconnected' | 'ended'>('pending');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { currentUser } = useAuth();
-  const isClaimant = currentUser?.role === 'victim';
-  
-  const [caseDetails, setCaseDetails] = useState<any>(null);
-  const [currentSection, setCurrentSection] = useState(0);
-  const [activeRecordingId, setActiveRecordingId] = useState<string | null>(null);
-  const [interviewData, setInterviewData] = useState<any>(null);
-  const [isReadOnly, setIsReadOnly] = useState(false);
-  
-  // State for interview answers and input methods
-  const [answers, setAnswers] = useState<Record<string, any>>({});
-  const [questionInputMethods, setQuestionInputMethods] = useState<Record<string, 'text' | 'voice'>>({});
 
   useEffect(() => {
-    if (caseId) {
-      // In a real app, these would be API calls
-      const details = getCaseDetails(caseId);
-      const interview = getInterviewData(caseId);
-      
-      setCaseDetails(details);
-      setInterviewData(interview);
-      
-      // Set read-only mode if user is not the claimant or if interview is completed
-      if (!isClaimant || interview.isCompleted) {
-        setIsReadOnly(true);
-      }
-      
-      // If the interview was started, load the last section they were working on
-      if (interview.isStarted && interview.completedSections.length > 0) {
-        const nextSectionIndex = Math.min(
-          interview.completedSections.length,
-          interviewSections.length - 1
-        );
-        setCurrentSection(nextSectionIndex);
-      }
-      
-      // Load saved answers if they exist
-      if (interview.answers) {
-        setAnswers(interview.answers);
-      }
-    } else {
-      // If no case ID is provided, redirect to case silos
-      navigate('/case-silo');
-    }
-  }, [caseId, isClaimant, navigate]);
+    // Simulate interview connection process
+    const connectToInterview = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
-  // Interview sections with their questions
-  const interviewSections = [
-    {
-      id: 'about',
-      title: 'About You & Your Injury',
-      description: 'We\'ll start with some basics so we can personalise your assessment.',
-      icon: '👤',
-      questions: [
-        {
-          id: 'fullName',
-          text: 'Your full name and date of birth',
-          type: 'text'
-        },
-        {
-          id: 'contact',
-          text: 'Your postcode and preferred contact method',
-          type: 'text'
-        },
-        {
-          id: 'injuryType',
-          text: 'Type of injury:',
-          type: 'select',
-          options: ['Physical', 'Psychological', 'Both']
-        },
-        {
-          id: 'injuryDescription',
-          text: 'What happened, and when did it happen?',
-          type: 'textarea'
-        },
-        {
-          id: 'treatment',
-          text: 'Are you still receiving treatment? From whom?',
-          type: 'textarea'
-        }
-      ]
-    },
-    {
-      id: 'work',
-      title: 'Work Background & Experience',
-      description: 'Let\'s understand your work history and skills.',
-      icon: '💼',
-      questions: [
-        {
-          id: 'education',
-          text: 'What is your highest level of education?',
-          type: 'select',
-          options: ['High School', 'Certificate/Diploma', 'Bachelor\'s Degree', 'Masters/PhD', 'Other']
-        },
-        {
-          id: 'workHistory',
-          text: 'What jobs have you had in the past 10 years?',
-          type: 'textarea'
-        },
-        {
-          id: 'skills',
-          text: 'Do you hold any licenses, certificates or trade skills?',
-          type: 'textarea'
-        },
-        {
-          id: 'responsibilities',
-          text: 'What were your key responsibilities in your most recent job?',
-          type: 'textarea'
-        }
-      ]
-    },
-    {
-      id: 'impact',
-      title: 'Impact of the Injury',
-      description: 'Tell us how the injury affects your ability to work or function day to day.',
-      icon: '🩹',
-      questions: [
-        {
-          id: 'difficulties',
-          text: 'What physical or mental tasks are difficult for you now?',
-          type: 'textarea'
-        },
-        {
-          id: 'symptoms',
-          text: 'Do you experience pain, fatigue, concentration or memory issues?',
-          type: 'textarea'
-        },
-        {
-          id: 'lifestyle',
-          text: 'How has your injury changed your day-to-day life?',
-          type: 'textarea'
-        },
-        {
-          id: 'readiness',
-          text: 'On a scale of 1–10, how ready do you feel to return to work?',
-          type: 'range',
-          min: 1,
-          max: 10
-        }
-      ]
-    },
-    {
-      id: 'preferences',
-      title: 'Employment Preferences & Restrictions',
-      description: 'We\'d like to understand what type of work feels realistic or motivating.',
-      icon: '🔍',
-      questions: [
-        {
-          id: 'comfortableWork',
-          text: 'What kinds of work do you feel comfortable doing now?',
-          type: 'textarea'
-        },
-        {
-          id: 'avoidWork',
-          text: 'What jobs or tasks should be avoided due to your injury?',
-          type: 'textarea'
-        },
-        {
-          id: 'environment',
-          text: 'Do you have a preferred work environment (e.g. indoors, remote, flexible)?',
-          type: 'textarea'
-        },
-        {
-          id: 'hours',
-          text: 'What hours per week would feel manageable for you?',
-          type: 'select',
-          options: ['Less than 10', '10-20', '20-30', '30-40', 'Full time (40+)']
-        }
-      ]
-    },
-    {
-      id: 'experience',
-      title: 'Return to Work & Rehab Experience',
-      description: 'If you\'ve tried returning to work or training, tell us how it went.',
-      icon: '🔄',
-      questions: [
-        {
-          id: 'returnAttempt',
-          text: 'Have you attempted to return to work or study? What happened?',
-          type: 'textarea'
-        },
-        {
-          id: 'rehab',
-          text: 'Have you participated in any rehab, work trials or job-seeking programs?',
-          type: 'textarea'
-        },
-        {
-          id: 'support',
-          text: 'Did you feel supported in these processes?',
-          type: 'textarea'
-        },
-        {
-          id: 'workCapacity',
-          text: 'Have you received a Work Capacity Decision? Did you agree with it?',
-          type: 'textarea'
-        }
-      ]
-    },
-    {
-      id: 'opportunities',
-      title: 'Local Job Opportunities',
-      description: 'Let\'s explore what\'s available around you and what barriers may exist.',
-      icon: '🌐',
-      questions: [
-        {
-          id: 'localJobs',
-          text: 'Are there local jobs that you believe suit your skills and limitations?',
-          type: 'textarea'
-        },
-        {
-          id: 'jobSeeking',
-          text: 'Are you currently looking for work? With what support?',
-          type: 'textarea'
-        },
-        {
-          id: 'barriers',
-          text: 'Do you have transport or digital access issues?',
-          type: 'textarea'
-        },
-        {
-          id: 'retraining',
-          text: 'Would you be open to retraining? In what areas?',
-          type: 'textarea'
-        }
-      ]
-    },
-    {
-      id: 'final',
-      title: 'Final Thoughts & Consent',
-      description: 'Last few questions to wrap up this process.',
-      icon: '📝',
-      questions: [
-        {
-          id: 'outcome',
-          text: 'What outcome would you like from this report?',
-          type: 'textarea'
-        },
-        {
-          id: 'additional',
-          text: 'Is there anything else we should know about your situation?',
-          type: 'textarea'
-        },
-        {
-          id: 'consent',
-          text: 'Do you consent to this information being used for vocational or legal reporting purposes?',
-          type: 'radio',
-          options: ['Yes, I consent', 'No, I do not consent']
-        }
-      ]
-    }
-  ];
-
-  const currentSectionData = interviewSections[currentSection];
-
-  // Get input method for a specific question
-  const getInputMethod = (questionId: string): 'text' | 'voice' => {
-    return questionInputMethods[questionId] || 'text';
-  };
-
-  // Set input method for a specific question
-  const setInputMethod = (questionId: string, method: 'text' | 'voice') => {
-    if (isReadOnly) return;
-    
-    setQuestionInputMethods(prev => ({
-      ...prev,
-      [questionId]: method
-    }));
-  };
-
-  const handleInputChange = (questionId: string, value: any) => {
-    if (isReadOnly) return;
-    
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: value
-    }));
-
-    // Autosave functionality
-    saveProgress(true);
-  };
-
-  const startRecording = (questionId: string) => {
-    if (isReadOnly) return;
-    
-    // If this question is already recording, stop it
-    if (activeRecordingId === questionId) {
-      stopRecording();
-      return;
-    }
-    
-    // If any other question is currently recording, stop it first
-    if (activeRecordingId) {
-      stopRecording();
-    }
-
-    // Start recording for this question
-    setActiveRecordingId(questionId);
-    toast({
-      title: "Recording started",
-      description: "Speak clearly into your microphone"
-    });
-
-    // In a real implementation, this would connect to a voice recording service
-    // and then transcribe the audio via a backend API
-    setTimeout(() => {
-      // Simulating recording for demo purposes
-      toast({
-        title: "Recording complete",
-        description: "Your answer has been transcribed"
-      });
-      setActiveRecordingId(null);
-      
-      // Simulate a transcribed response
-      const simulatedResponse = "This is a simulated transcribed response for demonstration purposes.";
-      handleInputChange(questionId, simulatedResponse);
-    }, 3000);
-  };
-
-  const stopRecording = () => {
-    setActiveRecordingId(null);
-    toast({
-      title: "Recording stopped"
-    });
-  };
-
-  const saveProgress = (isAutoSave = false) => {
-    if (isReadOnly) return;
-    
-    // In a real application, this would send the data to your backend
-    console.log("Saving progress:", answers);
-    
-    if (!isAutoSave) {
-      toast({
-        title: "Progress saved",
-        description: "Your answers have been saved"
-      });
-    }
-    
-    // Update interview data with completed sections
-    if (interviewData) {
-      const updatedInterviewData = {
-        ...interviewData,
-        isStarted: true,
-        answers: answers,
-        completedSections: Array.from(new Set([...interviewData.completedSections, currentSection])),
-        lastUpdated: new Date().toLocaleString()
-      };
-      setInterviewData(updatedInterviewData);
-    }
-  };
-
-  const goToNextSection = () => {
-    if (isReadOnly) return;
-    
-    if (currentSection < interviewSections.length - 1) {
-      saveProgress();
-      setCurrentSection(currentSection + 1);
-      window.scrollTo(0, 0);
-    }
-  };
-
-  const goToPreviousSection = () => {
-    if (isReadOnly) return;
-    
-    if (currentSection > 0) {
-      saveProgress();
-      setCurrentSection(currentSection - 1);
-      window.scrollTo(0, 0);
-    }
-  };
-
-  const submitInterview = () => {
-    if (isReadOnly) return;
-    
-    saveProgress();
-    
-    // Mark the interview as completed
-    if (interviewData) {
-      const updatedInterviewData = {
-        ...interviewData,
-        isCompleted: true,
-        lastUpdated: new Date().toLocaleString()
-      };
-      setInterviewData(updatedInterviewData);
-    }
-    
-    toast({
-      title: "Interview submitted",
-      description: "Thank you for completing your interview"
-    });
-    
-    // In a real application, this would finalize the submission
-    // and perhaps redirect the user or show a completion screen
-    setTimeout(() => {
-      navigate(`/case-silo`);
-    }, 2000);
-  };
-
-  const renderQuestion = (question: any) => {
-    const value = answers[question.id] || '';
-    const inputMethod = getInputMethod(question.id);
-    const isRecording = activeRecordingId === question.id;
-    
-    const renderInputField = () => {
-      if (isReadOnly) {
-        // In read-only mode, just show the answer or "Not answered" text
-        if (!value) {
-          return <div className="text-muted-foreground italic mt-1">Not answered</div>;
-        }
-        
-        switch (question.type) {
-          case 'select':
-          case 'radio':
-          case 'text':
-          case 'textarea':
-            return <div className="mt-1 p-2 bg-muted/40 rounded">{value}</div>;
-          case 'range':
-            return (
-              <div className="mt-4">
-                <div className="flex justify-between text-xs mb-1">
-                  {[...Array(10)].map((_, i) => (
-                    <span key={i} className={value && i + 1 <= parseInt(value) ? "font-bold" : ""}>{i + 1}</span>
-                  ))}
-                </div>
-                <Progress value={(parseInt(value) / 10) * 100} className="h-2" />
-                <div className="flex justify-between text-xs mt-1">
-                  <span>Not ready</span>
-                  <span>Very ready</span>
-                </div>
-              </div>
-            );
-          default:
-            return <div className="mt-1 p-2 bg-muted/40 rounded">{value}</div>;
-        }
-      }
-      
-      if (inputMethod === 'voice') {
-        return (
-          <div className="mt-1 flex items-center gap-2">
-            <Button 
-              type="button" 
-              onClick={() => startRecording(question.id)} 
-              variant={isRecording ? "destructive" : "secondary"}
-              className="flex items-center gap-2"
-              disabled={isReadOnly}
-            >
-              <Mic size={16} />
-              {isRecording ? 'Stop Recording' : 'Record Answer'}
-            </Button>
-            {answers[question.id] && (
-              <div className="ml-2 text-sm text-muted-foreground">
-                Answer recorded
-              </div>
-            )}
-          </div>
-        );
-      }
-
-      switch (question.type) {
-        case 'text':
-          return <Input value={value} onChange={e => handleInputChange(question.id, e.target.value)} className="mt-1" disabled={isReadOnly} />;
-        case 'textarea':
-          return <Textarea value={value} onChange={e => handleInputChange(question.id, e.target.value)} className="mt-1" rows={4} disabled={isReadOnly} />;
-        case 'select':
-          return (
-            <Select value={value} onValueChange={val => handleInputChange(question.id, val)} disabled={isReadOnly}>
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Select an option" />
-              </SelectTrigger>
-              <SelectContent>
-                {question.options?.map((option: string) => (
-                  <SelectItem key={option} value={option}>{option}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          );
-        case 'range':
-          return (
-            <div className="mt-4">
-              <div className="flex justify-between text-xs mb-1">
-                {[...Array(10)].map((_, i) => (
-                  <span key={i}>{i + 1}</span>
-                ))}
-              </div>
-              <input
-                type="range"
-                min={1}
-                max={10}
-                value={value || 5}
-                onChange={e => handleInputChange(question.id, e.target.value)}
-                className="w-full"
-                disabled={isReadOnly}
-              />
-              <div className="flex justify-between text-xs mt-1">
-                <span>Not ready</span>
-                <span>Very ready</span>
-              </div>
-            </div>
-          );
-        case 'radio':
-          return (
-            <RadioGroup value={value} onValueChange={val => handleInputChange(question.id, val)} className="mt-3" disabled={isReadOnly}>
-              {question.options?.map((option: string) => (
-                <div className="flex items-center space-x-2 mt-1" key={option}>
-                  <RadioGroupItem value={option} id={`${question.id}-${option}`} disabled={isReadOnly} />
-                  <Label htmlFor={`${question.id}-${option}`}>{option}</Label>
-                </div>
-              ))}
-            </RadioGroup>
-          );
-        default:
-          return <Input value={value} onChange={e => handleInputChange(question.id, e.target.value)} className="mt-1" disabled={isReadOnly} />;
+        // Simulate successful connection
+        setInterviewStatus('connecting');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setInterviewStatus('active');
+      } catch (err) {
+        setError('Failed to connect to the interview. Please try again.');
+        setInterviewStatus('disconnected');
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    return (
-      <div key={question.id} className="mb-6 border p-4 rounded-md bg-card">
-        <div className="flex justify-between mb-2">
-          <Label className="text-md font-medium">{question.text}</Label>
-          {!isReadOnly && (
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                size="sm"
-                variant={inputMethod === 'text' ? 'default' : 'outline'}
-                className="h-8 px-2"
-                onClick={() => setInputMethod(question.id, 'text')}
-                disabled={isReadOnly}
-              >
-                <Type size={14} className="mr-1" /> Text
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant={inputMethod === 'voice' ? 'default' : 'outline'}
-                className="h-8 px-2" 
-                onClick={() => setInputMethod(question.id, 'voice')}
-                disabled={(activeRecordingId !== null && activeRecordingId !== question.id) || isReadOnly}
-              >
-                <Mic size={14} className="mr-1" /> Voice
-              </Button>
-            </div>
-          )}
-        </div>
-        {renderInputField()}
-      </div>
-    );
+    if (caseId) {
+      connectToInterview();
+    } else {
+      setError('Case ID is missing.');
+      setIsLoading(false);
+    }
+  }, [caseId]);
+
+  const endInterview = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Simulate ending the interview
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setInterviewStatus('ended');
+      navigate(`/case/${caseId}`); // Redirect to case details page
+    } catch (err) {
+      setError('Failed to end the interview. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
   
-  if (!caseDetails) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  // Update the role comparison to use the proper UserRole type
+  const isPsychologist = currentUser?.role === 'psychologist';
+  
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <ErrorDisplay message={error} onRetry={() => window.location.reload()} />;
   }
 
   return (
-    <div className="max-w-4xl mx-auto pb-12">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-        <div>
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/case-silo')} 
-            className="mb-2 p-0 h-auto"
-          >
-            &larr; Back to Case Silos
-          </Button>
-          <h1 className="text-3xl font-bold mb-1">Self-Guided Interview</h1>
-          <p className="text-muted-foreground">
-            {isClaimant ? 
-              "This information will help your case assessment." : 
-              `Viewing ${caseDetails.claimantName}'s interview responses.`}
-          </p>
-        </div>
-        <div className="mt-4 md:mt-0">
-          <Card className="p-3 flex flex-col gap-1">
-            <div className="text-sm">
-              <span className="text-muted-foreground mr-1">Case:</span>
-              {caseDetails.caseType}
-            </div>
-            <div className="flex gap-3 text-sm">
-              <div>
-                <Calendar className="h-4 w-4 inline mr-1" />
-                <span className="text-muted-foreground">Created:</span> {caseDetails.createdDate}
-              </div>
-              <div>
-                <Clock className="h-4 w-4 inline mr-1" />
-                <span className="text-muted-foreground">Expires:</span> {caseDetails.expiryDate}
-              </div>
-            </div>
-          </Card>
-        </div>
-      </div>
-      
-      {isReadOnly && (
-        <div className="mb-6 bg-muted/40 p-3 rounded-md border border-muted flex items-center gap-2">
-          <Lock className="h-4 w-4 text-muted-foreground" />
-          <span>You are viewing this interview in read-only mode.</span>
-          {interviewData && interviewData.isCompleted && (
-            <Badge variant="outline" className="ml-auto">Completed</Badge>
-          )}
-          {interviewData && interviewData.isStarted && !interviewData.isCompleted && (
-            <Badge variant="outline" className="ml-auto bg-amber-100 text-amber-800 border-amber-300">In Progress</Badge>
-          )}
-        </div>
-      )}
-      
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-2">
-          <div className="text-sm">
-            Step {currentSection + 1} of {interviewSections.length}: <span className="font-medium">{currentSectionData.title}</span>
-          </div>
-          {!isReadOnly && (
-            <div className="text-sm text-muted-foreground">
-              Auto-saving enabled
-            </div>
-          )}
-        </div>
-        <Progress value={(currentSection / (interviewSections.length - 1)) * 100} className="h-2" />
-      </div>
-      
-      <Card>
+    <div className="container mx-auto p-4">
+      <Card className="w-full max-w-3xl mx-auto">
         <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="text-2xl">{currentSectionData.icon}</div>
+          <CardTitle className="text-lg">Interview with Client</CardTitle>
+          <CardDescription>
+            Conducting interview for case ID: {caseId}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <InterviewStatus status={interviewStatus} onEndInterview={endInterview} />
+          <Separator />
+          <div className="flex items-center space-x-4">
+            <Avatar>
+              <AvatarImage src="https://i.pravatar.cc/150?img=5" alt="Client Avatar" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
             <div>
-              <CardTitle>{currentSectionData.title}</CardTitle>
-              <CardDescription>{currentSectionData.description}</CardDescription>
+              <p className="text-sm font-medium">Client Name</p>
+              <p className="text-sm text-muted-foreground">Client Role</p>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          {currentSectionData.questions.map(renderQuestion)}
+          <Separator />
+          <div className="flex items-center space-x-4">
+            <Avatar>
+              <AvatarImage src={currentUser?.avatar || "https://i.pravatar.cc/150?img=9"} alt="Your Avatar" />
+              <AvatarFallback>{currentUser?.name?.substring(0, 2).toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="text-sm font-medium">{currentUser?.name}</p>
+              <p className="text-sm text-muted-foreground">{currentUser?.title} at {currentUser?.company}</p>
+            </div>
+          </div>
         </CardContent>
-        <CardFooter className="flex justify-between border-t pt-6">
-          <Button 
-            type="button" 
-            onClick={goToPreviousSection}
-            variant="outline"
-            disabled={currentSection === 0 || isReadOnly}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft size={16} />
-            Previous Section
-          </Button>
-
-          {!isReadOnly && (
-            <Button 
-              type="button" 
-              onClick={() => saveProgress()}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Save size={16} />
-              Save Progress
-            </Button>
-          )}
-          
-          {!isReadOnly && currentSection < interviewSections.length - 1 ? (
-            <Button 
-              type="button" 
-              onClick={goToNextSection}
-              className="flex items-center gap-2"
-            >
-              Next Section
-              <ArrowRight size={16} />
-            </Button>
-          ) : !isReadOnly ? (
-            <Button 
-              type="button" 
-              onClick={submitInterview}
-              className="flex items-center gap-2"
-            >
-              Submit Interview
-            </Button>
-          ) : (
-            // If read-only, show navigation buttons
-            <Button 
-              type="button" 
-              variant="outline"
-              onClick={() => {
-                if (currentSection < interviewSections.length - 1) {
-                  setCurrentSection(currentSection + 1);
-                }
-              }}
-              disabled={currentSection === interviewSections.length - 1}
-              className="flex items-center gap-2"
-            >
-              Next Section
-              <ArrowRight size={16} />
-            </Button>
-          )}
-        </CardFooter>
       </Card>
-
-      {!isReadOnly && (
-        <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-          <AlertCircle size={16} />
-          <span>If you need to take a break, click Save Progress. You can continue later.</span>
-        </div>
-      )}
     </div>
   );
 };

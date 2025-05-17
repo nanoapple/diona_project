@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { CheckCircle, ClipboardList, Clock, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { Assessment, AssessmentQuestion, AssessmentStatus } from '@/types';
+import { UserRole } from '@/contexts/AuthContext';
 
 const mockAssessments: Assessment[] = [
   {
@@ -90,7 +90,7 @@ const mockClientAssessments: Assessment[] = [
   }
 ];
 
-const Assessments = () => {
+const AssessmentsPage = () => {
   const { currentUser } = useAuth();
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
@@ -373,6 +373,8 @@ const Assessments = () => {
     return renderAssessmentQuestions();
   }
 
+  const canCreateAssessments = currentUser?.role === 'psychologist';
+  
   return (
     <div>
       <h1 className="text-3xl font-bold mb-1">Assessments</h1>
@@ -390,7 +392,7 @@ const Assessments = () => {
             <TabsTrigger value="completed">Completed</TabsTrigger>
           </TabsList>
           
-          {currentUser?.role === 'psychologist' && (
+          {canCreateAssessments && (
             <Button>
               Create Assessment
             </Button>
@@ -411,4 +413,4 @@ const Assessments = () => {
   );
 };
 
-export default Assessments;
+export default AssessmentsPage;

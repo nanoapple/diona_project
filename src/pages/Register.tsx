@@ -1,170 +1,199 @@
 
-import { useState, FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth, UserRole } from '../contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useToast } from '@/components/ui/use-toast';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { UserRole } from "../contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Icons } from "@/components/icons";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const Register = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<UserRole>('victim');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const { register } = useAuth();
+export default function Register() {
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "claimant" as UserRole,
+  });
+  const [formError, setFormError] = useState("");
+  
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleRoleChange = (value: UserRole) => {
+    setFormData({
+      ...formData,
+      role: value,
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
-    
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      setIsLoading(false);
+    setFormError("");
+
+    // Basic validations
+    if (!formData.name.trim()) {
+      setFormError("Please enter your name");
       return;
     }
-    
+
+    if (!formData.email.trim()) {
+      setFormError("Please enter your email");
+      return;
+    }
+
+    if (!formData.password) {
+      setFormError("Please enter a password");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setFormError("Passwords don't match");
+      return;
+    }
+
     try {
-      await register(name, email, password, role);
-      toast({
-        title: "Registration successful",
-        description: "Your account has been created.",
+      setLoading(true);
+      
+      // Simulate API request
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // In a real app, we would register the user with the backend
+      
+      // Mock success, navigate to login
+      navigate("/login", { 
+        state: { message: "Account created. Please log in." } 
       });
-      navigate('/dashboard');
-    } catch (err) {
-      setError('Registration failed. Please try again.');
+    } catch (error) {
+      console.error("Registration error:", error);
+      setFormError("Failed to create account. Please try again.");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2">
-            <span className="text-gradient">Claim</span>Collab
-          </h1>
-          <p className="text-muted-foreground">
-            Collaborative platform for injury claims
-          </p>
-        </div>
-        
-        <Card className="shadow-lg">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
-            <CardDescription>
-              Enter your information to create your account
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-              
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  placeholder="John Doe"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+    <div className="flex items-center justify-center min-h-screen p-4 bg-muted/40">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl text-center">Create an account</CardTitle>
+          <CardDescription className="text-center">
+            Enter your details to create your account
+          </CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            {formError && (
+              <div className="p-3 rounded-md bg-destructive/10 text-destructive text-sm">
+                {formError}
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="name@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>I am a:</Label>
-                <RadioGroup 
-                  value={role} 
-                  onValueChange={(value) => setRole(value as UserRole)}
-                  className="flex flex-col space-y-2 mt-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="victim" id="victim" />
-                    <Label htmlFor="victim" className="font-normal">Injured Person / Claimant</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="lawyer" id="lawyer" />
-                    <Label htmlFor="lawyer" className="font-normal">Lawyer / Legal Representative</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="psychologist" id="psychologist" />
-                    <Label htmlFor="psychologist" className="font-normal">Psychologist / Healthcare Provider</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></div>
-                    <span>Creating account...</span>
-                  </div>
-                ) : (
-                  'Create account'
-                )}
-              </Button>
-            </form>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                name="name"
+                placeholder="John Doe"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="john@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="role">Role</Label>
+              <Select
+                value={formData.role}
+                onValueChange={(value) => handleRoleChange(value as UserRole)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="claimant">Claimant</SelectItem>
+                  <SelectItem value="lawyer">Lawyer</SelectItem>
+                  <SelectItem value="psychologist">Psychologist</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </CardContent>
-          <CardFooter className="flex justify-center">
-            <p className="text-sm text-center text-muted-foreground">
-              Already have an account?{' '}
-              <Link to="/login" className="text-primary hover:underline">
+          <CardFooter className="flex flex-col">
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                "Create account"
+              )}
+            </Button>
+            <p className="mt-4 text-center text-sm">
+              Already have an account?{" "}
+              <Link to="/login" className="underline text-primary">
                 Log in
               </Link>
             </p>
           </CardFooter>
-        </Card>
-      </div>
+        </form>
+      </Card>
     </div>
   );
-};
-
-export default Register;
+}
