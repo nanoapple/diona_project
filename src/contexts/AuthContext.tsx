@@ -1,9 +1,7 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-// Define UserRole type and export it
-export type UserRole = 'admin' | 'lawyer' | 'psychologist' | 'claimant';
+import { UserRole } from '../types';
 
 // User interface
 export interface User {

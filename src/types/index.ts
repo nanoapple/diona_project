@@ -1,6 +1,4 @@
 
-import { UserRole } from "../contexts/AuthContext";
-
 // Case types
 export interface Case {
   id: string;
@@ -16,6 +14,38 @@ export interface Case {
   dueDate?: string;
   category?: string;
   tags?: string[];
+}
+
+// User role type
+export type UserRole = 'admin' | 'lawyer' | 'psychologist' | 'claimant';
+
+// Define ClaimStage type for CaseSilo
+export type ClaimStage = 'intake' | 'legal_review' | 'assessment' | 'report' | 'lodgement' | 'outcome';
+
+// CaseSilo types
+export interface CaseSilo {
+  id: string;
+  title: string;
+  client: string;
+  status: CaseSiloStatus;
+  dateCreated: string;
+  lastUpdated: string;
+  assignedTo: string[];
+  stage: ClaimStage;
+  description?: string;
+}
+
+export type CaseSiloStatus = 'active' | 'on_hold' | 'closed' | 'pending';
+
+// Info Request type
+export interface InfoRequest {
+  id: string;
+  title: string;
+  dateRequested: string;
+  requestedBy: string;
+  status: 'pending' | 'completed';
+  dueDate: string;
+  assignedTo?: UserRole[];
 }
 
 // Document types
@@ -51,6 +81,9 @@ export interface Assessment {
   completionDate?: string;
   score?: number;
   type?: string;
+  description?: string;
+  completionPercentage?: number;
+  date?: string;
 }
 
 // Report types
@@ -62,7 +95,13 @@ export interface Report {
   lastEdited: string;
   status: 'draft' | 'completed';
   authorName?: string;
+  content?: string;
+  type?: ReportType;
 }
+
+// Report status and type
+export type ReportStatus = 'draft' | 'completed' | 'submitted' | 'reviewed';
+export type ReportType = 'clinical' | 'assessment' | 'progress' | 'discharge';
 
 // Timeline item types
 export interface TimelineItem {
