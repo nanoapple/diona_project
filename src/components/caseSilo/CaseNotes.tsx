@@ -1,37 +1,14 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Plus, Eye, EyeOff, User, UserCheck, Edit, Save, Share, FileText, X } from "lucide-react";
+import { MessageSquare, Plus, Eye, EyeOff } from "lucide-react";
 import { CaseNote } from "@/types";
-import { formatDate } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { UserRole } from "@/types";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle 
-} from "@/components/ui/dialog";
-import { 
-  AlertDialog, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
-} from "@/components/ui/alert-dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
+import { UserRole } from "@/types";
+import CaseNoteItem from './CaseNoteItem';
+import NoteVerificationDialog from './NoteVerificationDialog';
+import ClinicalNotesDialog from './ClinicalNotesDialog';
+import ShareNotesDialog from './ShareNotesDialog';
 
 interface CaseNotesProps {
   notes: CaseNote[];
@@ -111,7 +88,7 @@ const CaseNotes = ({ notes, canView, canCreate, onCreateItem, currentUserRole }:
     // If showing private notes and user can view them and their role is allowed to see this note
     return showPrivateNotes && 
            canView && 
-           note.visibleTo?.includes(currentUserRole as any);
+           note.visibleTo?.includes(currentUserRole as UserRole);
   });
 
   const handleNoteClick = (note: CaseNote) => {
@@ -220,184 +197,48 @@ const CaseNotes = ({ notes, canView, canCreate, onCreateItem, currentUserRole }:
           </div>
         ) : (
           filteredNotes.map(note => (
-            <div 
-              key={note.id} 
-              className="p-3 border rounded-md hover:bg-muted/50 transition-colors cursor-pointer"
-              onClick={() => canView && handleNoteClick(note)}
-            >
-              <div className="flex flex-wrap items-center justify-between mb-2 gap-2">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="flex items-center gap-1 text-xs">
-                    <User className="h-3 w-3" /> {note.createdBy}
-                  </Badge>
-                  
-                  {note.isPrivate && (
-                    <Badge variant="secondary" className="flex items-center gap-1 text-xs">
-                      <EyeOff className="h-3 w-3" /> Private
-                    </Badge>
-                  )}
-                  
-                  {!note.isPrivate && (
-                    <Badge variant="default" className="flex items-center gap-1 text-xs">
-                      <UserCheck className="h-3 w-3" /> Shared
-                    </Badge>
-                  )}
-                  
-                  {/* Note type badge (Transcribed or Written) */}
-                  <Badge variant="outline" className={`flex items-center gap-1 text-xs ${
-                    getNoteType(note.id) === "Transcribed" ? "bg-blue-100 text-blue-800 border-blue-300" : "bg-green-100 text-green-800 border-green-300"
-                  }`}>
-                    <FileText className="h-3 w-3" /> {getNoteType(note.id)}
-                  </Badge>
-                </div>
-                
-                <span className="text-xs text-muted-foreground">
-                  {formatDate(note.createdAt)}
-                </span>
-              </div>
-              
-              <p className="whitespace-pre-wrap">{note.content}</p>
-              
-              {note.visibleTo && note.isPrivate && canView && (
-                <div className="mt-2 text-xs text-muted-foreground">
-                  <span>Visible to: {note.visibleTo.join(', ')}</span>
-                </div>
-              )}
-            </div>
+            <CaseNoteItem 
+              key={note.id}
+              note={note}
+              onViewNote={handleNoteClick}
+              isPrivateNote={!!note.isPrivate}
+              noteType={getNoteType(note.id) as 'Transcribed' | 'Written'}
+            />
           ))
         )}
       </div>
       
       {/* Verification Dialog */}
-      <Dialog open={isVerifyDialogOpen} onOpenChange={setIsVerifyDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Verify Access</DialogTitle>
-            <DialogDescription>
-              Please enter the 6-digit security code from your authentication app to view the clinical notes.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <div className="space-y-2">
-              <Label>Security Code</Label>
-              <InputOTP maxLength={6} value={verificationCode} onChange={setVerificationCode}>
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
-                  <InputOTPSlot index={3} />
-                  <InputOTPSlot index={4} />
-                  <InputOTPSlot index={5} />
-                </InputOTPGroup>
-              </InputOTP>
-              <p className="text-xs text-muted-foreground">For demo purposes, use code: 778899</p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsVerifyDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleVerifyCode}>Verify</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <NoteVerificationDialog
+        isOpen={isVerifyDialogOpen}
+        onOpenChange={setIsVerifyDialogOpen}
+        verificationCode={verificationCode}
+        setVerificationCode={setVerificationCode}
+        onVerify={handleVerifyCode}
+      />
       
       {/* Clinical Notes Dialog */}
-      <Dialog open={isNotesDialogOpen} onOpenChange={setIsNotesDialogOpen}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Clinical Notes</DialogTitle>
-            <DialogDescription>
-              Full clinical documentation for this session.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <div className="whitespace-pre-wrap font-mono text-sm border p-4 rounded-md bg-muted/20 max-h-[60vh] overflow-y-auto">
-              {sampleClinicalNotes}
-            </div>
-          </div>
-          <DialogFooter className="flex justify-between items-center">
-            <div className="flex gap-2">
-              <Button variant="outline">
-                <Edit className="w-4 h-4 mr-1" /> Edit
-              </Button>
-              <Button variant="outline">
-                <Save className="w-4 h-4 mr-1" /> Save
-              </Button>
-            </div>
-            <Button onClick={handleShareClick}>
-              <Share className="w-4 h-4 mr-1" /> Share
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ClinicalNotesDialog
+        isOpen={isNotesDialogOpen}
+        onOpenChange={setIsNotesDialogOpen}
+        clinicalNotes={sampleClinicalNotes}
+        onShare={handleShareClick}
+      />
       
       {/* Share Dialog */}
-      <AlertDialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-        <AlertDialogContent className="sm:max-w-[425px]">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Share Clinical Notes</AlertDialogTitle>
-            <AlertDialogDescription>
-              Please verify your identity and consent to share these notes.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="py-4 space-y-4">
-            <div className="space-y-2">
-              <Label>Security Code</Label>
-              <InputOTP maxLength={6} value={shareCode} onChange={setShareCode}>
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
-                  <InputOTPSlot index={3} />
-                  <InputOTPSlot index={4} />
-                  <InputOTPSlot index={5} />
-                </InputOTPGroup>
-              </InputOTP>
-              <p className="text-xs text-muted-foreground">Enter the code from your authenticator app</p>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="therapist-name">Therapist Name</Label>
-              <Input 
-                id="therapist-name" 
-                value={therapistName} 
-                onChange={e => setTherapistName(e.target.value)} 
-                placeholder="Enter your full name"
-              />
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Checkbox id="consent" checked={hasConsent} onCheckedChange={(checked) => setHasConsent(!!checked)} />
-              <label
-                htmlFor="consent"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                I consent to share these notes <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a>
-              </label>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="recipient-email">Recipient Email</Label>
-              <Input 
-                id="recipient-email" 
-                type="email"
-                value={recipientEmail} 
-                onChange={e => setRecipientEmail(e.target.value)} 
-                placeholder="Enter recipient's email"
-                disabled={!hasConsent}
-                className={!hasConsent ? "bg-muted cursor-not-allowed" : ""}
-              />
-            </div>
-            
-            <div className="rounded-md bg-blue-50 p-3 text-sm text-blue-800">
-              <p>The recipient will need the security code generated by the therapist's App to open the sharing link.</p>
-            </div>
-          </div>
-          <AlertDialogFooter>
-            <Button variant="outline" onClick={() => setIsShareDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleShareSubmit}>Share Notes</Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ShareNotesDialog
+        isOpen={isShareDialogOpen}
+        onOpenChange={setIsShareDialogOpen}
+        shareCode={shareCode}
+        setShareCode={setShareCode}
+        therapistName={therapistName}
+        setTherapistName={setTherapistName}
+        hasConsent={hasConsent}
+        setHasConsent={setHasConsent}
+        recipientEmail={recipientEmail}
+        setRecipientEmail={setRecipientEmail}
+        onShare={handleShareSubmit}
+      />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -10,9 +10,6 @@ import {
   Archive, 
   Search, 
   User, 
-  FileText, 
-  ClipboardCheck, 
-  Book, 
   Plus, 
   Calendar, 
   Clock, 
@@ -20,7 +17,6 @@ import {
   Clock as ClockIcon, 
   AlertCircle,
   Upload,
-  MessageSquare,
   ArrowLeftCircle
 } from "lucide-react";
 import { formatDate } from '@/lib/utils';
@@ -32,8 +28,7 @@ import {
   Report, 
   CaseNote, 
   CaseSiloStatus,
-  InfoRequest,
-  ClaimStage
+  UserRole
 } from '@/types';
 import CaseOverview from '@/components/caseSilo/CaseOverview';
 import CaseDocuments from '@/components/caseSilo/CaseDocuments';
@@ -547,7 +542,7 @@ const CaseSiloPage = () => {
                     canView={canViewInternalNotes()} 
                     canCreate={canViewInternalNotes() && canEdit(selectedCase.status)}
                     onCreateItem={() => handleCreateItem('note')} 
-                    currentUserRole={currentUser?.role}
+                    currentUserRole={currentUser?.role as UserRole}
                   />
                 </TabsContent>
                 
@@ -566,7 +561,7 @@ const CaseSiloPage = () => {
                     requests={selectedCase.infoRequests} 
                     canCreate={canCreateInfoRequests() && canEdit(selectedCase.status)}
                     onCreateItem={() => handleCreateItem('info-request')}
-                    userRole={currentUser?.role}
+                    userRole={currentUser?.role as UserRole}
                   />
                 </TabsContent>
                 

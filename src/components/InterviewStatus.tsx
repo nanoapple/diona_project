@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Circle, CheckCircle, XCircle, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { UserRole } from '@/contexts/AuthContext';
+import { UserRole } from '@/types';
 
 type Status = 'pending' | 'connecting' | 'active' | 'disconnected' | 'ended';
 
