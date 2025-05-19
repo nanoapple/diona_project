@@ -13,6 +13,32 @@ interface CaseSiloListProps {
   searchTerm: string;
 }
 
+// Function to get tag color variant
+const getTagColorVariant = (tag: string) => {
+  const tagGroups: Record<string, string> = {
+    'ANX': 'blue',
+    'MOOD': 'purple',
+    'TRM': 'red',
+    'PERS': 'orange',
+    'REL': 'pink',
+    'LIFE': 'yellow',
+    'WORK': 'green',
+    'LEGAL': 'slate',
+    'PAIN': 'rose',
+    'NDV': 'indigo',
+    'EDU': 'cyan',
+    'EXIS': 'violet',
+    'SOC': 'amber',
+    'IDEN': 'lime',
+    'JUST': 'gray',
+    'MED': 'emerald',
+    'ADDX': 'fuchsia',
+    'COG': 'teal',
+  };
+  
+  return tagGroups[tag] || 'default';
+};
+
 const CaseSiloList: React.FC<CaseSiloListProps> = ({ caseSilos, onSelectCase, searchTerm }) => {
   // Calculate days until expiry for a case
   const getDaysUntilExpiry = (expiryDate: string) => {
@@ -28,7 +54,7 @@ const CaseSiloList: React.FC<CaseSiloListProps> = ({ caseSilos, onSelectCase, se
       case 'active':
         return 'default';
       case 'expiring_soon':
-        return 'secondary'; // Using secondary instead of warning (which doesn't exist in the badge component)
+        return 'secondary';
       case 'expired':
         return 'destructive';
       default:
@@ -50,22 +76,6 @@ const CaseSiloList: React.FC<CaseSiloListProps> = ({ caseSilos, onSelectCase, se
       default:
         return status;
     }
-  };
-
-  const getCategoryTagBadges = (caseSilo: CaseSilo) => {
-    if (!caseSilo.categoryTags || caseSilo.categoryTags.length === 0) {
-      return null;
-    }
-
-    return (
-      <div className="flex flex-wrap gap-1 mt-2">
-        {caseSilo.categoryTags.map(tag => (
-          <Badge key={tag} variant="outline" className="text-xs bg-muted/50">
-            {tag}
-          </Badge>
-        ))}
-      </div>
-    );
   };
 
   return (
@@ -100,50 +110,66 @@ const CaseSiloList: React.FC<CaseSiloListProps> = ({ caseSilos, onSelectCase, se
             onClick={() => onSelectCase(caseSilo.id)}
           >
             <CardContent className="p-5">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-lg font-medium">{caseSilo.claimantName}</h3>
-                    <Badge variant={getStatusBadgeVariant(caseSilo.status)}>
-                      {caseSilo.status === 'active' ? 'Active' : 
-                       caseSilo.status === 'expiring_soon' ? 'Expiring Soon' : 
-                       'Expired'}
-                    </Badge>
-                  </div>
-                  
-                  <div className="text-muted-foreground">
-                    {caseSilo.caseType}
-                    {caseSilo.claimNumber && ` • Claim #${caseSilo.claimNumber}`}
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-4 mt-3 text-sm text-muted-foreground">
-                    <div className="flex items-center">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      Created {formatDate(caseSilo.createdDate)}
+              <div className="flex flex-col">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-lg font-medium">{caseSilo.claimantName}</h3>
+                      <Badge variant={getStatusBadgeVariant(caseSilo.status)}>
+                        {caseSilo.status === 'active' ? 'Active' : 
+                         caseSilo.status === 'expiring_soon' ? 'Expiring Soon' : 
+                         'Expired'}
+                      </Badge>
                     </div>
-                    <div className="flex items-center">
-                      <Clock className="w-4 h-4 mr-1" />
-                      {getStatusLabel(caseSilo.status, caseSilo.expiryDate)}
+                    
+                    <div className="text-muted-foreground">
+                      {caseSilo.caseType}
+                      {caseSilo.claimNumber && ` • Claim #${caseSilo.claimNumber}`}
                     </div>
-                    {caseSilo.injuryDate && (
+                    
+                    <div className="flex flex-wrap gap-4 mt-3 text-sm text-muted-foreground">
                       <div className="flex items-center">
-                        <AlertCircle className="w-4 h-4 mr-1" />
-                        Injury Date: {formatDate(caseSilo.injuryDate)}
+                        <Calendar className="w-4 h-4 mr-1" />
+                        Created {formatDate(caseSilo.createdDate)}
                       </div>
-                    )}
+                      <div className="flex items-center">
+                        <Clock className="w-4 h-4 mr-1" />
+                        {getStatusLabel(caseSilo.status, caseSilo.expiryDate)}
+                      </div>
+                      {caseSilo.injuryDate && (
+                        <div className="flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          Injury Date: {formatDate(caseSilo.injuryDate)}
+                        </div>
+                      )}
+                    </div>
                   </div>
+                  
+                  <div>
+                    <Button variant="outline" size="sm" onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectCase(caseSilo.id);
+                    }}>
+                      View Case
+                    </Button>
+                  </div>
+                </div>
 
-                  {getCategoryTagBadges(caseSilo)}
-                </div>
-                
-                <div>
-                  <Button variant="outline" size="sm" onClick={(e) => {
-                    e.stopPropagation();
-                    onSelectCase(caseSilo.id);
-                  }}>
-                    View Case
-                  </Button>
-                </div>
+                {/* Category Tags moved to bottom right */}
+                {caseSilo.categoryTags && caseSilo.categoryTags.length > 0 && (
+                  <div className="flex justify-end mt-4">
+                    <div className="flex flex-wrap gap-1 justify-end">
+                      {caseSilo.categoryTags.map(tag => (
+                        <Badge 
+                          key={tag} 
+                          className={`text-xs text-white bg-${getTagColorVariant(tag)}-500 hover:bg-${getTagColorVariant(tag)}-600`}
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

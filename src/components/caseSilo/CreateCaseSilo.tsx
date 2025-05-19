@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { Calendar as CalendarIcon, Plus, Trash, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { v4 as uuidv4 } from '@/lib/utils';
@@ -41,12 +42,48 @@ const CATEGORY_TAGS: CategoryTag[] = [
   { id: 'COG', name: 'Cognitive Decline / Dementia', abbreviation: 'COG' },
 ];
 
-// Mock clients for demo
+// Mock clients for demo with expanded information
 const MOCK_CLIENTS = [
-  { id: 'client1', name: 'John Doe', dob: '1980-05-15' },
-  { id: 'client2', name: 'Jane Smith', dob: '1992-11-23' },
-  { id: 'client3', name: 'Robert Johnson', dob: '1975-08-04' },
-  { id: 'client4', name: 'Emily Wilson', dob: '1988-03-30' },
+  { 
+    id: 'client1', 
+    name: 'John Doe', 
+    dob: '1980-05-15',
+    gender: 'Male',
+    mobile: '0412 345 678',
+    email: 'john.doe@example.com',
+    address: '123 Main St, Sydney NSW 2000',
+    referral: 'Smith & Associates'
+  },
+  { 
+    id: 'client2', 
+    name: 'Jane Smith', 
+    dob: '1992-11-23',
+    gender: 'Female',
+    mobile: '0423 456 789',
+    email: 'jane.smith@example.com',
+    address: '45 Park Ave, Melbourne VIC 3000',
+    referral: 'Johnson Legal'
+  },
+  { 
+    id: 'client3', 
+    name: 'Robert Johnson', 
+    dob: '1975-08-04',
+    gender: 'Male',
+    mobile: '0434 567 890',
+    email: 'robert.johnson@example.com',
+    address: '78 Queen St, Brisbane QLD 4000',
+    referral: 'Brisbane Medical Centre'
+  },
+  { 
+    id: 'client4', 
+    name: 'Emily Wilson', 
+    dob: '1988-03-30',
+    gender: 'Female',
+    mobile: '0445 678 901',
+    email: 'emily.wilson@example.com',
+    address: '56 King St, Perth WA 6000',
+    referral: 'Wilson & Partners'
+  },
 ];
 
 export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseSiloProps) {
@@ -138,6 +175,32 @@ export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseS
     setExternalContributors([]);
   };
 
+  // Function to get tag color variant
+  const getTagColorVariant = (tag: string) => {
+    const tagGroups: Record<string, string> = {
+      'ANX': 'blue',
+      'MOOD': 'purple',
+      'TRM': 'red',
+      'PERS': 'orange',
+      'REL': 'pink',
+      'LIFE': 'yellow',
+      'WORK': 'green',
+      'LEGAL': 'slate',
+      'PAIN': 'rose',
+      'NDV': 'indigo',
+      'EDU': 'cyan',
+      'EXIS': 'violet',
+      'SOC': 'amber',
+      'IDEN': 'lime',
+      'JUST': 'gray',
+      'MED': 'emerald',
+      'ADDX': 'fuchsia',
+      'COG': 'teal',
+    };
+    
+    return tagGroups[tag] || 'default';
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
@@ -145,8 +208,9 @@ export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseS
           <DialogTitle>Create New Case Silo</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-5 py-4">
-          <div className="space-y-2">
+        <div className="space-y-6 py-4">
+          {/* Client Section */}
+          <div className="space-y-3">
             <Label htmlFor="client">Client</Label>
             <Select value={selectedClient} onValueChange={setSelectedClient}>
               <SelectTrigger>
@@ -161,20 +225,53 @@ export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseS
               </SelectContent>
             </Select>
             {clientInfo && (
-              <div className="text-sm text-muted-foreground mt-1">
-                Date of Birth: {format(new Date(clientInfo.dob), 'dd MMM yyyy')}
+              <div className="mt-3 space-y-2 p-3 border rounded-md bg-muted/10">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <span className="text-xs text-muted-foreground">Gender:</span>
+                    <p className="text-sm">{clientInfo.gender}</p>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Date of Birth:</span>
+                    <p className="text-sm">{format(new Date(clientInfo.dob), 'dd MMM yyyy')}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <span className="text-xs text-muted-foreground">Mobile:</span>
+                    <p className="text-sm">{clientInfo.mobile}</p>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Email:</span>
+                    <p className="text-sm">{clientInfo.email}</p>
+                  </div>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground">Address:</span>
+                  <p className="text-sm">{clientInfo.address}</p>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground">Referral Source:</span>
+                  <p className="text-sm">{clientInfo.referral}</p>
+                </div>
               </div>
             )}
           </div>
 
-          <div className="space-y-2">
+          <Separator />
+
+          {/* Categories Section */}
+          <div className="space-y-3">
             <Label>Category Tags (Select up to 3)</Label>
             <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-1">
               {CATEGORY_TAGS.map(tag => (
                 <Badge 
                   key={tag.id} 
                   variant={selectedTags.includes(tag.id) ? "default" : "outline"}
-                  className="cursor-pointer px-3 py-1 justify-between"
+                  className={`cursor-pointer px-3 py-1 justify-between ${
+                    selectedTags.includes(tag.id) ? 
+                    `bg-${getTagColorVariant(tag.id)}-500 hover:bg-${getTagColorVariant(tag.id)}-600 text-white` : ''
+                  }`}
                   onClick={() => handleTagSelection(tag.id)}
                 >
                   {tag.name} ({tag.abbreviation})
@@ -186,7 +283,11 @@ export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseS
                 {selectedTags.map(tagId => {
                   const tag = CATEGORY_TAGS.find(t => t.id === tagId);
                   return (
-                    <Badge key={tagId} variant="secondary" className="gap-1">
+                    <Badge 
+                      key={tagId} 
+                      variant="secondary" 
+                      className={`gap-1 bg-${getTagColorVariant(tagId)}-500 hover:bg-${getTagColorVariant(tagId)}-600 text-white`}
+                    >
                       {tag?.name}
                       <X 
                         className="h-3 w-3 cursor-pointer" 
@@ -199,8 +300,11 @@ export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseS
             )}
           </div>
 
-          <div className="flex gap-4">
-            <div className="space-y-2 flex-1">
+          <Separator />
+
+          {/* Case Numbers and Dates Section */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
               <Label htmlFor="externalCaseNo">External Case # (Optional)</Label>
               <Input
                 id="externalCaseNo"
@@ -209,7 +313,7 @@ export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseS
                 placeholder="External reference number"
               />
             </div>
-            <div className="space-y-2 flex-1">
+            <div className="space-y-2">
               <Label htmlFor="injuryDate">Injury/Incident Date (Optional)</Label>
               <Popover open={dateOpen} onOpenChange={setDateOpen}>
                 <PopoverTrigger asChild>
@@ -236,6 +340,9 @@ export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseS
             </div>
           </div>
 
+          <Separator />
+
+          {/* External Contributors Section */}
           <div className="space-y-4">
             <div>
               <Label>External Contributors</Label>

@@ -9,6 +9,54 @@ interface CaseOverviewProps {
   caseData: CaseSilo;
 }
 
+// Map of category tag IDs to full names
+const CATEGORY_FULL_NAMES: Record<string, string> = {
+  'ANX': 'Anxiety / Stress',
+  'MOOD': 'Mood Disorders',
+  'TRM': 'Trauma / PTSD',
+  'PERS': 'Personality / Behaviour',
+  'REL': 'Relationships / Families',
+  'LIFE': 'Life Changes / Grief',
+  'WORK': 'Workplace Stress / Bullying',
+  'LEGAL': 'Legal / Compensation Issues',
+  'PAIN': 'Pain / Physical Injury',
+  'NDV': 'Neurodiversity Support',
+  'EDU': 'Academic / School Challenges',
+  'EXIS': 'Existential / Spiritual Crises',
+  'SOC': 'Cultural / Social Oppression',
+  'IDEN': 'Identity / Affirmation',
+  'JUST': 'Forensic / Justice Involvement',
+  'MED': 'Medical / Health Psychology',
+  'ADDX': 'Addiction / Compulsive Behaviour',
+  'COG': 'Cognitive Decline / Dementia',
+};
+
+// Function to get tag color variant
+const getTagColorVariant = (tag: string) => {
+  const tagGroups: Record<string, string> = {
+    'ANX': 'blue',
+    'MOOD': 'purple',
+    'TRM': 'red',
+    'PERS': 'orange',
+    'REL': 'pink',
+    'LIFE': 'yellow',
+    'WORK': 'green',
+    'LEGAL': 'slate',
+    'PAIN': 'rose',
+    'NDV': 'indigo',
+    'EDU': 'cyan',
+    'EXIS': 'violet',
+    'SOC': 'amber',
+    'IDEN': 'lime',
+    'JUST': 'gray',
+    'MED': 'emerald',
+    'ADDX': 'fuchsia',
+    'COG': 'teal',
+  };
+  
+  return tagGroups[tag] || 'default';
+};
+
 const CaseOverview = ({ caseData }: CaseOverviewProps) => {
   const getCaseProgress = (caseData: CaseSilo) => {
     // Calculate progress based on documents, assessments and reports
@@ -60,30 +108,13 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
     );
   };
 
-  // Get participant name by role
-  const getParticipantName = (role: string) => {
-    switch(role) {
-      case 'lawyer':
-        return "Lawyer Name";
-      case 'psychologist':
-        return "Psychologist Name";
-      case 'caseManager':
-        return "Case Manager Name";
-      default:
-        return `${role} Name`;
-    }
-  };
-
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <h3 className="text-lg font-medium mb-3">Case Summary</h3>
           <div className="space-y-3">
-            <div className="flex justify-between p-2 bg-muted/20 rounded-md">
-              <span className="font-medium">Case Type</span>
-              <span>{caseData.caseType}</span>
-            </div>
+            {/* Removed separate Case Type field as requested */}
             <div className="flex justify-between p-2 bg-muted/20 rounded-md">
               <span className="font-medium">Status</span>
               <Badge variant={caseData.status === "active" ? "default" : "outline"}>
@@ -102,13 +133,18 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               <span className="font-medium">Case Progress</span>
               <span>{getCaseProgress(caseData)}%</span>
             </div>
+            
+            {/* Case Categories using full names */}
             {caseData.categoryTags && caseData.categoryTags.length > 0 && (
               <div className="p-2 bg-muted/20 rounded-md">
-                <span className="font-medium">Categories</span>
-                <div className="flex flex-wrap gap-1 mt-1">
+                <span className="font-medium block mb-2">Case Categories</span>
+                <div className="flex flex-wrap gap-2">
                   {caseData.categoryTags.map(tag => (
-                    <Badge key={tag} variant="secondary" className="text-xs">
-                      {tag}
+                    <Badge 
+                      key={tag} 
+                      className={`bg-${getTagColorVariant(tag)}-500 hover:bg-${getTagColorVariant(tag)}-600 text-white`}
+                    >
+                      {CATEGORY_FULL_NAMES[tag] || tag}
                     </Badge>
                   ))}
                 </div>
@@ -120,7 +156,8 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         <div>
           <h3 className="text-lg font-medium mb-3">Key Participants</h3>
           <div className="space-y-3">
-            <div className="p-3 border rounded-md">
+            {/* Client with highlighted styling */}
+            <div className="p-3 border rounded-md bg-primary/5 border-primary/20 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">C</div>
                 <div>
@@ -130,17 +167,8 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               </div>
             </div>
             
-            <div className="p-3 border rounded-md">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">L</div>
-                <div>
-                  <p className="font-medium">Lawyer Name</p>
-                  <p className="text-xs text-muted-foreground">Legal Representative</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-3 border rounded-md">
+            {/* Practitioner with highlighted styling */}
+            <div className="p-3 border rounded-md bg-primary/5 border-primary/20 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">P</div>
                 <div>
@@ -150,12 +178,23 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               </div>
             </div>
             
+            {/* Lawyer with less emphasis */}
+            <div className="p-3 border rounded-md">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground font-medium">L</div>
+                <div>
+                  <p className="font-medium">Lawyer Name</p>
+                  <p className="text-xs text-muted-foreground">Legal Representative</p>
+                </div>
+              </div>
+            </div>
+            
             {/* External contributors */}
             {caseData.participants?.others && caseData.participants.others.length > 0 && 
               caseData.participants.others.map((contributor, index) => (
                 <div key={contributor.id} className="p-3 border rounded-md">
                   <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">
+                    <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground font-medium">
                       {contributor.role.charAt(0)}
                     </div>
                     <div>
