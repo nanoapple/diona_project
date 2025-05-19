@@ -52,6 +52,22 @@ const CaseSiloList: React.FC<CaseSiloListProps> = ({ caseSilos, onSelectCase, se
     }
   };
 
+  const getCategoryTagBadges = (caseSilo: CaseSilo) => {
+    if (!caseSilo.categoryTags || caseSilo.categoryTags.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="flex flex-wrap gap-1 mt-2">
+        {caseSilo.categoryTags.map(tag => (
+          <Badge key={tag} variant="outline" className="text-xs bg-muted/50">
+            {tag}
+          </Badge>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-4">
       {caseSilos.length === 0 ? (
@@ -85,7 +101,7 @@ const CaseSiloList: React.FC<CaseSiloListProps> = ({ caseSilos, onSelectCase, se
           >
             <CardContent className="p-5">
               <div className="flex justify-between items-start">
-                <div>
+                <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="text-lg font-medium">{caseSilo.claimantName}</h3>
                     <Badge variant={getStatusBadgeVariant(caseSilo.status)}>
@@ -116,6 +132,8 @@ const CaseSiloList: React.FC<CaseSiloListProps> = ({ caseSilos, onSelectCase, se
                       </div>
                     )}
                   </div>
+
+                  {getCategoryTagBadges(caseSilo)}
                 </div>
                 
                 <div>

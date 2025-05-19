@@ -20,7 +20,16 @@ export interface Case {
 export type UserRole = 'admin' | 'lawyer' | 'psychologist' | 'claimant';
 
 // Define ClaimStage type for CaseSilo
-export type ClaimStage = 'intake' | 'legal_review' | 'assessment' | 'report' | 'lodgement' | 'outcome' | 'Intake & Triage' | 'Legal Review' | 'Assessment' | 'Report' | 'Lodgement' | 'Outcome';
+export type ClaimStage = 
+  'intake' | 'legal_review' | 'assessment' | 'report' | 'lodgement' | 'outcome' | 
+  'Intake & Triage' | 'Legal Review' | 'Assessment' | 'Report' | 'Lodgement' | 'Outcome';
+
+// Category tags for cases
+export type CategoryTag = {
+  id: string;
+  name: string;
+  abbreviation: string;
+};
 
 // CaseSilo types
 export interface CaseSilo {
@@ -28,6 +37,7 @@ export interface CaseSilo {
   claimantName: string;
   caseType: string;
   claimNumber?: string;
+  externalCaseNumber?: string;
   referralSource?: string;
   injuryDate?: string;
   currentStage?: string;
@@ -36,8 +46,11 @@ export interface CaseSilo {
   expiryDate: string;
   participants?: {
     claimantId: string;
-    lawyerId: string;
-    psychologistId: string;
+    lawyerId?: string;
+    psychologistId?: string;
+    caseManagerId?: string;
+    supportCoordinatorId?: string;
+    others?: Array<{id: string, role: string, email: string}>;
   };
   documents?: CaseDocument[];
   assessments?: Assessment[];
@@ -46,6 +59,7 @@ export interface CaseSilo {
   infoRequests?: InfoRequest[];
   externalUploads?: CaseDocument[];
   completedStages?: string[];
+  categoryTags?: string[];
 }
 
 export type CaseSiloStatus = 'active' | 'on_hold' | 'closed' | 'pending' | 'expiring_soon' | 'expired';
@@ -104,6 +118,8 @@ export interface Assessment {
   completionPercentage?: number;
   date?: string;
   results?: AssessmentResults;
+  isAssigned?: boolean;
+  assignedEmail?: string;
 }
 
 // Assessment Results
@@ -163,4 +179,12 @@ export interface DASS21Question {
   text: string;
   category: 'depression' | 'anxiety' | 'stress';
   answer?: number;
+}
+
+// User  external contributor type
+export interface ExternalContributor {
+  id: string;
+  name: string;
+  role: 'Lawyer' | 'Case Manager' | 'Support Coordinator' | 'Other';
+  email: string;
 }

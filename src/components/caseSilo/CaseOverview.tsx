@@ -60,6 +60,20 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
     );
   };
 
+  // Get participant name by role
+  const getParticipantName = (role: string) => {
+    switch(role) {
+      case 'lawyer':
+        return "Lawyer Name";
+      case 'psychologist':
+        return "Psychologist Name";
+      case 'caseManager':
+        return "Case Manager Name";
+      default:
+        return `${role} Name`;
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -88,6 +102,18 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               <span className="font-medium">Case Progress</span>
               <span>{getCaseProgress(caseData)}%</span>
             </div>
+            {caseData.categoryTags && caseData.categoryTags.length > 0 && (
+              <div className="p-2 bg-muted/20 rounded-md">
+                <span className="font-medium">Categories</span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {caseData.categoryTags.map(tag => (
+                    <Badge key={tag} variant="secondary" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
         
@@ -123,6 +149,23 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
                 </div>
               </div>
             </div>
+            
+            {/* External contributors */}
+            {caseData.participants?.others && caseData.participants.others.length > 0 && 
+              caseData.participants.others.map((contributor, index) => (
+                <div key={contributor.id} className="p-3 border rounded-md">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">
+                      {contributor.role.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-medium">{contributor.email.split('@')[0]}</p>
+                      <p className="text-xs text-muted-foreground">{contributor.role}</p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
           </div>
         </div>
       </div>

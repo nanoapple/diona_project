@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -19,16 +20,11 @@ import {
   Upload,
   ArrowLeftCircle
 } from "lucide-react";
-import { formatDate } from '@/lib/utils';
+import { formatDate, v4 } from '@/lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 import { 
   CaseSilo as CaseSiloType, 
-  CaseDocument, 
-  Assessment, 
-  Report, 
-  CaseNote, 
-  CaseSiloStatus,
-  UserRole
+  ClaimStage
 } from '@/types';
 import CaseOverview from '@/components/caseSilo/CaseOverview';
 import CaseDocuments from '@/components/caseSilo/CaseDocuments';
@@ -42,9 +38,7 @@ import InfoRequests from '@/components/caseSilo/InfoRequests';
 import ErrorDisplay from '@/components/ErrorDisplay';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { Progress } from '@/components/ui/progress';
-
-// At the top of the file, add this type declaration
-export type ClaimStage = 'intake' | 'assessment' | 'treatment' | 'report' | 'review' | 'completed';
+import { CreateCaseSilo } from '@/components/caseSilo/CreateCaseSilo';
 
 const CaseSiloPage = () => {
   const { currentUser } = useAuth();
@@ -55,6 +49,7 @@ const CaseSiloPage = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'assessments' | 'reports' | 'notes' | 'timeline' | 'external' | 'info-requests'>('overview');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreateSilo, setShowCreateSilo] = useState(false);
 
   useEffect(() => {
     // Fetch mock case silos
@@ -190,8 +185,9 @@ const CaseSiloPage = () => {
                   "Are you currently taking any medication for pain management?"
                 ],
                 requestedBy: "John Smith, Lawyer",
-                requestedAt: "2023-04-10",
-                status: "pending"
+                dateRequested: "2023-04-10",
+                status: "pending",
+                dueDate: "2023-04-25"
               }
             ],
             externalUploads: [
@@ -207,7 +203,8 @@ const CaseSiloPage = () => {
                 isExternal: true
               }
             ],
-            completedStages: ["Intake & Triage", "Legal Review"]
+            completedStages: ["Intake & Triage", "Legal Review"],
+            categoryTags: ["TRM", "WORK", "LEGAL"]
           },
           {
             id: "2",
@@ -261,7 +258,8 @@ const CaseSiloPage = () => {
             ],
             infoRequests: [],
             externalUploads: [],
-            completedStages: ["Intake & Triage"]
+            completedStages: ["Intake & Triage"],
+            categoryTags: ["ANX", "TRM"]
           }
         ];
         
@@ -320,6 +318,17 @@ const CaseSiloPage = () => {
     });
   };
 
+  // Handle creation of a new case silo
+  const handleCreateSilo = (newSilo: CaseSiloType) => {
+    setCaseSilos([newSilo, ...caseSilos]);
+    toast({
+      title: "Case silo created",
+      description: `New case silo for ${newSilo.claimantName} has been created successfully.`,
+    });
+    // Select the newly created case
+    setSelectedCaseId(newSilo.id);
+  };
+
   // Calculate progress through claim stages
   const calculateClaimProgress = (caseSilo: CaseSiloType) => {
     const allStages: ClaimStage[] = [
@@ -339,14 +348,14 @@ const CaseSiloPage = () => {
   const canViewInternalNotes = () => currentUser?.role === 'lawyer' || currentUser?.role === 'psychologist';
   const canAddAssessments = () => currentUser?.role === 'psychologist';
   const canEditReports = () => currentUser?.role === 'psychologist';
-  const canCreateSilo = () => currentUser?.role === 'lawyer';
+  const canCreateSilo = () => currentUser?.role === 'lawyer' || currentUser?.role === 'psychologist';
   const canShareAccess = () => currentUser?.role === 'lawyer';
   const canUploadDocuments = () => true; // All roles can upload
   const canCreateInfoRequests = () => currentUser?.role === 'lawyer' || currentUser?.role === 'psychologist';
   const canManageExpiryDate = () => currentUser?.role === 'lawyer';
 
   // Check if silo is expired to determine if edits are allowed
-  const canEdit = (caseStatus: CaseSiloStatus) => caseStatus !== 'expired';
+  const canEdit = (caseStatus: string) => caseStatus !== 'expired';
 
   // Calculate days until expiry for a case
   const getDaysUntilExpiry = (expiryDate: string) => {
@@ -357,7 +366,7 @@ const CaseSiloPage = () => {
   };
 
   // Get status display details
-  const getStatusDetails = (status: CaseSiloStatus, expiryDate: string) => {
+  const getStatusDetails = (status: string, expiryDate: string) => {
     const daysLeft = getDaysUntilExpiry(expiryDate);
     
     switch(status) {
@@ -378,6 +387,12 @@ const CaseSiloPage = () => {
           label: "Expired",
           variant: "destructive" as const,
           message: "Read only access"
+        };
+      default:
+        return {
+          label: status.charAt(0).toUpperCase() + status.slice(1),
+          variant: "outline" as const,
+          message: `Expires in ${daysLeft} days`
         };
     }
   };
@@ -444,6 +459,15 @@ const CaseSiloPage = () => {
                 </div>
               )}
             </div>
+            {selectedCase.categoryTags && selectedCase.categoryTags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {selectedCase.categoryTags.map(tag => (
+                  <Badge key={tag} variant="outline" className="text-xs">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
           
           <div className="flex flex-col items-end gap-3 mt-2 sm:mt-0">
@@ -545,7 +569,7 @@ const CaseSiloPage = () => {
                     canView={canViewInternalNotes()} 
                     canCreate={canViewInternalNotes() && canEdit(selectedCase.status)}
                     onCreateItem={() => handleCreateItem('note')} 
-                    currentUserRole={currentUser?.role as UserRole}
+                    currentUserRole={currentUser?.role}
                   />
                 </TabsContent>
                 
@@ -564,7 +588,7 @@ const CaseSiloPage = () => {
                     requests={selectedCase.infoRequests} 
                     canCreate={canCreateInfoRequests() && canEdit(selectedCase.status)}
                     onCreateItem={() => handleCreateItem('info-request')}
-                    userRole={currentUser?.role as UserRole}
+                    userRole={currentUser?.role}
                   />
                 </TabsContent>
                 
@@ -614,8 +638,8 @@ const CaseSiloPage = () => {
             </div>
             
             {canCreateSilo() && (
-              <Button>
-                <Plus className="w-4 h-4 mr-1" /> Create New Case
+              <Button onClick={() => setShowCreateSilo(true)}>
+                <Plus className="w-4 h-4 mr-1" /> New Case Silo
               </Button>
             )}
           </div>
@@ -624,6 +648,12 @@ const CaseSiloPage = () => {
             caseSilos={filteredCaseSilos} 
             onSelectCase={setSelectedCaseId} 
             searchTerm={searchTerm}
+          />
+          
+          <CreateCaseSilo 
+            open={showCreateSilo}
+            onOpenChange={setShowCreateSilo}
+            onCreateSilo={handleCreateSilo}
           />
         </>
       )}

@@ -1,0 +1,323 @@
+
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Badge } from '@/components/ui/badge';
+import { Calendar as CalendarIcon, Plus, Trash, X } from 'lucide-react';
+import { format } from 'date-fns';
+import { v4 as uuidv4 } from '@/lib/utils';
+import { CaseSilo, ExternalContributor, CategoryTag } from '@/types';
+
+interface CreateCaseSiloProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onCreateSilo: (silo: CaseSilo) => void;
+}
+
+// Define category tags
+const CATEGORY_TAGS: CategoryTag[] = [
+  { id: 'ANX', name: 'Anxiety / Stress', abbreviation: 'ANX' },
+  { id: 'MOOD', name: 'Mood Disorders', abbreviation: 'MOOD' },
+  { id: 'TRM', name: 'Trauma / PTSD', abbreviation: 'TRM' },
+  { id: 'PERS', name: 'Personality / Behaviour', abbreviation: 'PERS' },
+  { id: 'REL', name: 'Relationships / Families', abbreviation: 'REL' },
+  { id: 'LIFE', name: 'Life Changes / Grief', abbreviation: 'LIFE' },
+  { id: 'WORK', name: 'Workplace Stress / Bullying', abbreviation: 'WORK' },
+  { id: 'LEGAL', name: 'Legal / Compensation Issues', abbreviation: 'LEGAL' },
+  { id: 'PAIN', name: 'Pain / Physical Injury', abbreviation: 'PAIN' },
+  { id: 'NDV', name: 'Neurodiversity Support', abbreviation: 'NDV' },
+  { id: 'EDU', name: 'Academic / School Challenges', abbreviation: 'EDU' },
+  { id: 'EXIS', name: 'Existential / Spiritual Crises', abbreviation: 'EXIS' },
+  { id: 'SOC', name: 'Cultural / Social Oppression', abbreviation: 'SOC' },
+  { id: 'IDEN', name: 'Identity / Affirmation', abbreviation: 'IDEN' },
+  { id: 'JUST', name: 'Forensic / Justice Involvement', abbreviation: 'JUST' },
+  { id: 'MED', name: 'Medical / Health Psychology', abbreviation: 'MED' },
+  { id: 'ADDX', name: 'Addiction / Compulsive Behaviour', abbreviation: 'ADDX' },
+  { id: 'COG', name: 'Cognitive Decline / Dementia', abbreviation: 'COG' },
+];
+
+// Mock clients for demo
+const MOCK_CLIENTS = [
+  { id: 'client1', name: 'John Doe', dob: '1980-05-15' },
+  { id: 'client2', name: 'Jane Smith', dob: '1992-11-23' },
+  { id: 'client3', name: 'Robert Johnson', dob: '1975-08-04' },
+  { id: 'client4', name: 'Emily Wilson', dob: '1988-03-30' },
+];
+
+export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseSiloProps) {
+  const [selectedClient, setSelectedClient] = useState<string>('');
+  const [externalCaseNo, setExternalCaseNo] = useState<string>('');
+  const [injuryDate, setInjuryDate] = useState<Date | undefined>(undefined);
+  const [dateOpen, setDateOpen] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [externalContributors, setExternalContributors] = useState<ExternalContributor[]>([]);
+  const [newContributor, setNewContributor] = useState({
+    name: '',
+    role: 'Other' as const,
+    email: ''
+  });
+
+  const clientInfo = MOCK_CLIENTS.find(c => c.id === selectedClient);
+
+  const handleTagSelection = (tagId: string) => {
+    if (selectedTags.includes(tagId)) {
+      setSelectedTags(selectedTags.filter(t => t !== tagId));
+    } else if (selectedTags.length < 3) {
+      setSelectedTags([...selectedTags, tagId]);
+    }
+  };
+
+  const handleAddContributor = () => {
+    if (newContributor.name && newContributor.email) {
+      setExternalContributors([
+        ...externalContributors,
+        { ...newContributor, id: uuidv4() }
+      ]);
+      setNewContributor({ name: '', role: 'Other', email: '' });
+    }
+  };
+
+  const handleRemoveContributor = (id: string) => {
+    setExternalContributors(externalContributors.filter(c => c.id !== id));
+  };
+
+  const handleCreateSilo = () => {
+    if (!selectedClient) return;
+
+    // Generate a case number
+    const caseNumber = `CS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    
+    // Get full case type from selected tags
+    const caseType = selectedTags.length > 0 
+      ? selectedTags.map(tag => CATEGORY_TAGS.find(t => t.id === tag)?.name).join(' | ')
+      : 'General Case';
+
+    const newSilo: CaseSilo = {
+      id: uuidv4(),
+      claimantName: clientInfo?.name || 'Unknown Client',
+      caseType,
+      claimNumber: caseNumber,
+      externalCaseNumber: externalCaseNo || undefined,
+      injuryDate: injuryDate ? format(injuryDate, 'yyyy-MM-dd') : undefined,
+      status: 'active',
+      createdDate: format(new Date(), 'yyyy-MM-dd'),
+      expiryDate: format(new Date(new Date().setMonth(new Date().getMonth() + 6)), 'yyyy-MM-dd'),
+      participants: {
+        claimantId: selectedClient,
+        psychologistId: 'user3', // Assuming current logged in user
+        others: externalContributors.map(c => ({
+          id: c.id,
+          role: c.role,
+          email: c.email
+        }))
+      },
+      documents: [],
+      assessments: [],
+      reports: [],
+      notes: [],
+      infoRequests: [],
+      externalUploads: [],
+      completedStages: ['Intake & Triage'],
+      currentStage: 'Assessment',
+      categoryTags: selectedTags
+    };
+
+    onCreateSilo(newSilo);
+    onOpenChange(false);
+    
+    // Reset form
+    setSelectedClient('');
+    setExternalCaseNo('');
+    setInjuryDate(undefined);
+    setSelectedTags([]);
+    setExternalContributors([]);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Create New Case Silo</DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-5 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="client">Client</Label>
+            <Select value={selectedClient} onValueChange={setSelectedClient}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select client" />
+              </SelectTrigger>
+              <SelectContent>
+                {MOCK_CLIENTS.map(client => (
+                  <SelectItem key={client.id} value={client.id}>
+                    {client.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {clientInfo && (
+              <div className="text-sm text-muted-foreground mt-1">
+                Date of Birth: {format(new Date(clientInfo.dob), 'dd MMM yyyy')}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Category Tags (Select up to 3)</Label>
+            <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-1">
+              {CATEGORY_TAGS.map(tag => (
+                <Badge 
+                  key={tag.id} 
+                  variant={selectedTags.includes(tag.id) ? "default" : "outline"}
+                  className="cursor-pointer px-3 py-1 justify-between"
+                  onClick={() => handleTagSelection(tag.id)}
+                >
+                  {tag.name} ({tag.abbreviation})
+                </Badge>
+              ))}
+            </div>
+            {selectedTags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {selectedTags.map(tagId => {
+                  const tag = CATEGORY_TAGS.find(t => t.id === tagId);
+                  return (
+                    <Badge key={tagId} variant="secondary" className="gap-1">
+                      {tag?.name}
+                      <X 
+                        className="h-3 w-3 cursor-pointer" 
+                        onClick={() => setSelectedTags(selectedTags.filter(t => t !== tagId))}
+                      />
+                    </Badge>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-4">
+            <div className="space-y-2 flex-1">
+              <Label htmlFor="externalCaseNo">External Case # (Optional)</Label>
+              <Input
+                id="externalCaseNo"
+                value={externalCaseNo}
+                onChange={(e) => setExternalCaseNo(e.target.value)}
+                placeholder="External reference number"
+              />
+            </div>
+            <div className="space-y-2 flex-1">
+              <Label htmlFor="injuryDate">Injury/Incident Date (Optional)</Label>
+              <Popover open={dateOpen} onOpenChange={setDateOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {injuryDate ? format(injuryDate, 'PPP') : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={injuryDate}
+                    onSelect={(date) => {
+                      setInjuryDate(date);
+                      setDateOpen(false);
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <Label>External Contributors</Label>
+              <p className="text-sm text-muted-foreground mb-2">
+                Add people who need upload-only access to this case
+              </p>
+            </div>
+            
+            <div className="flex gap-2 items-end">
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="contributorName">Name</Label>
+                <Input 
+                  id="contributorName"
+                  value={newContributor.name}
+                  onChange={(e) => setNewContributor({...newContributor, name: e.target.value})}
+                  placeholder="Name"
+                />
+              </div>
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="contributorRole">Role</Label>
+                <Select 
+                  value={newContributor.role}
+                  onValueChange={(value: any) => setNewContributor({...newContributor, role: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Lawyer">Lawyer</SelectItem>
+                    <SelectItem value="Case Manager">Case Manager</SelectItem>
+                    <SelectItem value="Support Coordinator">Support Coordinator</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="contributorEmail">Email</Label>
+                <Input 
+                  id="contributorEmail"
+                  type="email"
+                  value={newContributor.email}
+                  onChange={(e) => setNewContributor({...newContributor, email: e.target.value})}
+                  placeholder="Email"
+                />
+              </div>
+              <Button 
+                size="icon" 
+                onClick={handleAddContributor}
+                disabled={!newContributor.name || !newContributor.email}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {externalContributors.length > 0 && (
+              <div className="space-y-2 mt-2">
+                <p className="text-sm font-medium">Added Contributors:</p>
+                {externalContributors.map(contributor => (
+                  <div key={contributor.id} className="flex items-center justify-between p-2 border rounded-md">
+                    <div>
+                      <p className="font-medium">{contributor.name}</p>
+                      <p className="text-sm text-muted-foreground">{contributor.role} • {contributor.email}</p>
+                    </div>
+                    <Button
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => handleRemoveContributor(contributor.id)}
+                    >
+                      <Trash className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button onClick={handleCreateSilo} disabled={!selectedClient}>Create Case Silo</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
