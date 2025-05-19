@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserRole } from '../types';
@@ -141,4 +142,4 @@ export const useAuth = () => {
   return context;
 };
 
-export { UserRole }; // Export UserRole type
+export type { UserRole }; // Fix: Use 'export type' to re-export the type

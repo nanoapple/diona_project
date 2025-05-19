@@ -114,7 +114,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         <div>
           <h3 className="text-lg font-medium mb-3">Case Summary</h3>
           <div className="space-y-3">
-            {/* Removed separate Case Type field as requested */}
+            {/* Status field */}
             <div className="flex justify-between p-2 bg-muted/20 rounded-md">
               <span className="font-medium">Status</span>
               <Badge variant={caseData.status === "active" ? "default" : "outline"}>
@@ -134,7 +134,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               <span>{getCaseProgress(caseData)}%</span>
             </div>
             
-            {/* Case Categories using full names */}
+            {/* Case Categories using full names and color coding */}
             {caseData.categoryTags && caseData.categoryTags.length > 0 && (
               <div className="p-2 bg-muted/20 rounded-md">
                 <span className="font-medium block mb-2">Case Categories</span>
