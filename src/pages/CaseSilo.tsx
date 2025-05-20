@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -18,7 +17,8 @@ import {
   Clock as ClockIcon, 
   AlertCircle,
   Upload,
-  ArrowLeftCircle
+  ArrowLeftCircle,
+  Flag
 } from "lucide-react";
 import { formatDate, v4 } from '@/lib/utils';
 import { useAuth } from '../contexts/AuthContext';
@@ -39,6 +39,7 @@ import ErrorDisplay from '@/components/ErrorDisplay';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { Progress } from '@/components/ui/progress';
 import { CreateCaseSilo } from '@/components/caseSilo/CreateCaseSilo';
+import MilestoneTracker, { Milestone } from '@/components/caseSilo/MilestoneTracker';
 
 const CaseSiloPage = () => {
   const { currentUser } = useAuth();
@@ -50,6 +51,7 @@ const CaseSiloPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateSilo, setShowCreateSilo] = useState(false);
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
 
   useEffect(() => {
     // Fetch mock case silos
@@ -263,6 +265,56 @@ const CaseSiloPage = () => {
           }
         ];
         
+        // Generate mock milestones for the selected case
+        if (selectedCaseId) {
+          const mockMilestones: Milestone[] = [
+            {
+              id: "m1",
+              type: "intake",
+              title: "Initial Intake Session",
+              date: "2023-03-18",
+              description: "Client onboarded and case created",
+              status: "completed"
+            },
+            {
+              id: "m2",
+              type: "document",
+              title: "Medical Records Added",
+              date: "2023-03-25",
+              description: "GP medical records uploaded",
+              status: "completed",
+              relatedItemId: "doc1"
+            },
+            {
+              id: "m3",
+              type: "assessment",
+              title: "DASS-21 Completed",
+              date: "2023-04-05",
+              description: "Client completed psychological assessment",
+              status: "completed",
+              relatedItemId: "assess1"
+            },
+            {
+              id: "m4",
+              type: "key_session",
+              title: "Trauma Processing Session",
+              date: "2023-04-12",
+              description: "Key therapeutic session - trauma narrative",
+              status: "completed"
+            },
+            {
+              id: "m5",
+              type: "report",
+              title: "Initial Report Completed",
+              date: "2023-04-15",
+              description: "Psychological assessment report finalized",
+              status: "completed",
+              relatedItemId: "report1"
+            }
+          ];
+          setMilestones(mockMilestones);
+        }
+        
         // Filter cases based on user role
         // If user is a claimant, only show cases where they are the claimant
         let filteredSilos = mockCaseSilos;
@@ -293,7 +345,7 @@ const CaseSiloPage = () => {
     };
     
     fetchData();
-  }, [currentUser]);
+  }, [currentUser, selectedCaseId]);
 
   const filteredCaseSilos = caseSilos.filter(caseSilo => 
     caseSilo.claimantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -395,6 +447,63 @@ const CaseSiloPage = () => {
           message: `Expires in ${daysLeft} days`
         };
     }
+  };
+
+  const handleMilestoneClick = (milestone: Milestone) => {
+    // Handle milestone click based on type and relatedItemId
+    if (milestone.relatedItemId) {
+      // Navigate to the appropriate tab and item
+      switch (milestone.type) {
+        case 'document':
+          setActiveTab('documents');
+          break;
+        case 'assessment':
+          setActiveTab('assessments');
+          break;
+        case 'report':
+          setActiveTab('reports');
+          break;
+        case 'external':
+          setActiveTab('external');
+          break;
+        case 'letter':
+        case 'meeting':
+        case 'referral':
+        default:
+          // For other types, just show a toast message for now
+          toast({
+            title: milestone.title,
+            description: milestone.description,
+          });
+      }
+    } else {
+      // Show details in a toast if no related item
+      toast({
+        title: milestone.title,
+        description: milestone.description,
+      });
+    }
+  };
+  
+  const handleMarkMilestone = (type: Milestone['type'], itemId?: string) => {
+    // This function would be called when a user marks an item as a milestone
+    toast({
+      title: "Milestone marked",
+      description: `Item has been marked as a milestone.`,
+    });
+    
+    // In a real app, you would save this to your backend
+    const newMilestone: Milestone = {
+      id: v4(),
+      type: type,
+      title: `New ${type} milestone`,
+      date: new Date().toISOString(),
+      description: `This ${type} has been marked as a milestone`,
+      status: "completed",
+      relatedItemId: itemId
+    };
+    
+    setMilestones(prev => [newMilestone, ...prev]);
   };
 
   const renderCaseDetail = () => {
@@ -499,18 +608,26 @@ const CaseSiloPage = () => {
         </div>
         
         <div className="mb-6">
-          <div className="flex justify-between items-center mb-1">
-            <h3 className="text-sm font-medium">Claim Progress</h3>
-            <span className="text-sm">{selectedCase.currentStage}</span>
-          </div>
-          <Progress value={calculateClaimProgress(selectedCase)} className="h-2"/>
-          <div className="flex justify-between mt-1 text-xs text-muted-foreground">
-            {selectedCase.completedStages.map((stage, index) => (
-              <div key={index} className="flex flex-col items-center text-center max-w-[80px]">
-                <CheckCircle className="w-4 h-4 text-primary" />
-                <span className="mt-1 text-center">{stage}</span>
-              </div>
-            ))}
+          <h3 className="text-lg font-medium mb-3">Case Milestones</h3>
+          <MilestoneTracker 
+            milestones={milestones} 
+            onMilestoneClick={handleMilestoneClick}
+          />
+          
+          <div className="mt-3 flex justify-end">
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="flex items-center gap-1"
+              onClick={() => {
+                toast({
+                  title: "Add Milestone",
+                  description: "This feature will be implemented in the future.",
+                });
+              }}
+            >
+              <Flag className="h-3 w-3" /> Mark as Milestone
+            </Button>
           </div>
         </div>
         

@@ -1,12 +1,15 @@
-
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress, SegmentedProgress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '../contexts/AuthContext';
-import { CheckCircle, Clock, AlertCircle, FileText, Calendar } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, FileText, Calendar, Flag } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
+import CaseMilestoneSummary from '@/components/caseSilo/CaseMilestoneSummary';
+import { Milestone } from '@/components/caseSilo/MilestoneTracker';
+import { toast } from "@/components/ui/use-toast";
 
 interface CaseUpdate {
   id: string;
@@ -187,6 +190,7 @@ const Dashboard = () => {
   const [cases, setCases] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCaseId, setSelectedCaseId] = useState<string>('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Simulate API call to fetch cases
