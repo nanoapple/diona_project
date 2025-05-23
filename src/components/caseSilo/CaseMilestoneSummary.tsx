@@ -17,6 +17,23 @@ interface CaseMilestoneSummaryProps {
   onTaskClick: (taskId: string) => void;
 }
 
+// Sample hover messages for each milestone type
+const getSampleMessage = (type: Milestone['type']) => {
+  const messages: Record<Milestone['type'], string> = {
+    intake: "Client completed intake interview and consented to psychological assessment.",
+    key_session: "Breakthrough session addressing trauma triggers. Client showed increased emotional regulation.",
+    document: "Medical report from GP uploaded by Dr. Johnson for review and claim substantiation.",
+    assessment: "Client submitted DASS-21 responses online. Moderate stress and depressive symptoms noted.",
+    report: "Psychological report drafted and submitted to legal team. Awaiting feedback.",
+    letter: "Formal letter to insurer outlining client's psychological condition and supporting evidence.",
+    external: "External specialist consultation completed, confirming diagnosis and treatment plan.",
+    meeting: "Case conference with legal and clinical team to discuss strategy and next steps.",
+    referral: "Client referred to specialist trauma therapist for ongoing treatment.",
+    closing: "Final case review completed. All documentation finalized for submission."
+  };
+  return messages[type];
+};
+
 const CaseMilestoneSummary: React.FC<CaseMilestoneSummaryProps> = ({
   recentMilestones,
   pendingTasks,
@@ -70,7 +87,7 @@ const CaseMilestoneSummary: React.FC<CaseMilestoneSummaryProps> = ({
                 <div className="font-medium text-sm">{milestone.title}</div>
               </div>
               <div className="flex justify-between mt-1">
-                <span className="text-xs">{milestone.description}</span>
+                <span className="text-xs">{milestone.description || getSampleMessage(milestone.type)}</span>
                 <span className="text-xs text-muted-foreground">{formatDate(milestone.date)}</span>
               </div>
             </div>

@@ -54,6 +54,23 @@ const getMilestoneTypeName = (type: Milestone['type']) => {
   return names[type];
 };
 
+// Sample hover messages for each milestone type
+const getSampleMessage = (type: Milestone['type']) => {
+  const messages: Record<Milestone['type'], string> = {
+    intake: "Client completed intake interview and consented to psychological assessment.",
+    key_session: "Breakthrough session addressing trauma triggers. Client showed increased emotional regulation.",
+    document: "Medical report from GP uploaded by Dr. Johnson for review and claim substantiation.",
+    assessment: "Client submitted DASS-21 responses online. Moderate stress and depressive symptoms noted.",
+    report: "Psychological report drafted and submitted to legal team. Awaiting feedback.",
+    letter: "Formal letter to insurer outlining client's psychological condition and supporting evidence.",
+    external: "External specialist consultation completed, confirming diagnosis and treatment plan.",
+    meeting: "Case conference with legal and clinical team to discuss strategy and next steps.",
+    referral: "Client referred to specialist trauma therapist for ongoing treatment.",
+    closing: "Final case review completed. All documentation finalized for submission."
+  };
+  return messages[type];
+};
+
 const MilestoneTracker: React.FC<MilestoneTrackerProps> = ({ milestones, onMilestoneClick }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -126,7 +143,7 @@ const MilestoneTracker: React.FC<MilestoneTrackerProps> = ({ milestones, onMiles
         {milestones.map((milestone) => (
           <div 
             key={milestone.id}
-            className={`shrink-0 cursor-pointer group relative`}
+            className="shrink-0 cursor-pointer relative flex flex-col items-center"
             onClick={() => onMilestoneClick(milestone)}
           >
             <Card 
@@ -141,12 +158,13 @@ const MilestoneTracker: React.FC<MilestoneTrackerProps> = ({ milestones, onMiles
               <div className="text-xs text-muted-foreground">{formatDate(milestone.date)}</div>
             </Card>
             
-            {/* Tooltip on hover */}
-            <div className="absolute z-20 w-56 p-2 bg-white rounded-md shadow-lg border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bottom-full mb-2 left-1/2 -translate-x-1/2">
+            {/* Tooltip positioned below the tile */}
+            <div className="w-56 p-2 mt-2 bg-white rounded-md shadow-lg border text-left">
               <div className="text-sm font-medium">{milestone.title}</div>
-              <div className="text-xs mt-1">{milestone.description}</div>
+              <div className="text-xs mt-1">
+                {milestone.description || getSampleMessage(milestone.type)}
+              </div>
               <div className="text-xs mt-1 text-muted-foreground">{formatDate(milestone.date)}</div>
-              <div className="absolute bottom-[-6px] left-1/2 transform -translate-x-1/2 rotate-45 w-3 h-3 bg-white border-r border-b"></div>
             </div>
           </div>
         ))}
