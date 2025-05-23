@@ -39,6 +39,8 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import { Progress } from '@/components/ui/progress';
 import { CreateCaseSilo } from '@/components/caseSilo/CreateCaseSilo';
 import MilestoneTracker, { Milestone } from '@/components/caseSilo/MilestoneTracker';
+import CaseMilestoneSummary from '@/components/caseSilo/CaseMilestoneSummary';
+import MsConfeeAssistant from '@/components/caseSilo/MsConfeeAssistant';
 
 const CaseSiloPage = () => {
   const { currentUser } = useAuth();
@@ -525,6 +527,13 @@ const CaseSiloPage = () => {
 
     return (
       <div>
+        {/* Ms Confee AI Assistant */}
+        <MsConfeeAssistant 
+          caseData={selectedCase}
+          activeTab={activeTab}
+          milestones={milestones}
+        />
+        
         <Button 
           variant="ghost" 
           onClick={() => setSelectedCaseId(null)} 
