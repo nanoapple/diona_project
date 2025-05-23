@@ -17,8 +17,7 @@ import {
   Clock as ClockIcon, 
   AlertCircle,
   Upload,
-  ArrowLeftCircle,
-  Flag
+  ArrowLeftCircle
 } from "lucide-react";
 import { formatDate, v4 } from '@/lib/utils';
 import { useAuth } from '../contexts/AuthContext';
@@ -581,17 +580,6 @@ const CaseSiloPage = () => {
           
           <div className="flex flex-col items-end gap-3 mt-2 sm:mt-0">
             <div className="flex gap-2">
-              {currentUser?.role === 'psychologist' && canEdit(selectedCase.status) && (
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="flex items-center gap-2"
-                  onClick={() => handleInterviewClick(selectedCase.id)}
-                >
-                  <User className="w-4 h-4" /> Interview Client
-                </Button>
-              )}
-              
               {canShareAccess() && canEdit(selectedCase.status) && (
                 <Button size="sm" variant="outline" className="flex items-center gap-2">
                   <User className="w-4 h-4" /> Manage Access
@@ -613,22 +601,6 @@ const CaseSiloPage = () => {
             milestones={milestones} 
             onMilestoneClick={handleMilestoneClick}
           />
-          
-          <div className="mt-3 flex justify-end">
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className="flex items-center gap-1"
-              onClick={() => {
-                toast({
-                  title: "Add Milestone",
-                  description: "This feature will be implemented in the future.",
-                });
-              }}
-            >
-              <Flag className="h-3 w-3" /> Mark as Milestone
-            </Button>
-          </div>
         </div>
         
         <Card>

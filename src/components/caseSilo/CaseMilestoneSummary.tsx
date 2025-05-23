@@ -78,7 +78,7 @@ const CaseMilestoneSummary: React.FC<CaseMilestoneSummaryProps> = ({
         <div className="space-y-2">
           <h4 className="text-sm font-medium">Recent Milestones</h4>
           {displayedMilestones.map((milestone) => (
-            <HoverCard key={milestone.id}>
+            <HoverCard key={milestone.id} openDelay={0}>
               <HoverCardTrigger asChild>
                 <div 
                   onClick={() => onMilestoneClick(milestone)}
@@ -100,7 +100,6 @@ const CaseMilestoneSummary: React.FC<CaseMilestoneSummaryProps> = ({
                 <div className="text-xs mt-1">
                   {milestone.description || getSampleMessage(milestone.type)}
                 </div>
-                <div className="text-xs mt-1 text-muted-foreground">{formatDate(milestone.date)}</div>
               </HoverCardContent>
             </HoverCard>
           ))}

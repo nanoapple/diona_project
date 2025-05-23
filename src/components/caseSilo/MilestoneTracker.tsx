@@ -142,7 +142,7 @@ const MilestoneTracker: React.FC<MilestoneTrackerProps> = ({ milestones, onMiles
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {milestones.map((milestone) => (
-          <HoverCard key={milestone.id}>
+          <HoverCard key={milestone.id} openDelay={0}>
             <HoverCardTrigger asChild>
               <div 
                 className="shrink-0 cursor-pointer"
@@ -167,7 +167,6 @@ const MilestoneTracker: React.FC<MilestoneTrackerProps> = ({ milestones, onMiles
               <div className="text-xs mt-1">
                 {milestone.description || getSampleMessage(milestone.type)}
               </div>
-              <div className="text-xs mt-1 text-muted-foreground">{formatDate(milestone.date)}</div>
             </HoverCardContent>
           </HoverCard>
         ))}
