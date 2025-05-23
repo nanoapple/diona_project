@@ -4,6 +4,7 @@ import { Milestone } from "./MilestoneTracker";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
 import { Check, Clock } from "lucide-react";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 
 interface CaseMilestoneSummaryProps {
   recentMilestones: Milestone[];
@@ -77,20 +78,31 @@ const CaseMilestoneSummary: React.FC<CaseMilestoneSummaryProps> = ({
         <div className="space-y-2">
           <h4 className="text-sm font-medium">Recent Milestones</h4>
           {displayedMilestones.map((milestone) => (
-            <div 
-              key={milestone.id}
-              onClick={() => onMilestoneClick(milestone)}
-              className={`border-l-4 ${getMilestoneColor(milestone.type)} bg-background hover:bg-muted/20 px-3 py-2 rounded-md cursor-pointer transition-colors`}
-            >
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-green-500" />
-                <div className="font-medium text-sm">{milestone.title}</div>
-              </div>
-              <div className="flex justify-between mt-1">
-                <span className="text-xs">{milestone.description || getSampleMessage(milestone.type)}</span>
-                <span className="text-xs text-muted-foreground">{formatDate(milestone.date)}</span>
-              </div>
-            </div>
+            <HoverCard key={milestone.id}>
+              <HoverCardTrigger asChild>
+                <div 
+                  onClick={() => onMilestoneClick(milestone)}
+                  className={`border-l-4 ${getMilestoneColor(milestone.type)} bg-background hover:bg-muted/20 px-3 py-2 rounded-md cursor-pointer transition-colors`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-green-500" />
+                    <div className="font-medium text-sm">{milestone.title}</div>
+                  </div>
+                  <div className="flex justify-between mt-1">
+                    <span className="text-xs">Click for details</span>
+                    <span className="text-xs text-muted-foreground">{formatDate(milestone.date)}</span>
+                  </div>
+                </div>
+              </HoverCardTrigger>
+              
+              <HoverCardContent className="w-64 p-3 bg-white rounded-md shadow-lg border text-left">
+                <div className="text-sm font-medium">{milestone.title}</div>
+                <div className="text-xs mt-1">
+                  {milestone.description || getSampleMessage(milestone.type)}
+                </div>
+                <div className="text-xs mt-1 text-muted-foreground">{formatDate(milestone.date)}</div>
+              </HoverCardContent>
+            </HoverCard>
           ))}
         </div>
       )}

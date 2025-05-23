@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 
 export interface Milestone {
   id: string;
@@ -141,32 +142,34 @@ const MilestoneTracker: React.FC<MilestoneTrackerProps> = ({ milestones, onMiles
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {milestones.map((milestone) => (
-          <div 
-            key={milestone.id}
-            className="shrink-0 cursor-pointer relative flex flex-col items-center"
-            onClick={() => onMilestoneClick(milestone)}
-          >
-            <Card 
-              className={`w-[120px] h-[90px] flex flex-col justify-between p-3 border rounded-md transition-all ${
-                getMilestoneColor(milestone.type)
-              } hover:shadow-md`}
-            >
-              <div className="text-xs font-medium">
-                {getMilestoneTypeName(milestone.type)}
+          <HoverCard key={milestone.id}>
+            <HoverCardTrigger asChild>
+              <div 
+                className="shrink-0 cursor-pointer"
+                onClick={() => onMilestoneClick(milestone)}
+              >
+                <Card 
+                  className={`w-[120px] h-[90px] flex flex-col justify-between p-3 border rounded-md transition-all ${
+                    getMilestoneColor(milestone.type)
+                  } hover:shadow-md`}
+                >
+                  <div className="text-xs font-medium">
+                    {getMilestoneTypeName(milestone.type)}
+                  </div>
+                  <div className="text-sm truncate">{milestone.title}</div>
+                  <div className="text-xs text-muted-foreground">{formatDate(milestone.date)}</div>
+                </Card>
               </div>
-              <div className="text-sm truncate">{milestone.title}</div>
-              <div className="text-xs text-muted-foreground">{formatDate(milestone.date)}</div>
-            </Card>
+            </HoverCardTrigger>
             
-            {/* Tooltip positioned below the tile */}
-            <div className="w-56 p-2 mt-2 bg-white rounded-md shadow-lg border text-left">
+            <HoverCardContent className="w-56 p-2 bg-white rounded-md shadow-lg border text-left">
               <div className="text-sm font-medium">{milestone.title}</div>
               <div className="text-xs mt-1">
                 {milestone.description || getSampleMessage(milestone.type)}
               </div>
               <div className="text-xs mt-1 text-muted-foreground">{formatDate(milestone.date)}</div>
-            </div>
-          </div>
+            </HoverCardContent>
+          </HoverCard>
         ))}
       </div>
       
