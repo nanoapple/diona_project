@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,6 +17,11 @@ interface EditFrameworkDialogProps {
 
 const EditFrameworkDialog = ({ open, onOpenChange, framework, data, onSave }: EditFrameworkDialogProps) => {
   const [editData, setEditData] = useState(data);
+
+  // Update editData when data prop changes
+  useEffect(() => {
+    setEditData(data);
+  }, [data]);
 
   const handleSave = () => {
     onSave(editData);

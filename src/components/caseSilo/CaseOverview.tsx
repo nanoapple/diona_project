@@ -151,6 +151,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
     
     switch (selectedFramework) {
       case "WHO-ICF":
+        const whoData = currentData as { bodyFunctions: string; activities: string; participation: string; environmental: string; personal: string; };
         return (
           <div>
             <div className="flex justify-between items-center mb-3">
@@ -174,23 +175,23 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               <TableBody>
                 <TableRow>
                   <TableCell className="font-medium">Body Functions</TableCell>
-                  <TableCell>{currentData.bodyFunctions}</TableCell>
+                  <TableCell>{whoData.bodyFunctions}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Activities</TableCell>
-                  <TableCell>{currentData.activities}</TableCell>
+                  <TableCell>{whoData.activities}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Participation</TableCell>
-                  <TableCell>{currentData.participation}</TableCell>
+                  <TableCell>{whoData.participation}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Environmental Factors</TableCell>
-                  <TableCell>{currentData.environmental}</TableCell>
+                  <TableCell>{whoData.environmental}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Personal Factors</TableCell>
-                  <TableCell>{currentData.personal}</TableCell>
+                  <TableCell>{whoData.personal}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -198,6 +199,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         );
       
       case "Bio-Psy-Soc":
+        const bioData = currentData as { biological: string; psychological: string; social: string; };
         return (
           <div>
             <div className="flex justify-between items-center mb-3">
@@ -221,15 +223,15 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               <TableBody>
                 <TableRow>
                   <TableCell className="font-medium">Biological</TableCell>
-                  <TableCell>{currentData.biological}</TableCell>
+                  <TableCell>{bioData.biological}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Psychological</TableCell>
-                  <TableCell>{currentData.psychological}</TableCell>
+                  <TableCell>{bioData.psychological}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Social</TableCell>
-                  <TableCell>{currentData.social}</TableCell>
+                  <TableCell>{bioData.social}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -237,6 +239,14 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         );
       
       case "PERMA+V":
+        const permaData = currentData as { 
+          positiveEmotions: { rating: number; comment: string }; 
+          engagement: { rating: number; comment: string }; 
+          relationships: { rating: number; comment: string }; 
+          meaning: { rating: number; comment: string }; 
+          achievement: { rating: number; comment: string }; 
+          vitality: { rating: number; comment: string }; 
+        };
         return (
           <div>
             <div className="flex justify-between items-center mb-3">
@@ -261,33 +271,33 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               <TableBody>
                 <TableRow>
                   <TableCell className="font-medium">Positive Emotions</TableCell>
-                  <TableCell className="text-center">{currentData.positiveEmotions.rating}</TableCell>
-                  <TableCell>{currentData.positiveEmotions.comment}</TableCell>
+                  <TableCell className="text-center">{permaData.positiveEmotions.rating}</TableCell>
+                  <TableCell>{permaData.positiveEmotions.comment}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Engagement</TableCell>
-                  <TableCell className="text-center">{currentData.engagement.rating}</TableCell>
-                  <TableCell>{currentData.engagement.comment}</TableCell>
+                  <TableCell className="text-center">{permaData.engagement.rating}</TableCell>
+                  <TableCell>{permaData.engagement.comment}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Relationships</TableCell>
-                  <TableCell className="text-center">{currentData.relationships.rating}</TableCell>
-                  <TableCell>{currentData.relationships.comment}</TableCell>
+                  <TableCell className="text-center">{permaData.relationships.rating}</TableCell>
+                  <TableCell>{permaData.relationships.comment}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Meaning</TableCell>
-                  <TableCell className="text-center">{currentData.meaning.rating}</TableCell>
-                  <TableCell>{currentData.meaning.comment}</TableCell>
+                  <TableCell className="text-center">{permaData.meaning.rating}</TableCell>
+                  <TableCell>{permaData.meaning.comment}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Achievement</TableCell>
-                  <TableCell className="text-center">{currentData.achievement.rating}</TableCell>
-                  <TableCell>{currentData.achievement.comment}</TableCell>
+                  <TableCell className="text-center">{permaData.achievement.rating}</TableCell>
+                  <TableCell>{permaData.achievement.comment}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Vitality</TableCell>
-                  <TableCell className="text-center">{currentData.vitality.rating}</TableCell>
-                  <TableCell>{currentData.vitality.comment}</TableCell>
+                  <TableCell className="text-center">{permaData.vitality.rating}</TableCell>
+                  <TableCell>{permaData.vitality.comment}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
