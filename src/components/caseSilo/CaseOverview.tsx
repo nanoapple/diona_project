@@ -2,10 +2,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { CaseSilo } from "@/types";
 import { formatDate } from "@/lib/utils";
-import { FileText, ClipboardCheck, Book, MessageSquare } from "lucide-react";
+import { FileText, ClipboardCheck, Book, MessageSquare, Edit } from "lucide-react";
 import { useState } from "react";
+import EditFrameworkDialog from "./EditFrameworkDialog";
 
 interface CaseOverviewProps {
   caseData: CaseSilo;
@@ -61,6 +63,31 @@ const getTagColorVariant = (tag: string) => {
 
 const CaseOverview = ({ caseData }: CaseOverviewProps) => {
   const [selectedFramework, setSelectedFramework] = useState("Bio-Psy-Soc");
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  
+  // Framework data state
+  const [frameworkData, setFrameworkData] = useState({
+    'Bio-Psy-Soc': {
+      biological: "Michael presents with residual pain and fatigue following a motor vehicle accident. He experiences severe sleep disruption due to nightmares and hypervigilance. His physical health is further impacted by increased nicotine use (over 20 cigarettes/day) and poor nutrition. Although prescribed anxiolytics, adherence is inconsistent.",
+      psychological: "He meets criteria for PTSD, with symptoms including intrusive thoughts, avoidance, emotional numbing, and hyperarousal. He also shows signs of depression and anxiety, along with cognitive distortions such as self-blame and catastrophic thinking. Coping is largely avoidant, and motivation to engage fully in therapy remains low.",
+      social: "Michael lives alone and has become socially isolated. While he maintains remote contact with family, he has disengaged from church and community roles. Financial stress and cultural stigma about mental health contribute to feelings of shame and reinforce his withdrawal from social and spiritual supports."
+    },
+    'WHO-ICF': {
+      bodyFunctions: "PTSD symptoms, disrupted sleep, chronic pain, emotional dysregulation",
+      activities: "Avoids driving, withdrawn from social and religious roles, unemployed",
+      participation: "Ceased volunteering, disengaged from community and church",
+      environmental: "Family support (remote), cultural stigma, insurance stress, spiritual disconnect",
+      personal: "Male, 34, Eastern Orthodox, identity loss, ambivalence about help-seeking"
+    },
+    'PERMA+V': {
+      positiveEmotions: { rating: 3, comment: "Brief moments of peace during prayer; otherwise low affect" },
+      engagement: { rating: 2, comment: "Avoids activities once enjoyed (e.g. woodworking, reading)" },
+      relationships: { rating: 4, comment: "Maintains phone contact with family; socially withdrawn" },
+      meaning: { rating: 5, comment: "Spiritual questioning; loss of vocational and volunteer identity" },
+      achievement: { rating: 2, comment: "Feels like a failure due to unemployment and inactivity" },
+      vitality: { rating: 3, comment: "Poor sleep, fatigue, chain-smoking, neglects physical health" }
+    }
+  });
 
   const getCaseProgress = (caseData: CaseSilo) => {
     // Calculate progress based on documents, assessments and reports
@@ -112,12 +139,31 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
     );
   };
 
+  const handleFrameworkSave = (updatedData: any) => {
+    setFrameworkData(prev => ({
+      ...prev,
+      [selectedFramework]: updatedData
+    }));
+  };
+
   const renderFrameworkContent = () => {
+    const currentData = frameworkData[selectedFramework as keyof typeof frameworkData];
+    
     switch (selectedFramework) {
       case "WHO-ICF":
         return (
           <div>
-            <h4 className="text-md font-medium mb-3">WHO-ICF Snapshot</h4>
+            <div className="flex justify-between items-center mb-3">
+              <h4 className="text-md font-medium">WHO-ICF Snapshot</h4>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowEditDialog(true)}
+                className="p-1 h-auto"
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+            </div>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -128,23 +174,23 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               <TableBody>
                 <TableRow>
                   <TableCell className="font-medium">Body Functions</TableCell>
-                  <TableCell>PTSD symptoms, disrupted sleep, chronic pain, emotional dysregulation</TableCell>
+                  <TableCell>{currentData.bodyFunctions}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Activities</TableCell>
-                  <TableCell>Avoids driving, withdrawn from social and religious roles, unemployed</TableCell>
+                  <TableCell>{currentData.activities}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Participation</TableCell>
-                  <TableCell>Ceased volunteering, disengaged from community and church</TableCell>
+                  <TableCell>{currentData.participation}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Environmental Factors</TableCell>
-                  <TableCell>Family support (remote), cultural stigma, insurance stress, spiritual disconnect</TableCell>
+                  <TableCell>{currentData.environmental}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Personal Factors</TableCell>
-                  <TableCell>Male, 34, Eastern Orthodox, identity loss, ambivalence about help-seeking</TableCell>
+                  <TableCell>{currentData.personal}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -154,7 +200,17 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
       case "Bio-Psy-Soc":
         return (
           <div>
-            <h4 className="text-md font-medium mb-3">Biopsychosocial Summary – {caseData.claimantName}</h4>
+            <div className="flex justify-between items-center mb-3">
+              <h4 className="text-md font-medium">Biopsychosocial Summary – {caseData.claimantName}</h4>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowEditDialog(true)}
+                className="p-1 h-auto"
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+            </div>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -165,15 +221,15 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               <TableBody>
                 <TableRow>
                   <TableCell className="font-medium">Biological</TableCell>
-                  <TableCell>Michael presents with residual pain and fatigue following a motor vehicle accident. He experiences severe sleep disruption due to nightmares and hypervigilance. His physical health is further impacted by increased nicotine use (over 20 cigarettes/day) and poor nutrition. Although prescribed anxiolytics, adherence is inconsistent.</TableCell>
+                  <TableCell>{currentData.biological}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Psychological</TableCell>
-                  <TableCell>He meets criteria for PTSD, with symptoms including intrusive thoughts, avoidance, emotional numbing, and hyperarousal. He also shows signs of depression and anxiety, along with cognitive distortions such as self-blame and catastrophic thinking. Coping is largely avoidant, and motivation to engage fully in therapy remains low.</TableCell>
+                  <TableCell>{currentData.psychological}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Social</TableCell>
-                  <TableCell>Michael lives alone and has become socially isolated. While he maintains remote contact with family, he has disengaged from church and community roles. Financial stress and cultural stigma about mental health contribute to feelings of shame and reinforce his withdrawal from social and spiritual supports.</TableCell>
+                  <TableCell>{currentData.social}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -183,7 +239,17 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
       case "PERMA+V":
         return (
           <div>
-            <h4 className="text-md font-medium mb-3">PERMA+V Profile</h4>
+            <div className="flex justify-between items-center mb-3">
+              <h4 className="text-md font-medium">PERMA+V Profile</h4>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowEditDialog(true)}
+                className="p-1 h-auto"
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+            </div>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -195,33 +261,33 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               <TableBody>
                 <TableRow>
                   <TableCell className="font-medium">Positive Emotions</TableCell>
-                  <TableCell className="text-center">3</TableCell>
-                  <TableCell>Brief moments of peace during prayer; otherwise low affect</TableCell>
+                  <TableCell className="text-center">{currentData.positiveEmotions.rating}</TableCell>
+                  <TableCell>{currentData.positiveEmotions.comment}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Engagement</TableCell>
-                  <TableCell className="text-center">2</TableCell>
-                  <TableCell>Avoids activities once enjoyed (e.g. woodworking, reading)</TableCell>
+                  <TableCell className="text-center">{currentData.engagement.rating}</TableCell>
+                  <TableCell>{currentData.engagement.comment}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Relationships</TableCell>
-                  <TableCell className="text-center">4</TableCell>
-                  <TableCell>Maintains phone contact with family; socially withdrawn</TableCell>
+                  <TableCell className="text-center">{currentData.relationships.rating}</TableCell>
+                  <TableCell>{currentData.relationships.comment}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Meaning</TableCell>
-                  <TableCell className="text-center">5</TableCell>
-                  <TableCell>Spiritual questioning; loss of vocational and volunteer identity</TableCell>
+                  <TableCell className="text-center">{currentData.meaning.rating}</TableCell>
+                  <TableCell>{currentData.meaning.comment}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Achievement</TableCell>
-                  <TableCell className="text-center">2</TableCell>
-                  <TableCell>Feels like a failure due to unemployment and inactivity</TableCell>
+                  <TableCell className="text-center">{currentData.achievement.rating}</TableCell>
+                  <TableCell>{currentData.achievement.comment}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Vitality</TableCell>
-                  <TableCell className="text-center">3</TableCell>
-                  <TableCell>Poor sleep, fatigue, chain-smoking, neglects physical health</TableCell>
+                  <TableCell className="text-center">{currentData.vitality.rating}</TableCell>
+                  <TableCell>{currentData.vitality.comment}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -415,6 +481,15 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
           {caseData.assessments.length > 0 && renderTimelineItem(caseData.assessments[0], 'assessment')}
         </div>
       </div>
+
+      {/* Edit Framework Dialog */}
+      <EditFrameworkDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        framework={selectedFramework as 'WHO-ICF' | 'Bio-Psy-Soc' | 'PERMA+V'}
+        data={frameworkData[selectedFramework as keyof typeof frameworkData]}
+        onSave={handleFrameworkSave}
+      />
     </div>
   );
 };
