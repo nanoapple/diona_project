@@ -356,6 +356,32 @@ const CaseSiloPage = () => {
 
   const selectedCase = selectedCaseId ? caseSilos.find(cs => cs.id === selectedCaseId) : null;
 
+  // Function to get tag color classes
+  const getTagColorClasses = (tag: string) => {
+    const tagColors: Record<string, string> = {
+      'ANX': 'bg-blue-500 text-white',
+      'MOOD': 'bg-purple-500 text-white',
+      'TRM': 'bg-red-500 text-white',
+      'PERS': 'bg-orange-500 text-white',
+      'REL': 'bg-pink-500 text-white',
+      'LIFE': 'bg-yellow-500 text-black',
+      'WORK': 'bg-green-500 text-white',
+      'LEGAL': 'bg-slate-500 text-white',
+      'PAIN': 'bg-rose-500 text-white',
+      'NDV': 'bg-indigo-500 text-white',
+      'EDU': 'bg-cyan-500 text-white',
+      'EXIS': 'bg-violet-500 text-white',
+      'SOC': 'bg-amber-500 text-black',
+      'IDEN': 'bg-lime-500 text-black',
+      'JUST': 'bg-gray-500 text-white',
+      'MED': 'bg-emerald-500 text-white',
+      'ADDX': 'bg-fuchsia-500 text-white',
+      'COG': 'bg-teal-500 text-white',
+    };
+    
+    return tagColors[tag] || 'bg-gray-400 text-white';
+  };
+
   // Handle navigation to interview
   const handleInterviewClick = (caseId: string) => {
     navigate(`/interview/${caseId}`);
@@ -583,11 +609,14 @@ const CaseSiloPage = () => {
               <p className="text-muted-foreground">{statusDetails.message}</p>
             </div>
             
-            {/* Case Categories with full names - moved here */}
+            {/* Case Categories with full names and colors */}
             {selectedCase.categoryTags && selectedCase.categoryTags.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {selectedCase.categoryTags.map(tag => (
-                  <Badge key={tag} variant="outline" className="text-xs">
+                  <Badge 
+                    key={tag} 
+                    className={`text-xs ${getTagColorClasses(tag)} border-0`}
+                  >
                     {CATEGORY_FULL_NAMES[tag] || tag}
                   </Badge>
                 ))}

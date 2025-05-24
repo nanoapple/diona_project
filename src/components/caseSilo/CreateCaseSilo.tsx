@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -175,30 +174,30 @@ export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseS
     setExternalContributors([]);
   };
 
-  // Function to get tag color variant
-  const getTagColorVariant = (tag: string) => {
-    const tagGroups: Record<string, string> = {
-      'ANX': 'blue',
-      'MOOD': 'purple',
-      'TRM': 'red',
-      'PERS': 'orange',
-      'REL': 'pink',
-      'LIFE': 'yellow',
-      'WORK': 'green',
-      'LEGAL': 'slate',
-      'PAIN': 'rose',
-      'NDV': 'indigo',
-      'EDU': 'cyan',
-      'EXIS': 'violet',
-      'SOC': 'amber',
-      'IDEN': 'lime',
-      'JUST': 'gray',
-      'MED': 'emerald',
-      'ADDX': 'fuchsia',
-      'COG': 'teal',
+  // Function to get tag color classes
+  const getTagColorClasses = (tag: string) => {
+    const tagColors: Record<string, string> = {
+      'ANX': 'bg-blue-500 hover:bg-blue-600 text-white border-blue-500',
+      'MOOD': 'bg-purple-500 hover:bg-purple-600 text-white border-purple-500',
+      'TRM': 'bg-red-500 hover:bg-red-600 text-white border-red-500',
+      'PERS': 'bg-orange-500 hover:bg-orange-600 text-white border-orange-500',
+      'REL': 'bg-pink-500 hover:bg-pink-600 text-white border-pink-500',
+      'LIFE': 'bg-yellow-500 hover:bg-yellow-600 text-black border-yellow-500',
+      'WORK': 'bg-green-500 hover:bg-green-600 text-white border-green-500',
+      'LEGAL': 'bg-slate-500 hover:bg-slate-600 text-white border-slate-500',
+      'PAIN': 'bg-rose-500 hover:bg-rose-600 text-white border-rose-500',
+      'NDV': 'bg-indigo-500 hover:bg-indigo-600 text-white border-indigo-500',
+      'EDU': 'bg-cyan-500 hover:bg-cyan-600 text-white border-cyan-500',
+      'EXIS': 'bg-violet-500 hover:bg-violet-600 text-white border-violet-500',
+      'SOC': 'bg-amber-500 hover:bg-amber-600 text-black border-amber-500',
+      'IDEN': 'bg-lime-500 hover:bg-lime-600 text-black border-lime-500',
+      'JUST': 'bg-gray-500 hover:bg-gray-600 text-white border-gray-500',
+      'MED': 'bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-500',
+      'ADDX': 'bg-fuchsia-500 hover:bg-fuchsia-600 text-white border-fuchsia-500',
+      'COG': 'bg-teal-500 hover:bg-teal-600 text-white border-teal-500',
     };
     
-    return tagGroups[tag] || 'default';
+    return tagColors[tag] || 'bg-gray-400 hover:bg-gray-500 text-white border-gray-400';
   };
 
   return (
@@ -270,7 +269,8 @@ export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseS
                   variant={selectedTags.includes(tag.id) ? "default" : "outline"}
                   className={`cursor-pointer px-3 py-1 justify-between ${
                     selectedTags.includes(tag.id) ? 
-                    `bg-${getTagColorVariant(tag.id)}-500 hover:bg-${getTagColorVariant(tag.id)}-600 text-white` : ''
+                    getTagColorClasses(tag.id) : 
+                    'hover:bg-gray-100'
                   }`}
                   onClick={() => handleTagSelection(tag.id)}
                 >
@@ -285,8 +285,7 @@ export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseS
                   return (
                     <Badge 
                       key={tagId} 
-                      variant="secondary" 
-                      className={`gap-1 bg-${getTagColorVariant(tagId)}-500 hover:bg-${getTagColorVariant(tagId)}-600 text-white`}
+                      className={`gap-1 ${getTagColorClasses(tagId)}`}
                     >
                       {tag?.name}
                       <X 
