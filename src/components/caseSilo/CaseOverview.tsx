@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CaseSilo } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { FileText, ClipboardCheck, Book, MessageSquare } from "lucide-react";
@@ -111,6 +112,127 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
     );
   };
 
+  const renderFrameworkContent = () => {
+    switch (selectedFramework) {
+      case "WHO-ICF":
+        return (
+          <div>
+            <h4 className="text-md font-medium mb-3">WHO-ICF Snapshot</h4>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-1/3">Domain</TableHead>
+                  <TableHead>Summary</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">Body Functions</TableCell>
+                  <TableCell>PTSD symptoms, disrupted sleep, chronic pain, emotional dysregulation</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Activities</TableCell>
+                  <TableCell>Avoids driving, withdrawn from social and religious roles, unemployed</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Participation</TableCell>
+                  <TableCell>Ceased volunteering, disengaged from community and church</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Environmental Factors</TableCell>
+                  <TableCell>Family support (remote), cultural stigma, insurance stress, spiritual disconnect</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Personal Factors</TableCell>
+                  <TableCell>Male, 34, Eastern Orthodox, identity loss, ambivalence about help-seeking</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        );
+      
+      case "Bio-Psy-Soc":
+        return (
+          <div>
+            <h4 className="text-md font-medium mb-3">Biopsychosocial Summary – {caseData.claimantName}</h4>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-1/3">Domain</TableHead>
+                  <TableHead>Summary</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">Biological</TableCell>
+                  <TableCell>Michael presents with residual pain and fatigue following a motor vehicle accident. He experiences severe sleep disruption due to nightmares and hypervigilance. His physical health is further impacted by increased nicotine use (over 20 cigarettes/day) and poor nutrition. Although prescribed anxiolytics, adherence is inconsistent.</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Psychological</TableCell>
+                  <TableCell>He meets criteria for PTSD, with symptoms including intrusive thoughts, avoidance, emotional numbing, and hyperarousal. He also shows signs of depression and anxiety, along with cognitive distortions such as self-blame and catastrophic thinking. Coping is largely avoidant, and motivation to engage fully in therapy remains low.</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Social</TableCell>
+                  <TableCell>Michael lives alone and has become socially isolated. While he maintains remote contact with family, he has disengaged from church and community roles. Financial stress and cultural stigma about mental health contribute to feelings of shame and reinforce his withdrawal from social and spiritual supports.</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        );
+      
+      case "PERMA+V":
+        return (
+          <div>
+            <h4 className="text-md font-medium mb-3">PERMA+V Profile</h4>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-1/4">Element</TableHead>
+                  <TableHead className="w-1/6">Rating (/10)</TableHead>
+                  <TableHead>Comment</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">Positive Emotions</TableCell>
+                  <TableCell className="text-center">3</TableCell>
+                  <TableCell>Brief moments of peace during prayer; otherwise low affect</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Engagement</TableCell>
+                  <TableCell className="text-center">2</TableCell>
+                  <TableCell>Avoids activities once enjoyed (e.g. woodworking, reading)</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Relationships</TableCell>
+                  <TableCell className="text-center">4</TableCell>
+                  <TableCell>Maintains phone contact with family; socially withdrawn</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Meaning</TableCell>
+                  <TableCell className="text-center">5</TableCell>
+                  <TableCell>Spiritual questioning; loss of vocational and volunteer identity</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Achievement</TableCell>
+                  <TableCell className="text-center">2</TableCell>
+                  <TableCell>Feels like a failure due to unemployment and inactivity</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Vitality</TableCell>
+                  <TableCell className="text-center">3</TableCell>
+                  <TableCell>Poor sleep, fatigue, chain-smoking, neglects physical health</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        );
+      
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
@@ -206,7 +328,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         <div className="md:col-span-3">
           {/* Tri-state Toggle Button */}
           <div className="mb-6">
-            <h3 className="text-lg font-medium mb-3">Assessment Framework</h3>
+            <h3 className="text-lg font-medium mb-3">Functioning Profile & Wellbeing Matrix</h3>
             <ToggleGroup 
               type="single" 
               value={selectedFramework} 
@@ -224,11 +346,9 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               </ToggleGroupItem>
             </ToggleGroup>
             
-            {/* Placeholder for future content */}
-            <div className="mt-4 p-4 border-2 border-dashed border-muted rounded-md">
-              <p className="text-muted-foreground text-center">
-                Content for {selectedFramework} framework will be added here
-              </p>
+            {/* Framework content with tables */}
+            <div className="mt-4 p-4 border rounded-md bg-card">
+              {renderFrameworkContent()}
             </div>
           </div>
         </div>
