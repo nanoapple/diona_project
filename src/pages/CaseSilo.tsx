@@ -575,7 +575,7 @@ const CaseSiloPage = () => {
 
     return (
       <div>
-        {/* Ms Confee AI Assistant */}
+        {/* Ms Confee AI Assistant - Floating */}
         <MsConfeeAssistant 
           caseData={selectedCase}
           activeTab={activeTab}
