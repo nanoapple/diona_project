@@ -158,7 +158,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-1/3">Domain</TableHead>
+                  <TableHead className="w-1/6">Domain</TableHead>
                   <TableHead>Summary</TableHead>
                 </TableRow>
               </TableHeader>
