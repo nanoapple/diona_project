@@ -10,7 +10,7 @@ const FloatingIcons = () => {
 
   return (
     <>
-      <div className="fixed bottom-4 left-48 flex gap-3 z-50">
+      <div className="fixed bottom-4 left-44 flex gap-3 z-50">
         <Button
           onClick={() => setShowSelfCare(true)}
           className="w-8 h-8 rounded-full p-0 bg-green-500 hover:bg-green-600 border border-white shadow-md"
