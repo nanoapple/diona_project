@@ -525,6 +525,28 @@ const CaseSiloPage = () => {
 
     const statusDetails = getStatusDetails(selectedCase.status, selectedCase.expiryDate);
 
+    // Map of category tag IDs to full names for display
+    const CATEGORY_FULL_NAMES: Record<string, string> = {
+      'ANX': 'Anxiety / Stress',
+      'MOOD': 'Mood Disorders',
+      'TRM': 'Trauma / PTSD',
+      'PERS': 'Personality / Behaviour',
+      'REL': 'Relationships / Families',
+      'LIFE': 'Life Changes / Grief',
+      'WORK': 'Workplace Stress / Bullying',
+      'LEGAL': 'Legal / Compensation Issues',
+      'PAIN': 'Pain / Physical Injury',
+      'NDV': 'Neurodiversity Support',
+      'EDU': 'Academic / School Challenges',
+      'EXIS': 'Existential / Spiritual Crises',
+      'SOC': 'Cultural / Social Oppression',
+      'IDEN': 'Identity / Affirmation',
+      'JUST': 'Forensic / Justice Involvement',
+      'MED': 'Medical / Health Psychology',
+      'ADDX': 'Addiction / Compulsive Behaviour',
+      'COG': 'Cognitive Decline / Dementia',
+    };
+
     return (
       <div>
         {/* Ms Confee AI Assistant */}
@@ -560,6 +582,18 @@ const CaseSiloPage = () => {
               <span className="text-muted-foreground">•</span>
               <p className="text-muted-foreground">{statusDetails.message}</p>
             </div>
+            
+            {/* Case Categories with full names - moved here */}
+            {selectedCase.categoryTags && selectedCase.categoryTags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {selectedCase.categoryTags.map(tag => (
+                  <Badge key={tag} variant="outline" className="text-xs">
+                    {CATEGORY_FULL_NAMES[tag] || tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+            
             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mt-3">
               <div className="flex items-center gap-1">
                 <Calendar className="text-muted-foreground w-4 h-4" />
@@ -576,15 +610,6 @@ const CaseSiloPage = () => {
                 </div>
               )}
             </div>
-            {selectedCase.categoryTags && selectedCase.categoryTags.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
-                {selectedCase.categoryTags.map(tag => (
-                  <Badge key={tag} variant="outline" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            )}
           </div>
           
           <div className="flex flex-col items-end gap-3 mt-2 sm:mt-0">

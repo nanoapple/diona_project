@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CaseSilo } from "@/types";
@@ -133,23 +132,6 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               <span className="font-medium">Case Progress</span>
               <span>{getCaseProgress(caseData)}%</span>
             </div>
-            
-            {/* Case Categories using full names and color coding */}
-            {caseData.categoryTags && caseData.categoryTags.length > 0 && (
-              <div className="p-2 bg-muted/20 rounded-md">
-                <span className="font-medium block mb-2">Case Categories</span>
-                <div className="flex flex-wrap gap-2">
-                  {caseData.categoryTags.map(tag => (
-                    <Badge 
-                      key={tag} 
-                      className={`bg-${getTagColorVariant(tag)}-500 hover:bg-${getTagColorVariant(tag)}-600 text-white`}
-                    >
-                      {CATEGORY_FULL_NAMES[tag] || tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
         

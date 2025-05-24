@@ -1,8 +1,10 @@
-
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Send } from "lucide-react";
 import { CaseSilo, Assessment, Document, Report } from "@/types";
 import { Milestone } from "./MilestoneTracker";
 
@@ -19,6 +21,8 @@ const MsConfeeAssistant: React.FC<MsConfeeAssistantProps> = ({
 }) => {
   const [enabled, setEnabled] = useState(true);
   const [message, setMessage] = useState<string>("");
+  const [userInput, setUserInput] = useState<string>("");
+  const [chatHistory, setChatHistory] = useState<Array<{role: 'user' | 'assistant', content: string}>>([]);
 
   // Generate AI assistant message based on the active tab and case data
   useEffect(() => {
@@ -200,6 +204,41 @@ const MsConfeeAssistant: React.FC<MsConfeeAssistantProps> = ({
     `);
   };
 
+  const handleSendMessage = () => {
+    if (!userInput.trim()) return;
+    
+    // Add user message to chat history
+    setChatHistory(prev => [...prev, { role: 'user', content: userInput }]);
+    
+    // Generate AI response based on user input
+    let response = "";
+    const input = userInput.toLowerCase();
+    
+    if (input.includes('report') || input.includes('draft')) {
+      response = "I can help you prepare a psychological report draft. Based on the completed assessments, I'll include sections on background, assessment findings, and recommendations. Would you like me to start with a specific format?";
+    } else if (input.includes('assessment') || input.includes('test')) {
+      response = "I can recommend suitable assessments for this case type. Given the workplace injury and trauma categories, tools like PCL-5 for PTSD screening or DASS-21 for general psychological distress would be appropriate. Should I prepare an assessment plan?";
+    } else if (input.includes('document') || input.includes('record')) {
+      response = "I can help organize the case documents or suggest additional records that might be needed. Would you like me to create a document request template or review what's currently available?";
+    } else if (input.includes('timeline') || input.includes('milestone')) {
+      response = "I can help track case milestones and identify any gaps in the treatment timeline. Should I highlight the key dates or suggest next steps for case progression?";
+    } else {
+      response = "I'm here to assist with all aspects of this case. I can help with report writing, assessment planning, document organization, or case strategy. What specific area would you like to focus on?";
+    }
+    
+    // Add AI response to chat history
+    setChatHistory(prev => [...prev, { role: 'assistant', content: response }]);
+    
+    // Clear input
+    setUserInput("");
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
+
   if (!enabled) {
     return (
       <Card className="fixed top-20 right-4 w-64 bg-background/70 backdrop-blur-sm shadow-lg border border-primary/10 z-10">
@@ -238,11 +277,50 @@ const MsConfeeAssistant: React.FC<MsConfeeAssistantProps> = ({
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        {message.split('\n\n').map((paragraph, i) => (
-          <p key={i} className="text-xs mb-2 leading-relaxed">
-            {paragraph.trim()}
-          </p>
-        ))}
+        {/* Main AI message */}
+        <div className="mb-3">
+          {message.split('\n\n').map((paragraph, i) => (
+            <p key={i} className="text-xs mb-2 leading-relaxed">
+              {paragraph.trim()}
+            </p>
+          ))}
+        </div>
+        
+        {/* Chat history */}
+        {chatHistory.length > 0 && (
+          <div className="max-h-32 overflow-y-auto mb-3 space-y-2 border-t border-muted pt-2">
+            {chatHistory.slice(-4).map((chat, i) => (
+              <div key={i} className={`text-xs ${chat.role === 'user' ? 'text-right' : 'text-left'}`}>
+                <div className={`inline-block p-2 rounded-lg max-w-full ${
+                  chat.role === 'user' 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'bg-muted text-muted-foreground'
+                }`}>
+                  {chat.content}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {/* Interactive input */}
+        <div className="flex gap-2 mt-3">
+          <Input
+            placeholder="Ask Ms Confee..."
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            onKeyPress={handleKeyPress}
+            className="text-xs h-8 flex-1"
+          />
+          <Button 
+            onClick={handleSendMessage} 
+            size="sm" 
+            className="h-8 w-8 p-0"
+            disabled={!userInput.trim()}
+          >
+            <Send className="h-3 w-3" />
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
