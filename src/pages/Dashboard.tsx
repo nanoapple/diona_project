@@ -188,40 +188,57 @@ const getTasksForStage = (stageIndex: number, userRole: string) => {
 
 // Mock report sections data
 const getReportSections = (reportType: string) => {
-  const workInjuryReportSections = [
+  const johnDoeWorkInjuryReportSections = [
     { id: 1, title: 'Executive Summary', status: 'completed' as const },
     { id: 2, title: 'Background Information', status: 'completed' as const },
     { id: 3, title: 'Clinical Assessment', status: 'completed' as const },
-    { id: 4, title: 'Psychological Testing', status: 'in-progress' as const },
+    { id: 4, title: 'Psychological Testing', status: 'not-started' as const },
     { id: 5, title: 'Functional Assessment', status: 'not-started' as const },
-    { id: 6, title: 'Recommendations', status: 'not-started' as const }
+    { id: 6, title: 'Recommendations', status: 'not-started' as const },
+    { id: 7, title: 'Prognosis', status: 'not-started' as const },
+    { id: 8, title: 'Conclusion', status: 'not-started' as const }
   ];
 
-  const mvaReportSections = [
+  const janeSmithMvaReportSections = [
     { id: 1, title: 'Executive Summary', status: 'completed' as const },
-    { id: 2, title: 'Incident Details', status: 'in-progress' as const },
-    { id: 3, title: 'Medical History', status: 'not-started' as const },
-    { id: 4, title: 'PTSD Assessment', status: 'not-started' as const },
-    { id: 5, title: 'Impact Analysis', status: 'not-started' as const },
-    { id: 6, title: 'Treatment Plan', status: 'not-started' as const }
+    { id: 2, title: 'Incident Details', status: 'completed' as const },
+    { id: 3, title: 'Medical History', status: 'completed' as const },
+    { id: 4, title: 'PTSD Assessment', status: 'completed' as const },
+    { id: 5, title: 'Cognitive Assessment', status: 'completed' as const },
+    { id: 6, title: 'Functional Capacity', status: 'completed' as const },
+    { id: 7, title: 'Vocational Impact', status: 'completed' as const },
+    { id: 8, title: 'Treatment History', status: 'completed' as const },
+    { id: 9, title: 'Current Symptoms', status: 'completed' as const },
+    { id: 10, title: 'Impact Analysis', status: 'completed' as const },
+    { id: 11, title: 'Treatment Plan', status: 'completed' as const },
+    { id: 12, title: 'Recommendations', status: 'not-started' as const },
+    { id: 13, title: 'Prognosis', status: 'not-started' as const },
+    { id: 14, title: 'Legal Considerations', status: 'not-started' as const },
+    { id: 15, title: 'Conclusion', status: 'not-started' as const }
   ];
 
-  const workplaceStressSections = [
-    { id: 1, title: 'Background', status: 'in-progress' as const },
-    { id: 2, title: 'Assessment', status: 'not-started' as const },
-    { id: 3, title: 'Analysis', status: 'not-started' as const },
-    { id: 4, title: 'Recommendations', status: 'not-started' as const }
+  const robertBrownWorkplaceStressSections = [
+    { id: 1, title: 'Background', status: 'completed' as const },
+    { id: 2, title: 'Workplace Factors', status: 'completed' as const },
+    { id: 3, title: 'Psychological Assessment', status: 'completed' as const },
+    { id: 4, title: 'Stress Indicators', status: 'completed' as const },
+    { id: 5, title: 'Functional Impact', status: 'completed' as const },
+    { id: 6, title: 'Coping Mechanisms', status: 'completed' as const },
+    { id: 7, title: 'Treatment Response', status: 'completed' as const },
+    { id: 8, title: 'Recommendations', status: 'not-started' as const },
+    { id: 9, title: 'Return to Work Plan', status: 'not-started' as const },
+    { id: 10, title: 'Follow-up Strategy', status: 'not-started' as const }
   ];
 
   switch (reportType) {
     case 'work-injury':
-      return workInjuryReportSections;
+      return johnDoeWorkInjuryReportSections;
     case 'mva':
-      return mvaReportSections;
+      return janeSmithMvaReportSections;
     case 'workplace-stress':
-      return workplaceStressSections;
+      return robertBrownWorkplaceStressSections;
     default:
-      return workInjuryReportSections;
+      return johnDoeWorkInjuryReportSections;
   }
 };
 
@@ -615,6 +632,21 @@ const Dashboard = () => {
                 title="Robert Brown - Workplace Stress"
                 sections={getReportSections('workplace-stress')}
               />
+            </div>
+            
+            <div className="flex items-center gap-4 text-xs text-muted-foreground mt-4 pt-4 border-t">
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-blue-500 rounded-sm"></div>
+                <span>Completed</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-yellow-500 rounded-sm"></div>
+                <span>In Progress</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-gray-300 rounded-sm"></div>
+                <span>Not Started</span>
+              </div>
             </div>
           </CardContent>
         </Card>

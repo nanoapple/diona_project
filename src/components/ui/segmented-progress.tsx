@@ -65,21 +65,6 @@ const SegmentedReportProgress = React.forwardRef<
           />
         ))}
       </div>
-      
-      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-blue-500 rounded-sm"></div>
-          <span>Completed</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-yellow-500 rounded-sm"></div>
-          <span>In Progress</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-2 h-2 bg-gray-300 rounded-sm"></div>
-          <span>Not Started</span>
-        </div>
-      </div>
     </div>
   );
 });
