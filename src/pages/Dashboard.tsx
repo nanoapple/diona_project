@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress, SegmentedProgress } from '@/components/ui/progress';
+import { SegmentedReportProgress } from '@/components/ui/segmented-progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '../contexts/AuthContext';
@@ -182,6 +183,45 @@ const getTasksForStage = (stageIndex: number, userRole: string) => {
       }
     default:
       return [];
+  }
+};
+
+// Mock report sections data
+const getReportSections = (reportType: string) => {
+  const workInjuryReportSections = [
+    { id: 1, title: 'Executive Summary', status: 'completed' as const },
+    { id: 2, title: 'Background Information', status: 'completed' as const },
+    { id: 3, title: 'Clinical Assessment', status: 'completed' as const },
+    { id: 4, title: 'Psychological Testing', status: 'in-progress' as const },
+    { id: 5, title: 'Functional Assessment', status: 'not-started' as const },
+    { id: 6, title: 'Recommendations', status: 'not-started' as const }
+  ];
+
+  const mvaReportSections = [
+    { id: 1, title: 'Executive Summary', status: 'completed' as const },
+    { id: 2, title: 'Incident Details', status: 'in-progress' as const },
+    { id: 3, title: 'Medical History', status: 'not-started' as const },
+    { id: 4, title: 'PTSD Assessment', status: 'not-started' as const },
+    { id: 5, title: 'Impact Analysis', status: 'not-started' as const },
+    { id: 6, title: 'Treatment Plan', status: 'not-started' as const }
+  ];
+
+  const workplaceStressSections = [
+    { id: 1, title: 'Background', status: 'in-progress' as const },
+    { id: 2, title: 'Assessment', status: 'not-started' as const },
+    { id: 3, title: 'Analysis', status: 'not-started' as const },
+    { id: 4, title: 'Recommendations', status: 'not-started' as const }
+  ];
+
+  switch (reportType) {
+    case 'work-injury':
+      return workInjuryReportSections;
+    case 'mva':
+      return mvaReportSections;
+    case 'workplace-stress':
+      return workplaceStressSections;
+    default:
+      return workInjuryReportSections;
   }
 };
 
@@ -562,28 +602,19 @@ const Dashboard = () => {
             <CardDescription>Your report generation progress</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <div className="text-sm font-medium">John Doe - Work Injury Report</div>
-                  <div className="text-xs">Stage 3 of 6</div>
-                </div>
-                <Progress value={50} className="h-2" />
-              </div>
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <div className="text-sm font-medium">Jane Smith - MVA Report</div>
-                  <div className="text-xs">Stage 2 of 6</div>
-                </div>
-                <Progress value={33} className="h-2" />
-              </div>
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <div className="text-sm font-medium">Robert Brown - Workplace Stress</div>
-                  <div className="text-xs">Stage 1 of 6</div>
-                </div>
-                <Progress value={16} className="h-2" />
-              </div>
+            <div className="space-y-4">
+              <SegmentedReportProgress
+                title="John Doe - Work Injury Report"
+                sections={getReportSections('work-injury')}
+              />
+              <SegmentedReportProgress
+                title="Jane Smith - MVA Report"
+                sections={getReportSections('mva')}
+              />
+              <SegmentedReportProgress
+                title="Robert Brown - Workplace Stress"
+                sections={getReportSections('workplace-stress')}
+              />
             </div>
           </CardContent>
         </Card>
