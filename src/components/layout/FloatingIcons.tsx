@@ -10,28 +10,28 @@ const FloatingIcons = () => {
 
   return (
     <>
-      <div className="fixed bottom-4 left-4 flex gap-2 z-50">
+      <div className="fixed bottom-6 left-6 flex gap-3 z-50">
         <Button
           onClick={() => setShowSelfCare(true)}
-          className="w-16 h-16 rounded-full p-0 bg-green-500 hover:bg-green-600 border-2 border-white shadow-lg"
+          className="w-8 h-8 rounded-full p-0 bg-green-500 hover:bg-green-600 border border-white shadow-md"
           title="Self-Care Portal"
         >
           <img 
             src="/lovable-uploads/59e03bbf-7415-4289-ac29-413d19f0a2ee.png" 
             alt="Self-Care"
-            className="w-12 h-12 object-contain"
+            className="w-6 h-6 object-contain"
           />
         </Button>
         
         <Button
           onClick={() => setShowEmergency(true)}
-          className="w-16 h-16 rounded-full p-0 bg-red-500 hover:bg-red-600 border-2 border-white shadow-lg"
+          className="w-8 h-8 rounded-full p-0 bg-red-500 hover:bg-red-600 border border-white shadow-md"
           title="Emergency & Crisis Support"
         >
           <img 
             src="/lovable-uploads/52a1d7b8-5f43-4ba1-a9f6-5f526d58134d.png" 
             alt="Emergency Support"
-            className="w-12 h-12 object-contain"
+            className="w-6 h-6 object-contain"
           />
         </Button>
       </div>
