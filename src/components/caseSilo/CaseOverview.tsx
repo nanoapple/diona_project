@@ -1,8 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { CaseSilo } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { FileText, ClipboardCheck, Book, MessageSquare } from "lucide-react";
+import { useState } from "react";
 
 interface CaseOverviewProps {
   caseData: CaseSilo;
@@ -57,6 +59,8 @@ const getTagColorVariant = (tag: string) => {
 };
 
 const CaseOverview = ({ caseData }: CaseOverviewProps) => {
+  const [selectedFramework, setSelectedFramework] = useState("Bio-Psy-Soc");
+
   const getCaseProgress = (caseData: CaseSilo) => {
     // Calculate progress based on documents, assessments and reports
     const totalItems = 
@@ -109,8 +113,9 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+        {/* Case Summary - 2/5 width */}
+        <div className="md:col-span-2">
           <h3 className="text-lg font-medium mb-3">Case Summary</h3>
           <div className="space-y-3">
             {/* Status field */}
@@ -133,60 +138,98 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
               <span>{getCaseProgress(caseData)}%</span>
             </div>
           </div>
-        </div>
-        
-        <div>
-          <h3 className="text-lg font-medium mb-3">Key Participants</h3>
-          <div className="space-y-3">
-            {/* Client with highlighted styling */}
-            <div className="p-3 border rounded-md bg-primary/5 border-primary/20 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">C</div>
-                <div>
-                  <p className="font-medium">{caseData.claimantName}</p>
-                  <p className="text-xs text-muted-foreground">Claimant</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Practitioner with highlighted styling */}
-            <div className="p-3 border rounded-md bg-primary/5 border-primary/20 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">P</div>
-                <div>
-                  <p className="font-medium">Psychologist Name</p>
-                  <p className="text-xs text-muted-foreground">Clinical Psychologist</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Lawyer with less emphasis */}
-            <div className="p-3 border rounded-md">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground font-medium">L</div>
-                <div>
-                  <p className="font-medium">Lawyer Name</p>
-                  <p className="text-xs text-muted-foreground">Legal Representative</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* External contributors */}
-            {caseData.participants?.others && caseData.participants.others.length > 0 && 
-              caseData.participants.others.map((contributor, index) => (
-                <div key={contributor.id} className="p-3 border rounded-md">
+
+          {/* Key Participants moved below Case Summary */}
+          <div className="mt-6">
+            <h3 className="text-lg font-medium mb-3">Key Participants</h3>
+            <div className="space-y-3">
+              {/* Core participants side-by-side */}
+              <div className="grid grid-cols-2 gap-3">
+                {/* Client */}
+                <div className="p-3 border rounded-md bg-primary/5 border-primary/20 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground font-medium">
-                      {contributor.role.charAt(0)}
-                    </div>
+                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">C</div>
                     <div>
-                      <p className="font-medium">{contributor.email.split('@')[0]}</p>
-                      <p className="text-xs text-muted-foreground">{contributor.role}</p>
+                      <p className="font-medium">{caseData.claimantName}</p>
+                      <p className="text-xs text-muted-foreground">Claimant</p>
                     </div>
                   </div>
                 </div>
-              ))
-            }
+                
+                {/* Practitioner */}
+                <div className="p-3 border rounded-md bg-primary/5 border-primary/20 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">P</div>
+                    <div>
+                      <p className="font-medium">Psychologist Name</p>
+                      <p className="text-xs text-muted-foreground">Clinical Psychologist</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Other participants below */}
+              <div className="space-y-2">
+                {/* Lawyer */}
+                <div className="p-3 border rounded-md">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground font-medium">L</div>
+                    <div>
+                      <p className="font-medium">Lawyer Name</p>
+                      <p className="text-xs text-muted-foreground">Legal Representative</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* External contributors */}
+                {caseData.participants?.others && caseData.participants.others.length > 0 && 
+                  caseData.participants.others.map((contributor, index) => (
+                    <div key={contributor.id} className="p-3 border rounded-md">
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground font-medium">
+                          {contributor.role.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-medium">{contributor.email.split('@')[0]}</p>
+                          <p className="text-xs text-muted-foreground">{contributor.role}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Right column - 3/5 width */}
+        <div className="md:col-span-3">
+          {/* Tri-state Toggle Button */}
+          <div className="mb-6">
+            <h3 className="text-lg font-medium mb-3">Assessment Framework</h3>
+            <ToggleGroup 
+              type="single" 
+              value={selectedFramework} 
+              onValueChange={setSelectedFramework}
+              className="justify-start"
+            >
+              <ToggleGroupItem value="WHO-ICF" aria-label="WHO-ICF Framework">
+                WHO-ICF
+              </ToggleGroupItem>
+              <ToggleGroupItem value="Bio-Psy-Soc" aria-label="Bio-Psycho-Social Framework">
+                Bio-Psy-Soc
+              </ToggleGroupItem>
+              <ToggleGroupItem value="PERMA+V" aria-label="PERMA+V Framework">
+                PERMA+V
+              </ToggleGroupItem>
+            </ToggleGroup>
+            
+            {/* Placeholder for future content */}
+            <div className="mt-4 p-4 border-2 border-dashed border-muted rounded-md">
+              <p className="text-muted-foreground text-center">
+                Content for {selectedFramework} framework will be added here
+              </p>
+            </div>
           </div>
         </div>
       </div>
