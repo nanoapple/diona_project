@@ -154,7 +154,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         const whoData = currentData as { bodyFunctions: string; activities: string; participation: string; environmental: string; personal: string; };
         return (
           <div>
-            <div className="flex justify-between items-center mb-3">
+            <div className="flex justify-between items-center mb-2">
               <h4 className="text-md font-medium">WHO-ICF Snapshot</h4>
               <Button 
                 variant="ghost" 
@@ -167,31 +167,31 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
             </div>
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="w-1/3">Domain</TableHead>
-                  <TableHead>Summary</TableHead>
+                <TableRow className="h-10">
+                  <TableHead className="w-1/3 py-2">Domain</TableHead>
+                  <TableHead className="py-2">Summary</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell className="font-medium">Body Functions</TableCell>
-                  <TableCell>{whoData.bodyFunctions}</TableCell>
+                  <TableCell className="font-medium py-3">Body Functions</TableCell>
+                  <TableCell className="py-3">{whoData.bodyFunctions}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">Activities</TableCell>
-                  <TableCell>{whoData.activities}</TableCell>
+                  <TableCell className="font-medium py-3">Activities</TableCell>
+                  <TableCell className="py-3">{whoData.activities}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">Participation</TableCell>
-                  <TableCell>{whoData.participation}</TableCell>
+                  <TableCell className="font-medium py-3">Participation</TableCell>
+                  <TableCell className="py-3">{whoData.participation}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">Environmental Factors</TableCell>
-                  <TableCell>{whoData.environmental}</TableCell>
+                  <TableCell className="font-medium py-3">Environmental Factors</TableCell>
+                  <TableCell className="py-3">{whoData.environmental}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">Personal Factors</TableCell>
-                  <TableCell>{whoData.personal}</TableCell>
+                  <TableCell className="font-medium py-3">Personal Factors</TableCell>
+                  <TableCell className="py-3">{whoData.personal}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -202,7 +202,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         const bioData = currentData as { biological: string; psychological: string; social: string; };
         return (
           <div>
-            <div className="flex justify-between items-center mb-3">
+            <div className="flex justify-between items-center mb-2">
               <h4 className="text-md font-medium">Biopsychosocial Summary – {caseData.claimantName}</h4>
               <Button 
                 variant="ghost" 
@@ -215,23 +215,23 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
             </div>
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="w-1/6">Domain</TableHead>
-                  <TableHead>Summary</TableHead>
+                <TableRow className="h-10">
+                  <TableHead className="w-1/6 py-2">Domain</TableHead>
+                  <TableHead className="py-2">Summary</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell className="font-medium">Biological</TableCell>
-                  <TableCell>{bioData.biological}</TableCell>
+                  <TableCell className="font-medium py-3">Biological</TableCell>
+                  <TableCell className="py-3">{bioData.biological}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">Psychological</TableCell>
-                  <TableCell>{bioData.psychological}</TableCell>
+                  <TableCell className="font-medium py-3">Psychological</TableCell>
+                  <TableCell className="py-3">{bioData.psychological}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">Social</TableCell>
-                  <TableCell>{bioData.social}</TableCell>
+                  <TableCell className="font-medium py-3">Social</TableCell>
+                  <TableCell className="py-3">{bioData.social}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -249,7 +249,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         };
         return (
           <div>
-            <div className="flex justify-between items-center mb-3">
+            <div className="flex justify-between items-center mb-2">
               <h4 className="text-md font-medium">PERMA+V Profile</h4>
               <Button 
                 variant="ghost" 
@@ -262,42 +262,42 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
             </div>
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="w-1/4">Element</TableHead>
-                  <TableHead className="w-1/6">Rating (/10)</TableHead>
-                  <TableHead>Comment</TableHead>
+                <TableRow className="h-10">
+                  <TableHead className="w-1/4 py-2">Element</TableHead>
+                  <TableHead className="w-1/6 py-2">Rating (/10)</TableHead>
+                  <TableHead className="py-2">Comment</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell className="font-medium">Positive Emotions</TableCell>
-                  <TableCell className="text-center">{permaData.positiveEmotions.rating}</TableCell>
-                  <TableCell>{permaData.positiveEmotions.comment}</TableCell>
+                  <TableCell className="font-medium py-3">Positive Emotions</TableCell>
+                  <TableCell className="text-center py-3">{permaData.positiveEmotions.rating}</TableCell>
+                  <TableCell className="py-3">{permaData.positiveEmotions.comment}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">Engagement</TableCell>
-                  <TableCell className="text-center">{permaData.engagement.rating}</TableCell>
-                  <TableCell>{permaData.engagement.comment}</TableCell>
+                  <TableCell className="font-medium py-3">Engagement</TableCell>
+                  <TableCell className="text-center py-3">{permaData.engagement.rating}</TableCell>
+                  <TableCell className="py-3">{permaData.engagement.comment}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">Relationships</TableCell>
-                  <TableCell className="text-center">{permaData.relationships.rating}</TableCell>
-                  <TableCell>{permaData.relationships.comment}</TableCell>
+                  <TableCell className="font-medium py-3">Relationships</TableCell>
+                  <TableCell className="text-center py-3">{permaData.relationships.rating}</TableCell>
+                  <TableCell className="py-3">{permaData.relationships.comment}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">Meaning</TableCell>
-                  <TableCell className="text-center">{permaData.meaning.rating}</TableCell>
-                  <TableCell>{permaData.meaning.comment}</TableCell>
+                  <TableCell className="font-medium py-3">Meaning</TableCell>
+                  <TableCell className="text-center py-3">{permaData.meaning.rating}</TableCell>
+                  <TableCell className="py-3">{permaData.meaning.comment}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">Achievement</TableCell>
-                  <TableCell className="text-center">{permaData.achievement.rating}</TableCell>
-                  <TableCell>{permaData.achievement.comment}</TableCell>
+                  <TableCell className="font-medium py-3">Achievement</TableCell>
+                  <TableCell className="text-center py-3">{permaData.achievement.rating}</TableCell>
+                  <TableCell className="py-3">{permaData.achievement.comment}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">Vitality</TableCell>
-                  <TableCell className="text-center">{permaData.vitality.rating}</TableCell>
-                  <TableCell>{permaData.vitality.comment}</TableCell>
+                  <TableCell className="font-medium py-3">Vitality</TableCell>
+                  <TableCell className="text-center py-3">{permaData.vitality.rating}</TableCell>
+                  <TableCell className="py-3">{permaData.vitality.comment}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -404,7 +404,10 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         <div className="md:col-span-3">
           {/* Tri-state Toggle Button */}
           <div className="mb-6">
-            <h3 className="text-lg font-medium mb-3">Functioning Profile & Wellbeing Matrix</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-medium">Functioning Profile & Wellbeing Matrix</h3>
+              <span className="text-sm text-muted-foreground">Last updated: 03-Mar-2025</span>
+            </div>
             <ToggleGroup 
               type="single" 
               value={selectedFramework} 
@@ -423,7 +426,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
             </ToggleGroup>
             
             {/* Framework content with tables */}
-            <div className="mt-4 p-4 border rounded-md bg-card">
+            <div className="mt-3 p-3 border rounded-md bg-muted/30">
               {renderFrameworkContent()}
             </div>
           </div>
