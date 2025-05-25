@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Plus, Eye, EyeOff } from "lucide-react";
@@ -8,6 +7,7 @@ import CaseNoteItem from './CaseNoteItem';
 import NoteVerificationDialog from './NoteVerificationDialog';
 import ClinicalNotesDialog from './ClinicalNotesDialog';
 import ShareNotesDialog from './ShareNotesDialog';
+import AddNotesDialog from './AddNotesDialog';
 
 interface CaseNotesProps {
   notes: CaseNote[];
@@ -70,6 +70,7 @@ const CaseNotes = ({ notes, canView, canCreate, onCreateItem, currentUserRole }:
   const [isVerifyDialogOpen, setIsVerifyDialogOpen] = useState(false);
   const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [isAddNotesDialogOpen, setIsAddNotesDialogOpen] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [shareCode, setShareCode] = useState("");
   const [therapistName, setTherapistName] = useState("");
@@ -143,6 +144,21 @@ const CaseNotes = ({ notes, canView, canCreate, onCreateItem, currentUserRole }:
     setIsShareDialogOpen(false);
   };
 
+  const handleAddNote = () => {
+    setIsAddNotesDialogOpen(true);
+  };
+
+  const handleSaveNote = (noteData: any) => {
+    // In a real app, this would save to the backend
+    console.log('Saving note:', noteData);
+    toast({
+      title: "Note saved successfully",
+      description: "Your clinical note has been added to the case.",
+    });
+    // Call the original onCreateItem to update the parent component
+    onCreateItem();
+  };
+
   const getNoteType = (noteId: string) => {
     // This is just a demo implementation
     // In a real app, this would be stored in the note data
@@ -170,7 +186,7 @@ const CaseNotes = ({ notes, canView, canCreate, onCreateItem, currentUserRole }:
           )}
           
           {canCreate && (
-            <Button size="sm" onClick={onCreateItem}>
+            <Button size="sm" onClick={handleAddNote}>
               <Plus className="w-4 h-4 mr-1" /> Add Note
             </Button>
           )}
@@ -237,6 +253,13 @@ const CaseNotes = ({ notes, canView, canCreate, onCreateItem, currentUserRole }:
         recipientEmail={recipientEmail}
         setRecipientEmail={setRecipientEmail}
         onShare={handleShareSubmit}
+      />
+      
+      {/* Add Notes Dialog */}
+      <AddNotesDialog
+        open={isAddNotesDialogOpen}
+        onOpenChange={setIsAddNotesDialogOpen}
+        onSave={handleSaveNote}
       />
     </div>
   );
