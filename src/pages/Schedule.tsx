@@ -5,11 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { format, startOfWeek, endOfWeek, addDays, isSameWeek, isSameDay } from 'date-fns';
 import { Plus } from 'lucide-react';
+import CreateAppointmentDialog from '@/components/schedule/CreateAppointmentDialog';
 
 const Schedule = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedWeek, setSelectedWeek] = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogDate, setDialogDate] = useState<Date>();
+  const [dialogTime, setDialogTime] = useState<string>();
 
   const handleDateClick = (date: Date | undefined) => {
     if (date) {
@@ -20,6 +24,18 @@ const Schedule = () => {
 
   const handleSlotClick = (slotId: string) => {
     setSelectedSlot(selectedSlot === slotId ? null : slotId);
+  };
+
+  const handleAddClick = (slotId: string) => {
+    const [dayName, time] = slotId.split('-');
+    const weekDays = generateWeekDays();
+    const selectedDay = weekDays.find(day => day.dayName === dayName);
+    
+    if (selectedDay) {
+      setDialogDate(selectedDay.date);
+      setDialogTime(time);
+      setIsDialogOpen(true);
+    }
   };
 
   // Generate time slots from 9:00 AM to 6:00 PM with 15-minute intervals
@@ -125,7 +141,7 @@ const Schedule = () => {
                           className="absolute right-1 top-1/2 transform -translate-y-1/2 h-4 px-1 text-xs min-w-6"
                           onClick={(e) => {
                             e.stopPropagation();
-                            console.log(`Add event at ${slotId}`);
+                            handleAddClick(slotId);
                           }}
                         >
                           <Plus size={10} />
@@ -211,6 +227,14 @@ const Schedule = () => {
           </Card>
         </div>
       </div>
+
+      {/* Create Appointment Dialog */}
+      <CreateAppointmentDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        selectedDate={dialogDate}
+        selectedTime={dialogTime}
+      />
     </div>
   );
 };
