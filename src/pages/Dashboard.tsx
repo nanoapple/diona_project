@@ -242,6 +242,133 @@ const getReportSections = (reportType: string) => {
   }
 };
 
+// Mock milestones data for each case
+const getCaseMilestones = (caseId: string): Milestone[] => {
+  if (caseId === '1') {
+    return [
+      {
+        id: "m1",
+        type: "intake",
+        title: "Initial Intake Session",
+        date: "2023-03-18",
+        description: "Client onboarded and case created",
+        status: "completed"
+      },
+      {
+        id: "m2",
+        type: "document",
+        title: "Medical Records Added",
+        date: "2023-03-25",
+        description: "GP medical records uploaded",
+        status: "completed"
+      },
+      {
+        id: "m3",
+        type: "assessment",
+        title: "DASS-21 Completed",
+        date: "2023-04-05",
+        description: "Client completed psychological assessment",
+        status: "completed"
+      },
+      {
+        id: "m4",
+        type: "key_session",
+        title: "Trauma Processing Session",
+        date: "2023-04-12",
+        description: "Key therapeutic session - trauma narrative",
+        status: "completed"
+      },
+      {
+        id: "m5",
+        type: "report",
+        title: "Initial Report Completed",
+        date: "2023-04-15",
+        description: "Psychological assessment report finalized",
+        status: "completed"
+      }
+    ];
+  } else if (caseId === '2') {
+    return [
+      {
+        id: "m6",
+        type: "intake",
+        title: "Initial Consultation",
+        date: "2023-02-12",
+        description: "Case silo created and client onboarded",
+        status: "completed"
+      },
+      {
+        id: "m7",
+        type: "document",
+        title: "Accident Report Filed",
+        date: "2023-02-15",
+        description: "Police accident report uploaded",
+        status: "completed"
+      },
+      {
+        id: "m8",
+        type: "assessment",
+        title: "PTSD Screening Done",
+        date: "2023-02-25",
+        description: "Initial trauma assessment completed",
+        status: "completed"
+      }
+    ];
+  }
+  return [];
+};
+
+const getPendingTasks = (caseId: string) => {
+  if (caseId === '1') {
+    return [
+      {
+        id: "task1",
+        title: "Complete PCL-5 Assessment",
+        dueDate: "2023-05-05",
+        priority: 'high' as const
+      },
+      {
+        id: "task2", 
+        title: "Review Vocational Report",
+        dueDate: "2023-04-25",
+        priority: 'medium' as const
+      }
+    ];
+  }
+  return [];
+};
+
+const handleMilestoneClick = (milestone: Milestone) => {
+  // Navigate to case silo with appropriate tab
+  let tab = 'overview';
+  switch (milestone.type) {
+    case 'document':
+      tab = 'documents';
+      break;
+    case 'assessment':
+      tab = 'assessments';
+      break;
+    case 'report':
+      tab = 'reports';
+      break;
+    case 'external':
+      tab = 'external';
+      break;
+    default:
+      tab = 'overview';
+  }
+  
+  // Navigate to case silo with the selected case and tab
+  navigate(`/case-silo?case=${selectedCaseId}&tab=${tab}`);
+};
+
+const handleTaskClick = (taskId: string) => {
+  toast({
+    title: "Task clicked",
+    description: "Navigate to task details",
+  });
+};
+
 const Dashboard = () => {
   const { currentUser } = useAuth();
   const [cases, setCases] = useState<Case[]>([]);
@@ -431,18 +558,16 @@ const Dashboard = () => {
         <div className="mt-6">
           <Card>
             <CardHeader>
-              <CardTitle>Claim Progress</CardTitle>
+              <CardTitle>Case Milestones</CardTitle>
+              <CardDescription>Recent milestones for {cases[0].client}</CardDescription>
             </CardHeader>
             <CardContent>
-              {cases.length > 0 && (
-                <SegmentedProgress 
-                  stages={progressStages.map((stage, index) => ({
-                    ...stage,
-                    tasks: getTasksForStage(index, 'claimant')
-                  }))}
-                  currentStage={cases[0].currentStage}
-                />
-              )}
+              <CaseMilestoneSummary
+                recentMilestones={getCaseMilestones('1')}
+                pendingTasks={getPendingTasks('1')}
+                onMilestoneClick={handleMilestoneClick}
+                onTaskClick={handleTaskClick}
+              />
             </CardContent>
           </Card>
         </div>
@@ -550,7 +675,8 @@ const Dashboard = () => {
       <div className="mt-6">
         <Card>
           <CardHeader>
-            <CardTitle>Case Progress</CardTitle>
+            <CardTitle>Case Milestones</CardTitle>
+            <CardDescription>Recent milestones and progress</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="mb-4">
@@ -568,13 +694,12 @@ const Dashboard = () => {
               </Select>
             </div>
             
-            {selectedCase && (
-              <SegmentedProgress 
-                stages={progressStages.map((stage, index) => ({
-                  ...stage,
-                  tasks: getTasksForStage(index, 'lawyer')
-                }))}
-                currentStage={selectedCase.currentStage}
+            {selectedCaseId && (
+              <CaseMilestoneSummary
+                recentMilestones={getCaseMilestones(selectedCaseId)}
+                pendingTasks={getPendingTasks(selectedCaseId)}
+                onMilestoneClick={handleMilestoneClick}
+                onTaskClick={handleTaskClick}
               />
             )}
           </CardContent>
@@ -680,7 +805,8 @@ const Dashboard = () => {
       <div className="mt-6">
         <Card>
           <CardHeader>
-            <CardTitle>Case Progress</CardTitle>
+            <CardTitle>Case Milestones</CardTitle>
+            <CardDescription>Recent milestones and progress</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="mb-4">
@@ -698,13 +824,12 @@ const Dashboard = () => {
               </Select>
             </div>
             
-            {selectedCase && (
-              <SegmentedProgress 
-                stages={progressStages.map((stage, index) => ({
-                  ...stage,
-                  tasks: getTasksForStage(index, 'psychologist')
-                }))}
-                currentStage={selectedCase.currentStage}
+            {selectedCaseId && (
+              <CaseMilestoneSummary
+                recentMilestones={getCaseMilestones(selectedCaseId)}
+                pendingTasks={getPendingTasks(selectedCaseId)}
+                onMilestoneClick={handleMilestoneClick}
+                onTaskClick={handleTaskClick}
               />
             )}
           </CardContent>
