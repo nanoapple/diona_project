@@ -32,7 +32,7 @@ const Schedule = () => {
         slots.push({
           time,
           isHour: minute === 0,
-          display: minute === 0 ? `${hour}:00` : ''
+          display: minute === 0 ? `${hour}:00` : time // Show actual time for intervals
         });
       }
     }
@@ -120,7 +120,7 @@ const Schedule = () => {
                       {isSelected && (
                         <Button
                           size="sm"
-                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-4 px-2 text-xs"
+                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-4 px-1 text-xs min-w-8"
                           onClick={(e) => {
                             e.stopPropagation();
                             console.log(`Add event at ${slotId}`);
@@ -141,15 +141,15 @@ const Schedule = () => {
 
       {/* Bottom section - reorganized layout */}
       <div className="h-[calc(35vh)] flex gap-6">
-        {/* Calendar - moved to bottom left, original size */}
-        <div className="w-[35%]">
+        {/* Calendar - condensed and resized to match Mon+Tue width */}
+        <div className="w-[calc(28.57%*2+0.5rem)]"> {/* Width of 2 columns plus gap */}
           <Card className="h-full">
-            <CardContent className="p-3 h-full flex items-center justify-center">
+            <CardContent className="p-2 h-full flex items-center justify-center">
               <Calendar
                 mode="single"
                 selected={selectedDate}
                 onSelect={handleDateClick}
-                className="rounded-md border-0"
+                className="rounded-md border-0 scale-90 origin-center"
                 weekStartsOn={1}
                 modifiers={{
                   selectedWeek: (date) => selectedDate ? isSameWeek(date, selectedDate, { weekStartsOn: 1 }) : false
@@ -163,7 +163,7 @@ const Schedule = () => {
         </div>
 
         {/* Weekly Stats - adjusted width */}
-        <div className="w-[30%]">
+        <div className="w-[calc(28.57%*2.5)]">
           <Card className="h-full">
             <CardHeader>
               <CardTitle className="text-lg">Week Stats</CardTitle>
@@ -194,7 +194,7 @@ const Schedule = () => {
         </div>
 
         {/* Key Events - adjusted width */}
-        <div className="w-[35%]">
+        <div className="w-[calc(28.57%*2.5)]">
           <Card className="h-full">
             <CardHeader>
               <CardTitle className="text-lg">Key Events</CardTitle>
