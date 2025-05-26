@@ -17,7 +17,8 @@ import {
   Archive,
   Mic,
   Briefcase,
-  ClipboardList
+  ClipboardList,
+  Calendar
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -37,7 +38,8 @@ const Sidebar = () => {
     const isActive = location.pathname === to || 
                     (to.includes('/interview') && location.pathname.includes('/interview')) ||
                     (to.includes('/clients') && location.pathname.includes('/client-details')) ||
-                    (to.includes('/legal-tasks') && location.pathname.includes('/legal-tasks'));
+                    (to.includes('/legal-tasks') && location.pathname.includes('/legal-tasks')) ||
+                    (to.includes('/schedule') && location.pathname.includes('/schedule'));
     
     return (
       <Link to={to}>
@@ -62,6 +64,7 @@ const Sidebar = () => {
     const commonItems = [
       { to: "/dashboard", icon: CheckSquare, label: "Dashboard" },
       { to: "/case-silo", icon: Archive, label: "Case Silo" },
+      { to: "/schedule", icon: Calendar, label: "Schedule" },
       { to: "/profile", icon: User, label: "Profile" }
     ];
 
