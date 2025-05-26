@@ -70,8 +70,8 @@ const Schedule = () => {
   ];
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="h-screen flex flex-col p-6 overflow-hidden">
+      <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Schedule</h1>
         <div className="text-sm text-muted-foreground">
           Week of {format(selectedWeek, 'MMM d, yyyy')}
@@ -79,7 +79,7 @@ const Schedule = () => {
       </div>
 
       {/* Main content area - 80% height */}
-      <div className="h-[600px] grid grid-cols-7 gap-2">
+      <div className="h-[calc(80vh-120px)] grid grid-cols-7 gap-2 mb-6">
         {weekDays.map((day, index) => (
           <Card 
             key={index} 
@@ -90,8 +90,8 @@ const Schedule = () => {
                 {day.dayName} {day.dayNumber}
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-0">
-              <div className="space-y-0">
+            <CardContent className="p-0 h-full">
+              <div className="space-y-0 overflow-y-auto h-[calc(80vh-180px)]">
                 {timeSlots.map((slot, slotIndex) => (
                   <div
                     key={slotIndex}
@@ -114,9 +114,9 @@ const Schedule = () => {
       </div>
 
       {/* Bottom section - 20% height */}
-      <div className="h-[200px] flex gap-6">
+      <div className="h-[calc(20vh)] flex gap-6">
         {/* Weekly Stats */}
-        <div className="w-[20%]">
+        <div className="w-[30%]">
           <Card className="h-full">
             <CardHeader>
               <CardTitle className="text-lg">Week Stats</CardTitle>
@@ -146,15 +146,16 @@ const Schedule = () => {
           </Card>
         </div>
 
-        {/* Calendar - 60% width, centered */}
-        <div className="w-[60%]">
+        {/* Calendar - 40% width, centered */}
+        <div className="w-[40%]">
           <Card className="h-full rounded-t-lg">
-            <CardContent className="p-4 h-full flex items-center justify-center">
+            <CardContent className="p-2 h-full flex items-center justify-center">
               <Calendar
                 mode="single"
                 selected={selectedDate}
                 onSelect={handleDateClick}
-                className="rounded-md border-0 scale-75"
+                className="rounded-md border-0 text-xs [&_.rdp-caption]:text-xs [&_.rdp-head_cell]:text-[10px] [&_.rdp-day]:text-[10px] [&_.rdp-day]:h-6 [&_.rdp-day]:w-6 [&_.rdp-table]:text-xs scale-90"
+                weekStartsOn={1}
                 modifiers={{
                   selectedWeek: (date) => selectedDate ? isSameWeek(date, selectedDate, { weekStartsOn: 1 }) : false
                 }}
@@ -167,12 +168,12 @@ const Schedule = () => {
         </div>
 
         {/* Key Events */}
-        <div className="w-[20%]">
+        <div className="w-[30%]">
           <Card className="h-full">
             <CardHeader>
               <CardTitle className="text-lg">Key Events</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-2 overflow-y-auto">
               {keyEvents.map((event, index) => (
                 <div key={index} className="text-sm p-2 bg-gray-50 rounded">
                   {event}
