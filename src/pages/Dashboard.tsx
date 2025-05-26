@@ -8,8 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '../contexts/AuthContext';
 import { CheckCircle, Clock, AlertCircle, FileText, Calendar, Flag } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
-import CaseMilestoneSummary from '@/components/caseSilo/CaseMilestoneSummary';
-import { Milestone } from '@/components/caseSilo/MilestoneTracker';
+import MilestoneTracker, { Milestone } from '@/components/caseSilo/MilestoneTracker';
 import { toast } from "@/components/ui/use-toast";
 
 interface CaseUpdate {
@@ -565,11 +564,9 @@ const Dashboard = () => {
               <CardDescription>Recent milestones for {cases[0].client}</CardDescription>
             </CardHeader>
             <CardContent>
-              <CaseMilestoneSummary
-                recentMilestones={getCaseMilestones('1')}
-                pendingTasks={getPendingTasks('1')}
+              <MilestoneTracker
+                milestones={getCaseMilestones('1')}
                 onMilestoneClick={handleMilestoneClick}
-                onTaskClick={handleTaskClick}
               />
             </CardContent>
           </Card>
@@ -698,11 +695,9 @@ const Dashboard = () => {
             </div>
             
             {selectedCaseId && (
-              <CaseMilestoneSummary
-                recentMilestones={getCaseMilestones(selectedCaseId)}
-                pendingTasks={getPendingTasks(selectedCaseId)}
+              <MilestoneTracker
+                milestones={getCaseMilestones(selectedCaseId)}
                 onMilestoneClick={handleMilestoneClick}
-                onTaskClick={handleTaskClick}
               />
             )}
           </CardContent>
@@ -828,11 +823,9 @@ const Dashboard = () => {
             </div>
             
             {selectedCaseId && (
-              <CaseMilestoneSummary
-                recentMilestones={getCaseMilestones(selectedCaseId)}
-                pendingTasks={getPendingTasks(selectedCaseId)}
+              <MilestoneTracker
+                milestones={getCaseMilestones(selectedCaseId)}
                 onMilestoneClick={handleMilestoneClick}
-                onTaskClick={handleTaskClick}
               />
             )}
           </CardContent>
