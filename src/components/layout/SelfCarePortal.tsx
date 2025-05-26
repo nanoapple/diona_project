@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { X, Music, Heart, Activity, Brain, Utensils, Archive, MessageCircle, BookOpen } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Game2048 from '../selfcare/Game2048';
 
 interface SelfCarePortalProps {
   isOpen: boolean;
@@ -10,6 +11,8 @@ interface SelfCarePortalProps {
 }
 
 const SelfCarePortal = ({ isOpen, onClose }: SelfCarePortalProps) => {
+  const [currentView, setCurrentView] = useState<'portal' | 'mindfulness-games'>('portal');
+
   if (!isOpen) return null;
 
   const selfCareTiles = [
@@ -17,56 +20,77 @@ const SelfCarePortal = ({ isOpen, onClose }: SelfCarePortalProps) => {
       title: "Relaxation Music",
       icon: Music,
       description: "Soothing music and soundscapes",
-      color: "bg-blue-50 hover:bg-blue-100 border-blue-200"
+      color: "bg-blue-50 hover:bg-blue-100 border-blue-200",
+      action: () => {}
     },
     {
       title: "Mindful Movement & Exercise",
       icon: Activity,
       description: "Gentle exercises and stretches",
-      color: "bg-green-50 hover:bg-green-100 border-green-200"
+      color: "bg-green-50 hover:bg-green-100 border-green-200",
+      action: () => {}
     },
     {
       title: "Burnout Assessment",
       icon: Heart,
       description: "Check your wellbeing levels",
-      color: "bg-purple-50 hover:bg-purple-100 border-purple-200"
+      color: "bg-purple-50 hover:bg-purple-100 border-purple-200",
+      action: () => {}
     },
     {
       title: "Mindfulness Games",
       icon: Brain,
       description: "Interactive calming activities",
-      color: "bg-orange-50 hover:bg-orange-100 border-orange-200"
+      color: "bg-orange-50 hover:bg-orange-100 border-orange-200",
+      action: () => setCurrentView('mindfulness-games')
     },
     {
       title: "Meal/Drink Planning",
       icon: Utensils,
       description: "Nutritious meal suggestions",
-      color: "bg-yellow-50 hover:bg-yellow-100 border-yellow-200"
+      color: "bg-yellow-50 hover:bg-yellow-100 border-yellow-200",
+      action: () => {}
     },
     {
       title: "Time Capsules",
       icon: Archive,
       description: "Preserve positive memories",
-      color: "bg-pink-50 hover:bg-pink-100 border-pink-200"
+      color: "bg-pink-50 hover:bg-pink-100 border-pink-200",
+      action: () => {}
     },
     {
       title: "Greeting Message Generator",
       icon: MessageCircle,
       description: "Uplifting daily messages",
-      color: "bg-cyan-50 hover:bg-cyan-100 border-cyan-200"
+      color: "bg-cyan-50 hover:bg-cyan-100 border-cyan-200",
+      action: () => {}
     },
     {
       title: "Scrambled Journaling",
       icon: BookOpen,
       description: "Creative writing exercises",
-      color: "bg-indigo-50 hover:bg-indigo-100 border-indigo-200"
+      color: "bg-indigo-50 hover:bg-indigo-100 border-indigo-200",
+      action: () => {}
     }
   ];
+
+  const handleBackToPortal = () => {
+    setCurrentView('portal');
+  };
+
+  const handleClose = () => {
+    setCurrentView('portal');
+    onClose();
+  };
+
+  if (currentView === 'mindfulness-games') {
+    return <Game2048 onBack={handleBackToPortal} />;
+  }
 
   return (
     <div className="fixed inset-0 z-50">
       {/* Green transparent overlay */}
-      <div className="absolute inset-0 bg-green-500/50" onClick={onClose} />
+      <div className="absolute inset-0 bg-green-500/50" onClick={handleClose} />
       
       {/* Portal content - 85% of right side */}
       <div className="absolute top-0 right-0 h-full w-[85%] bg-white shadow-2xl overflow-y-auto">
@@ -86,7 +110,7 @@ const SelfCarePortal = ({ isOpen, onClose }: SelfCarePortalProps) => {
             <Button 
               variant="ghost" 
               size="icon" 
-              onClick={onClose}
+              onClick={handleClose}
               className="hover:bg-green-100"
             >
               <X className="h-6 w-6" />
@@ -98,6 +122,7 @@ const SelfCarePortal = ({ isOpen, onClose }: SelfCarePortalProps) => {
               <Card 
                 key={index} 
                 className={`cursor-pointer transition-all duration-200 ${tile.color} border-2`}
+                onClick={tile.action}
               >
                 <CardHeader className="pb-2">
                   <div className="flex justify-center mb-2">
