@@ -77,8 +77,8 @@ const Schedule = () => {
   ];
 
   return (
-    <div className="h-screen flex flex-col p-4 overflow-hidden">
-      <div className="flex justify-between items-center mb-4">
+    <div className="h-screen flex flex-col p-4 pt-2 overflow-hidden">
+      <div className="flex justify-between items-center mb-2">
         <h1 className="text-3xl font-bold">Schedule</h1>
         <div className="text-sm text-muted-foreground">
           Week of {format(selectedWeek, 'MMM d, yyyy')}
@@ -86,7 +86,7 @@ const Schedule = () => {
       </div>
 
       {/* Main content area - condensed weekday panels */}
-      <div className="h-[calc(65vh-100px)] grid grid-cols-7 gap-2 mb-4">
+      <div className="h-[calc(65vh-80px)] grid grid-cols-7 gap-2 mb-4">
         {weekDays.map((day, index) => (
           <Card 
             key={index} 
@@ -98,7 +98,7 @@ const Schedule = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0 h-full">
-              <div className="space-y-0 overflow-y-auto h-[calc(65vh-160px)]">
+              <div className="space-y-0 overflow-y-auto h-[calc(65vh-140px)]">
                 {timeSlots.map((slot, slotIndex) => {
                   const slotId = `${day.dayName}-${slot.time}`;
                   const isSelected = selectedSlot === slotId;
@@ -111,16 +111,18 @@ const Schedule = () => {
                           ? 'border-b border-gray-400 font-medium' 
                           : 'border-b border-dotted border-gray-300'
                       } ${isSelected ? 'bg-blue-200' : 'hover:bg-gray-100'}`}
-                      style={{ minHeight: '17px' }}
+                      style={{ minHeight: '14px' }}
                       onClick={() => handleSlotClick(slotId)}
                     >
                       {slot.display && (
-                        <span className="text-gray-600">{slot.display}</span>
+                        <span className={slot.isHour ? 'text-black' : 'text-white'}>
+                          {slot.display}
+                        </span>
                       )}
                       {isSelected && (
                         <Button
                           size="sm"
-                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-4 px-1 text-xs min-w-8"
+                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-4 px-1 text-xs min-w-6"
                           onClick={(e) => {
                             e.stopPropagation();
                             console.log(`Add event at ${slotId}`);
@@ -144,12 +146,12 @@ const Schedule = () => {
         {/* Calendar - condensed and resized to match Mon+Tue width */}
         <div className="w-[calc(28.57%*2+0.5rem)]"> {/* Width of 2 columns plus gap */}
           <Card className="h-full">
-            <CardContent className="p-2 h-full flex items-center justify-center">
+            <CardContent className="p-1 h-full flex items-center justify-center">
               <Calendar
                 mode="single"
                 selected={selectedDate}
                 onSelect={handleDateClick}
-                className="rounded-md border-0 scale-90 origin-center"
+                className="rounded-md border-0 scale-75 origin-center"
                 weekStartsOn={1}
                 modifiers={{
                   selectedWeek: (date) => selectedDate ? isSameWeek(date, selectedDate, { weekStartsOn: 1 }) : false
