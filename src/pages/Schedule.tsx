@@ -2,17 +2,24 @@
 import { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { format, startOfWeek, endOfWeek, addDays, isSameWeek, isSameDay } from 'date-fns';
+import { Plus } from 'lucide-react';
 
 const Schedule = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedWeek, setSelectedWeek] = useState<Date>(new Date());
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
 
   const handleDateClick = (date: Date | undefined) => {
     if (date) {
       setSelectedDate(date);
       setSelectedWeek(startOfWeek(date, { weekStartsOn: 1 })); // Monday as start of week
     }
+  };
+
+  const handleSlotClick = (slotId: string) => {
+    setSelectedSlot(selectedSlot === slotId ? null : slotId);
   };
 
   // Generate time slots from 9:00 AM to 6:00 PM with 15-minute intervals
@@ -70,8 +77,8 @@ const Schedule = () => {
   ];
 
   return (
-    <div className="h-screen flex flex-col p-6 overflow-hidden">
-      <div className="flex justify-between items-center mb-6">
+    <div className="h-screen flex flex-col p-4 overflow-hidden">
+      <div className="flex justify-between items-center mb-4">
         <h1 className="text-3xl font-bold">Schedule</h1>
         <div className="text-sm text-muted-foreground">
           Week of {format(selectedWeek, 'MMM d, yyyy')}
@@ -79,7 +86,7 @@ const Schedule = () => {
       </div>
 
       {/* Main content area - condensed weekday panels */}
-      <div className="h-[calc(65vh-120px)] grid grid-cols-7 gap-2 mb-6">
+      <div className="h-[calc(65vh-100px)] grid grid-cols-7 gap-2 mb-4">
         {weekDays.map((day, index) => (
           <Card 
             key={index} 
@@ -91,22 +98,41 @@ const Schedule = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0 h-full">
-              <div className="space-y-0 overflow-y-auto h-[calc(65vh-180px)]">
-                {timeSlots.map((slot, slotIndex) => (
-                  <div
-                    key={slotIndex}
-                    className={`px-2 py-1 text-xs ${
-                      slot.isHour 
-                        ? 'border-b border-gray-400 font-medium' 
-                        : 'border-b border-dotted border-gray-300'
-                    }`}
-                    style={{ minHeight: '20px' }}
-                  >
-                    {slot.display && (
-                      <span className="text-gray-600">{slot.display}</span>
-                    )}
-                  </div>
-                ))}
+              <div className="space-y-0 overflow-y-auto h-[calc(65vh-160px)]">
+                {timeSlots.map((slot, slotIndex) => {
+                  const slotId = `${day.dayName}-${slot.time}`;
+                  const isSelected = selectedSlot === slotId;
+                  
+                  return (
+                    <div
+                      key={slotIndex}
+                      className={`px-2 py-1 text-xs cursor-pointer transition-colors relative group ${
+                        slot.isHour 
+                          ? 'border-b border-gray-400 font-medium' 
+                          : 'border-b border-dotted border-gray-300'
+                      } ${isSelected ? 'bg-blue-200' : 'hover:bg-gray-100'}`}
+                      style={{ minHeight: '17px' }}
+                      onClick={() => handleSlotClick(slotId)}
+                    >
+                      {slot.display && (
+                        <span className="text-gray-600">{slot.display}</span>
+                      )}
+                      {isSelected && (
+                        <Button
+                          size="sm"
+                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-4 px-2 text-xs"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            console.log(`Add event at ${slotId}`);
+                          }}
+                        >
+                          <Plus size={10} />
+                          Add
+                        </Button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
