@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress, SegmentedProgress } from '@/components/ui/progress';
 import { SegmentedReportProgress } from '@/components/ui/segmented-progress';
@@ -7,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '../contexts/AuthContext';
 import { CheckCircle, Clock, AlertCircle, FileText, Calendar, Flag } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
-import { useNavigate } from 'react-router-dom';
 import CaseMilestoneSummary from '@/components/caseSilo/CaseMilestoneSummary';
 import { Milestone } from '@/components/caseSilo/MilestoneTracker';
 import { toast } from "@/components/ui/use-toast";
@@ -358,8 +358,11 @@ const handleMilestoneClick = (milestone: Milestone) => {
       tab = 'overview';
   }
   
-  // Navigate to case silo with the selected case and tab
-  navigate(`/case-silo?case=${selectedCaseId}&tab=${tab}`);
+  // Navigate to case silo - we need to find which case this milestone belongs to
+  const caseForMilestone = cases.find(c => getCaseMilestones(c.id).some(m => m.id === milestone.id));
+  if (caseForMilestone) {
+    navigate(`/case-silo?case=${caseForMilestone.id}&tab=${tab}`);
+  }
 };
 
 const handleTaskClick = (taskId: string) => {
@@ -371,10 +374,10 @@ const handleTaskClick = (taskId: string) => {
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [cases, setCases] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCaseId, setSelectedCaseId] = useState<string>('');
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Simulate API call to fetch cases
