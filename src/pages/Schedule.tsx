@@ -149,12 +149,12 @@ const Schedule = () => {
         {/* Calendar - 40% width, centered */}
         <div className="w-[40%]">
           <Card className="h-full rounded-t-lg">
-            <CardContent className="p-3 h-full flex items-center justify-center">
+            <CardContent className="p-0 h-full flex items-center justify-center">
               <Calendar
                 mode="single"
                 selected={selectedDate}
                 onSelect={handleDateClick}
-                className="rounded-md border-0 w-full [&_.rdp-table]:w-full [&_.rdp-caption]:text-sm [&_.rdp-head_cell]:text-xs [&_.rdp-head_cell]:w-[14.28%] [&_.rdp-day]:text-xs [&_.rdp-day]:h-8 [&_.rdp-day]:w-full [&_.rdp-day]:min-w-[2rem] [&_.rdp-cell]:w-[14.28%] [&_.rdp-cell]:p-0 [&_.rdp-row]:w-full"
+                className="rounded-md border-0 w-full h-full [&_.rdp-table]:w-full [&_.rdp-table]:h-full [&_.rdp-caption]:text-sm [&_.rdp-head_cell]:text-xs [&_.rdp-head_cell]:w-[14.28%] [&_.rdp-head_cell]:flex-1 [&_.rdp-day]:text-xs [&_.rdp-day]:h-8 [&_.rdp-day]:w-full [&_.rdp-day]:min-w-0 [&_.rdp-day]:flex-1 [&_.rdp-cell]:w-[14.28%] [&_.rdp-cell]:flex-1 [&_.rdp-cell]:p-0 [&_.rdp-row]:w-full [&_.rdp-row]:flex [&_.rdp-thead]:w-full [&_.rdp-tbody]:w-full [&_.rdp-month]:w-full [&_.rdp-months]:w-full"
                 weekStartsOn={1}
                 modifiers={{
                   selectedWeek: (date) => selectedDate ? isSameWeek(date, selectedDate, { weekStartsOn: 1 }) : false
