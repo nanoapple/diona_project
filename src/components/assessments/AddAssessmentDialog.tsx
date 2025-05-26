@@ -36,6 +36,7 @@ export function AddAssessmentDialog({
   const [mode, setMode] = useState<"add" | "assign">("add");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedScale, setSelectedScale] = useState<string>("");
+  const [assessmentPurpose, setAssessmentPurpose] = useState<string>("session");
   const [email, setEmail] = useState<string>("");
   const [emailMessage, setEmailMessage] = useState<string>("");
 
@@ -122,7 +123,7 @@ export function AddAssessmentDialog({
       date: now.toISOString(),
       completionPercentage: mode === "add" ? 0 : 0,
       type: selectedCategory !== "all" ? selectedCategory : undefined,
-      description: `${scale?.abbreviation || "Assessment"} - ${mode === "add" ? "In-session" : "Self-guided"}`
+      description: `${scale?.abbreviation || "Assessment"} - ${mode === "add" ? "In-session" : "Self-guided"} - ${assessmentPurpose}`
     };
 
     onAddAssessment(newAssessment);
@@ -181,10 +182,10 @@ export function AddAssessmentDialog({
 
         <div className="space-y-6 pt-4">
           <div className="flex items-center space-x-4">
-            <Label htmlFor="mode" className="flex-shrink-0">Assessment Mode:</Label>
+            <Label htmlFor="mode" className="flex-shrink-0">Mode:</Label>
             <div className="flex items-center space-x-2">
               <Label htmlFor="mode-toggle" className={mode === "add" ? "text-primary font-medium" : "text-muted-foreground"}>
-                Add Now
+                In-session assessment
               </Label>
               <Switch
                 id="mode-toggle"
@@ -192,34 +193,45 @@ export function AddAssessmentDialog({
                 onCheckedChange={(checked) => setMode(checked ? "assign" : "add")}
               />
               <Label htmlFor="mode-toggle" className={mode === "assign" ? "text-primary font-medium" : "text-muted-foreground"}>
-                Assign Self-Guided
+                Self-Guided assessment
               </Label>
             </div>
           </div>
 
           <div className="space-y-4">
             <h3 className="text-sm font-medium">Client Information</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="client-name">Name</Label>
-                <Input id="client-name" value={clientName} disabled />
+            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
+              <div className="flex">
+                <span className="font-medium w-20">Name:</span>
+                <span className="text-muted-foreground">{clientName}</span>
               </div>
-              <div>
-                <Label htmlFor="case-number">Case Number</Label>
-                <Input id="case-number" value={clientInfo?.caseNumber || "N/A"} disabled />
+              <div className="flex">
+                <span className="font-medium w-20">Case Number:</span>
+                <span className="text-muted-foreground">{clientInfo?.caseNumber || "N/A"}</span>
               </div>
-              <div>
-                <Label htmlFor="gender">Gender</Label>
-                <Input id="gender" value={clientInfo?.gender || "N/A"} disabled />
+              <div className="flex">
+                <span className="font-medium w-20">Gender:</span>
+                <span className="text-muted-foreground">{clientInfo?.gender || "N/A"}</span>
               </div>
-              <div>
-                <Label htmlFor="age">Age</Label>
-                <Input id="age" value={clientInfo?.age?.toString() || "N/A"} disabled />
+              <div className="flex">
+                <span className="font-medium w-20">Age:</span>
+                <span className="text-muted-foreground">{clientInfo?.age?.toString() || "N/A"}</span>
               </div>
-              <div>
-                <Label htmlFor="session-number">Session Number</Label>
-                <Input id="session-number" value={clientInfo?.sessionNumber?.toString() || "N/A"} disabled />
-              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="assessment-purpose">Assessment Purpose</Label>
+              <Select value={assessmentPurpose} onValueChange={setAssessmentPurpose}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select assessment purpose" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="intake">Intake</SelectItem>
+                  <SelectItem value="session">Session</SelectItem>
+                  <SelectItem value="vocational">Vocational</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
