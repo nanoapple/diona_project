@@ -78,8 +78,8 @@ const Schedule = () => {
         </div>
       </div>
 
-      {/* Main content area - 80% height */}
-      <div className="h-[calc(80vh-120px)] grid grid-cols-7 gap-2 mb-6">
+      {/* Main content area - condensed weekday panels */}
+      <div className="h-[calc(65vh-120px)] grid grid-cols-7 gap-2 mb-6">
         {weekDays.map((day, index) => (
           <Card 
             key={index} 
@@ -91,7 +91,7 @@ const Schedule = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0 h-full">
-              <div className="space-y-0 overflow-y-auto h-[calc(80vh-180px)]">
+              <div className="space-y-0 overflow-y-auto h-[calc(65vh-180px)]">
                 {timeSlots.map((slot, slotIndex) => (
                   <div
                     key={slotIndex}
@@ -113,9 +113,30 @@ const Schedule = () => {
         ))}
       </div>
 
-      {/* Bottom section - 20% height */}
-      <div className="h-[calc(20vh)] flex gap-6">
-        {/* Weekly Stats */}
+      {/* Bottom section - reorganized layout */}
+      <div className="h-[calc(35vh)] flex gap-6">
+        {/* Calendar - moved to bottom left, original size */}
+        <div className="w-[35%]">
+          <Card className="h-full">
+            <CardContent className="p-3 h-full flex items-center justify-center">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={handleDateClick}
+                className="rounded-md border-0"
+                weekStartsOn={1}
+                modifiers={{
+                  selectedWeek: (date) => selectedDate ? isSameWeek(date, selectedDate, { weekStartsOn: 1 }) : false
+                }}
+                modifiersStyles={{
+                  selectedWeek: { backgroundColor: '#dbeafe', fontWeight: 'bold' }
+                }}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Weekly Stats - adjusted width */}
         <div className="w-[30%]">
           <Card className="h-full">
             <CardHeader>
@@ -146,29 +167,8 @@ const Schedule = () => {
           </Card>
         </div>
 
-        {/* Calendar - 40% width, centered */}
-        <div className="w-[40%]">
-          <Card className="h-full rounded-t-lg">
-            <CardContent className="p-0 h-full flex items-center justify-center">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={handleDateClick}
-                className="rounded-md border-0 w-full h-full [&_.rdp-table]:w-full [&_.rdp-table]:h-full [&_.rdp-caption]:text-sm [&_.rdp-head_cell]:text-xs [&_.rdp-head_cell]:w-[14.28%] [&_.rdp-head_cell]:flex-1 [&_.rdp-day]:text-xs [&_.rdp-day]:h-8 [&_.rdp-day]:w-full [&_.rdp-day]:min-w-0 [&_.rdp-day]:flex-1 [&_.rdp-cell]:w-[14.28%] [&_.rdp-cell]:flex-1 [&_.rdp-cell]:p-0 [&_.rdp-row]:w-full [&_.rdp-row]:flex [&_.rdp-thead]:w-full [&_.rdp-tbody]:w-full [&_.rdp-month]:w-full [&_.rdp-months]:w-full"
-                weekStartsOn={1}
-                modifiers={{
-                  selectedWeek: (date) => selectedDate ? isSameWeek(date, selectedDate, { weekStartsOn: 1 }) : false
-                }}
-                modifiersStyles={{
-                  selectedWeek: { backgroundColor: '#dbeafe', fontWeight: 'bold' }
-                }}
-              />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Key Events */}
-        <div className="w-[30%]">
+        {/* Key Events - adjusted width */}
+        <div className="w-[35%]">
           <Card className="h-full">
             <CardHeader>
               <CardTitle className="text-lg">Key Events</CardTitle>
