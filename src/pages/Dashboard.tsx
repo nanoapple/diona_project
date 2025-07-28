@@ -337,39 +337,22 @@ const getPendingTasks = (caseId: string) => {
   return [];
 };
 
-const handleMilestoneClick = (milestone: Milestone) => {
-  // Navigate to case silo with appropriate tab
-  let tab = 'overview';
-  switch (milestone.type) {
-    case 'document':
-      tab = 'documents';
-      break;
-    case 'assessment':
-      tab = 'assessments';
-      break;
-    case 'report':
-      tab = 'reports';
-      break;
-    case 'external':
-      tab = 'external';
-      break;
-    default:
-      tab = 'overview';
-  }
-  
-  // Navigate to case silo - we need to find which case this milestone belongs to
-  const caseForMilestone = cases.find(c => getCaseMilestones(c.id).some(m => m.id === milestone.id));
-  if (caseForMilestone) {
-    navigate(`/case-silo?case=${caseForMilestone.id}&tab=${tab}`);
-  }
-};
 
-const handleTaskClick = (taskId: string) => {
-  toast({
-    title: "Task clicked",
-    description: "Navigate to task details",
-  });
-};
+// Mock case silos data
+const mockCaseSilos = [
+  {
+    id: '1',
+    claimantName: 'John Doe',
+    caseType: 'Work Injury',
+    status: 'active' as const
+  },
+  {
+    id: '2', 
+    claimantName: 'Jane Smith',
+    caseType: 'MVA',
+    status: 'active' as const
+  }
+];
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
@@ -377,6 +360,40 @@ const Dashboard = () => {
   const [cases, setCases] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCaseId, setSelectedCaseId] = useState<string>('');
+
+  const handleMilestoneClick = (milestone: Milestone) => {
+    // Navigate to case silo with appropriate tab
+    let tab = 'overview';
+    switch (milestone.type) {
+      case 'document':
+        tab = 'documents';
+        break;
+      case 'assessment':
+        tab = 'assessments';
+        break;
+      case 'report':
+        tab = 'reports';
+        break;
+      case 'external':
+        tab = 'external';
+        break;
+      default:
+        tab = 'overview';
+    }
+    
+    // Navigate to case silo - we need to find which case this milestone belongs to
+    const caseForMilestone = mockCaseSilos.find(c => getCaseMilestones(c.id).some(m => m.id === milestone.id));
+    if (caseForMilestone) {
+      navigate(`/case-silo?case=${caseForMilestone.id}&tab=${tab}`);
+    }
+  };
+
+  const handleTaskClick = (taskId: string) => {
+    toast({
+      title: "Task clicked",
+      description: "Navigate to task details",
+    });
+  };
 
   useEffect(() => {
     // Simulate API call to fetch cases
