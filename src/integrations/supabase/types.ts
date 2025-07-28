@@ -14,7 +14,619 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          appointment_type: string
+          attendees: string[] | null
+          case_silo_id: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          end_time: string
+          id: string
+          location: string | null
+          notes: string | null
+          start_time: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_type: string
+          attendees?: string[] | null
+          case_silo_id?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          end_time: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          start_time: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_type?: string
+          attendees?: string[] | null
+          case_silo_id?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          end_time?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          start_time?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_case_silo_id_fkey"
+            columns: ["case_silo_id"]
+            isOneToOne: false
+            referencedRelation: "case_silos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessments: {
+        Row: {
+          assigned_by: string
+          assigned_to: string | null
+          case_silo_id: string
+          completed_date: string | null
+          created_at: string
+          due_date: string | null
+          id: string
+          interpretation: string | null
+          results: Json | null
+          score: number | null
+          status: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_by: string
+          assigned_to?: string | null
+          case_silo_id: string
+          completed_date?: string | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          interpretation?: string | null
+          results?: Json | null
+          score?: number | null
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_by?: string
+          assigned_to?: string | null
+          case_silo_id?: string
+          completed_date?: string | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          interpretation?: string | null
+          results?: Json | null
+          score?: number | null
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessments_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessments_case_silo_id_fkey"
+            columns: ["case_silo_id"]
+            isOneToOne: false
+            referencedRelation: "case_silos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_documents: {
+        Row: {
+          case_silo_id: string
+          category: string | null
+          created_at: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          is_verified: boolean | null
+          title: string
+          updated_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          case_silo_id: string
+          category?: string | null
+          created_at?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          is_verified?: boolean | null
+          title: string
+          updated_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          case_silo_id?: string
+          category?: string | null
+          created_at?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          is_verified?: boolean | null
+          title?: string
+          updated_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_documents_case_silo_id_fkey"
+            columns: ["case_silo_id"]
+            isOneToOne: false
+            referencedRelation: "case_silos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_notes: {
+        Row: {
+          case_silo_id: string
+          content: string
+          created_at: string
+          created_by: string
+          id: string
+          is_private: boolean | null
+          note_type: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          case_silo_id: string
+          content: string
+          created_at?: string
+          created_by: string
+          id?: string
+          is_private?: boolean | null
+          note_type?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          case_silo_id?: string
+          content?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_private?: boolean | null
+          note_type?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_notes_case_silo_id_fkey"
+            columns: ["case_silo_id"]
+            isOneToOne: false
+            referencedRelation: "case_silos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_notes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_silos: {
+        Row: {
+          assigned_lawyer_id: string | null
+          assigned_psychologist_id: string | null
+          case_number: string | null
+          case_type: string
+          claim_stage: string | null
+          claimant_name: string
+          created_at: string
+          created_by: string
+          id: string
+          incident_date: string | null
+          priority: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_lawyer_id?: string | null
+          assigned_psychologist_id?: string | null
+          case_number?: string | null
+          case_type: string
+          claim_stage?: string | null
+          claimant_name: string
+          created_at?: string
+          created_by: string
+          id?: string
+          incident_date?: string | null
+          priority?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_lawyer_id?: string | null
+          assigned_psychologist_id?: string | null
+          case_number?: string | null
+          case_type?: string
+          claim_stage?: string | null
+          claimant_name?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          incident_date?: string | null
+          priority?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_silos_assigned_lawyer_id_fkey"
+            columns: ["assigned_lawyer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_silos_assigned_psychologist_id_fkey"
+            columns: ["assigned_psychologist_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_silos_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      external_contributors: {
+        Row: {
+          access_level: string | null
+          added_by: string
+          case_silo_id: string
+          contact_details: Json | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          organization: string | null
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          access_level?: string | null
+          added_by: string
+          case_silo_id: string
+          contact_details?: Json | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          organization?: string | null
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          access_level?: string | null
+          added_by?: string
+          case_silo_id?: string
+          contact_details?: Json | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          organization?: string | null
+          role?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_contributors_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "external_contributors_case_silo_id_fkey"
+            columns: ["case_silo_id"]
+            isOneToOne: false
+            referencedRelation: "case_silos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      info_requests: {
+        Row: {
+          assigned_to: string | null
+          case_silo_id: string
+          completed_date: string | null
+          created_at: string
+          description: string
+          due_date: string | null
+          id: string
+          priority: string | null
+          request_type: string | null
+          requested_by: string
+          response: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          case_silo_id: string
+          completed_date?: string | null
+          created_at?: string
+          description: string
+          due_date?: string | null
+          id?: string
+          priority?: string | null
+          request_type?: string | null
+          requested_by: string
+          response?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          case_silo_id?: string
+          completed_date?: string | null
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          priority?: string | null
+          request_type?: string | null
+          requested_by?: string
+          response?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "info_requests_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "info_requests_case_silo_id_fkey"
+            columns: ["case_silo_id"]
+            isOneToOne: false
+            referencedRelation: "case_silos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "info_requests_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          company: string | null
+          created_at: string
+          id: string
+          name: string
+          role: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          role?: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          role?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          author_id: string
+          case_silo_id: string
+          completed_date: string | null
+          content: Json | null
+          created_at: string
+          due_date: string | null
+          file_url: string | null
+          id: string
+          progress: number | null
+          reviewer_id: string | null
+          sections: Json | null
+          status: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          case_silo_id: string
+          completed_date?: string | null
+          content?: Json | null
+          created_at?: string
+          due_date?: string | null
+          file_url?: string | null
+          id?: string
+          progress?: number | null
+          reviewer_id?: string | null
+          sections?: Json | null
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          case_silo_id?: string
+          completed_date?: string | null
+          content?: Json | null
+          created_at?: string
+          due_date?: string | null
+          file_url?: string | null
+          id?: string
+          progress?: number | null
+          reviewer_id?: string | null
+          sections?: Json | null
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_case_silo_id_fkey"
+            columns: ["case_silo_id"]
+            isOneToOne: false
+            referencedRelation: "case_silos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      timeline_items: {
+        Row: {
+          case_silo_id: string
+          created_at: string
+          created_by: string
+          date: string
+          description: string | null
+          id: string
+          item_type: string
+          metadata: Json | null
+          related_id: string | null
+          title: string
+        }
+        Insert: {
+          case_silo_id: string
+          created_at?: string
+          created_by: string
+          date: string
+          description?: string | null
+          id?: string
+          item_type: string
+          metadata?: Json | null
+          related_id?: string | null
+          title: string
+        }
+        Update: {
+          case_silo_id?: string
+          created_at?: string
+          created_by?: string
+          date?: string
+          description?: string | null
+          id?: string
+          item_type?: string
+          metadata?: Json | null
+          related_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "timeline_items_case_silo_id_fkey"
+            columns: ["case_silo_id"]
+            isOneToOne: false
+            referencedRelation: "case_silos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "timeline_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
