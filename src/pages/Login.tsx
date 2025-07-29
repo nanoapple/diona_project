@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [accountType, setAccountType] = useState<'Client' | 'Practitioner' | 'Admin'>('Practitioner');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const { login } = useAuth();
@@ -58,6 +59,27 @@ const Login = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Account Type Selection */}
+              <div className="space-y-2">
+                <Label>Account Type</Label>
+                <div className="flex rounded-md border border-input bg-background p-1">
+                  {(['Client', 'Practitioner', 'Admin'] as const).map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setAccountType(type)}
+                      className={`flex-1 rounded-sm px-3 py-2 text-sm font-medium transition-colors ${
+                        accountType === type
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {error && (
                 <Alert variant="destructive">
                   <AlertDescription>{error}</AlertDescription>
@@ -106,9 +128,9 @@ const Login = () => {
               <div className="text-center text-sm">
                 <p className="text-muted-foreground">
                   Demo accounts: <br />
-                  <code>claimant@example.com</code>, <br />
-                  <code>lawyer@example.com</code>, <br />
-                  <code>psychologist@example.com</code> <br />
+                  <code>client@example.com</code>, <br />
+                  <code>psychologist@example.com</code>, <br />
+                  <code>counsellor@example.com</code> <br />
                   Password: <code>password</code>
                 </p>
               </div>
