@@ -23,7 +23,9 @@ interface ClientFormData {
   firstName: string;
   lastName: string;
   preferredFirstName: string;
-  dateOfBirth: Date | undefined;
+  birthDay: string;
+  birthMonth: string;
+  birthYear: string;
   sex: string;
   genderIdentity: string;
   pronouns: string;
@@ -93,7 +95,9 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
     firstName: '',
     lastName: '',
     preferredFirstName: '',
-    dateOfBirth: undefined,
+    birthDay: '',
+    birthMonth: '',
+    birthYear: '',
     sex: '',
     genderIdentity: '',
     pronouns: '',
@@ -181,7 +185,7 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
     if (!formData.lastName.trim()) {
       newErrors.lastName = 'Last name is required';
     }
-    if (!formData.dateOfBirth) {
+    if (!formData.birthDay || !formData.birthMonth || !formData.birthYear) {
       newErrors.dateOfBirth = 'Date of birth is required';
     }
     if (!formData.sex) {
@@ -215,7 +219,9 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
       id: Date.now().toString(),
       name: `${formData.firstName} ${formData.lastName}`,
       preferredName: formData.preferredFirstName,
-      dateOfBirth: formData.dateOfBirth?.toISOString().split('T')[0],
+      dateOfBirth: formData.birthDay && formData.birthMonth && formData.birthYear 
+        ? `${formData.birthYear}-${formData.birthMonth.padStart(2, '0')}-${formData.birthDay.padStart(2, '0')}`
+        : '',
       email: formData.email,
       phone: formData.mobilePhone,
       address: `${formData.addressLine1}${formData.addressLine2 ? ', ' + formData.addressLine2 : ''}, ${formData.suburb} ${formData.state} ${formData.postcode}`,
@@ -303,7 +309,7 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
 
   const isFormValid = formData.firstName.trim() && 
                       formData.lastName.trim() && 
-                      formData.dateOfBirth && 
+                      formData.birthDay && formData.birthMonth && formData.birthYear && 
                       formData.sex && 
                       formData.mobilePhone.trim() && 
                       formData.addressLine1.trim() && 
@@ -408,14 +414,58 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
 
                 <div className="space-y-2">
                   <Label className="text-sm font-semibold text-slate-700">
-                    Date of Birth <span className="text-destructive">*</span>
+                    Date of birth <span className="text-destructive">*</span>
                   </Label>
-                  <DatePicker
-                    value={formData.dateOfBirth}
-                    onChange={(date) => updateField('dateOfBirth', date)}
-                    placeholder="Pick a date"
-                    error={errors.dateOfBirth}
-                  />
+                  <div className="grid grid-cols-3 gap-2">
+                    <Select value={formData.birthDay} onValueChange={(value) => updateField('birthDay', value)}>
+                      <SelectTrigger className={cn(errors.dateOfBirth && "border-destructive")}>
+                        <SelectValue placeholder="Day" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 31 }, (_, i) => (
+                          <SelectItem key={i + 1} value={(i + 1).toString()}>
+                            {i + 1}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select value={formData.birthMonth} onValueChange={(value) => updateField('birthMonth', value)}>
+                      <SelectTrigger className={cn(errors.dateOfBirth && "border-destructive")}>
+                        <SelectValue placeholder="Month" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">January</SelectItem>
+                        <SelectItem value="2">February</SelectItem>
+                        <SelectItem value="3">March</SelectItem>
+                        <SelectItem value="4">April</SelectItem>
+                        <SelectItem value="5">May</SelectItem>
+                        <SelectItem value="6">June</SelectItem>
+                        <SelectItem value="7">July</SelectItem>
+                        <SelectItem value="8">August</SelectItem>
+                        <SelectItem value="9">September</SelectItem>
+                        <SelectItem value="10">October</SelectItem>
+                        <SelectItem value="11">November</SelectItem>
+                        <SelectItem value="12">December</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select value={formData.birthYear} onValueChange={(value) => updateField('birthYear', value)}>
+                      <SelectTrigger className={cn(errors.dateOfBirth && "border-destructive")}>
+                        <SelectValue placeholder="Year" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 100 }, (_, i) => {
+                          const year = new Date().getFullYear() - i;
+                          return (
+                            <SelectItem key={year} value={year.toString()}>
+                              {year}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   {errors.dateOfBirth && (
                     <p className="text-sm text-destructive">{errors.dateOfBirth}</p>
                   )}
