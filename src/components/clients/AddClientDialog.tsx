@@ -19,8 +19,10 @@ import { useToast } from '@/hooks/use-toast';
 
 interface ClientFormData {
   // Personal Details
-  preferredName: string;
-  fullLegalName: string;
+  title: string;
+  firstName: string;
+  lastName: string;
+  preferredFirstName: string;
   dateOfBirth: Date | undefined;
   sex: string;
   genderIdentity: string;
@@ -87,8 +89,10 @@ const DRAFT_KEY = 'addClientDraft';
 export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddClientDialogProps) {
   const { toast } = useToast();
   const [formData, setFormData] = useState<ClientFormData>({
-    preferredName: '',
-    fullLegalName: '',
+    title: '',
+    firstName: '',
+    lastName: '',
+    preferredFirstName: '',
     dateOfBirth: undefined,
     sex: '',
     genderIdentity: '',
@@ -171,8 +175,11 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.fullLegalName.trim()) {
-      newErrors.fullLegalName = 'Full legal name is required';
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required';
+    }
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required';
     }
     if (!formData.dateOfBirth) {
       newErrors.dateOfBirth = 'Date of birth is required';
@@ -206,8 +213,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
 
     const newClient = {
       id: Date.now().toString(),
-      name: formData.fullLegalName,
-      preferredName: formData.preferredName,
+      name: `${formData.firstName} ${formData.lastName}`,
+      preferredName: formData.preferredFirstName,
       dateOfBirth: formData.dateOfBirth?.toISOString().split('T')[0],
       email: formData.email,
       phone: formData.mobilePhone,
@@ -294,7 +301,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
     </Popover>
   );
 
-  const isFormValid = formData.fullLegalName.trim() && 
+  const isFormValid = formData.firstName.trim() && 
+                      formData.lastName.trim() && 
                       formData.dateOfBirth && 
                       formData.sex && 
                       formData.mobilePhone.trim() && 
@@ -320,38 +328,83 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             <section className="space-y-4 border-b border-border pb-6">
               <h3 className="text-lg font-semibold text-slate-700">Personal Details</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+              {/* Top row: Title, First name, Last name */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3">
                 <div className="space-y-2">
-                  <Label htmlFor="preferredName">Preferred Name</Label>
-                  <Input
-                    id="preferredName"
-                    value={formData.preferredName}
-                    onChange={(e) => updateField('preferredName', e.target.value)}
-                    className="focus-visible:ring-2 focus-visible:ring-primary"
-                  />
+                  <Label htmlFor="title" className="text-sm font-semibold text-slate-700">Title</Label>
+                  <Select value={formData.title} onValueChange={(value) => updateField('title', value)}>
+                    <SelectTrigger className="focus-visible:ring-2 focus-visible:ring-primary">
+                      <SelectValue placeholder="Select title" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mr">Mr</SelectItem>
+                      <SelectItem value="mrs">Mrs</SelectItem>
+                      <SelectItem value="ms">Ms</SelectItem>
+                      <SelectItem value="miss">Miss</SelectItem>
+                      <SelectItem value="dr">Dr</SelectItem>
+                      <SelectItem value="prof">Prof</SelectItem>
+                      <SelectItem value="mx">Mx</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="fullLegalName" className="text-sm font-semibold text-slate-700">
-                    Full Legal Name <span className="text-destructive">*</span>
+                  <Label htmlFor="firstName" className="text-sm font-semibold text-slate-700">
+                    First name <span className="text-destructive">*</span>
                   </Label>
                   <Input
-                    id="fullLegalName"
-                    value={formData.fullLegalName}
-                    onChange={(e) => updateField('fullLegalName', e.target.value)}
+                    id="firstName"
+                    value={formData.firstName}
+                    onChange={(e) => updateField('firstName', e.target.value)}
                     className={cn(
                       "focus-visible:ring-2 focus-visible:ring-primary",
-                      errors.fullLegalName && "border-destructive"
+                      errors.firstName && "border-destructive"
                     )}
-                    aria-invalid={!!errors.fullLegalName}
-                    aria-describedby={errors.fullLegalName ? "fullLegalName-error" : undefined}
+                    aria-invalid={!!errors.firstName}
+                    aria-describedby={errors.firstName ? "firstName-error" : undefined}
                   />
-                  {errors.fullLegalName && (
-                    <p id="fullLegalName-error" className="text-sm text-destructive">
-                      {errors.fullLegalName}
+                  {errors.firstName && (
+                    <p id="firstName-error" className="text-sm text-destructive">
+                      {errors.firstName}
                     </p>
                   )}
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="lastName" className="text-sm font-semibold text-slate-700">
+                    Last name <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="lastName"
+                    value={formData.lastName}
+                    onChange={(e) => updateField('lastName', e.target.value)}
+                    className={cn(
+                      "focus-visible:ring-2 focus-visible:ring-primary",
+                      errors.lastName && "border-destructive"
+                    )}
+                    aria-invalid={!!errors.lastName}
+                    aria-describedby={errors.lastName ? "lastName-error" : undefined}
+                  />
+                  {errors.lastName && (
+                    <p id="lastName-error" className="text-sm text-destructive">
+                      {errors.lastName}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Preferred first name - full width */}
+              <div className="space-y-2">
+                <Label htmlFor="preferredFirstName" className="text-sm font-semibold text-slate-700">Preferred first name</Label>
+                <Input
+                  id="preferredFirstName"
+                  value={formData.preferredFirstName}
+                  onChange={(e) => updateField('preferredFirstName', e.target.value)}
+                  className="focus-visible:ring-2 focus-visible:ring-primary"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
 
                 <div className="space-y-2">
                   <Label className="text-sm font-semibold text-slate-700">
