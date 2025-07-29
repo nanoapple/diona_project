@@ -25,44 +25,37 @@ interface CreateAppointmentDialogProps {
 const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTime }: CreateAppointmentDialogProps) => {
   const { currentUser } = useAuth();
   const [formData, setFormData] = useState({
-    title: '',
-    type: '',
+    appointmentType: '',
+    sessionTitle: '',
     date: selectedDate || new Date(),
     startTime: selectedTime || '',
-    endTime: '',
     duration: '60',
     isRecurring: false,
     recurringType: '',
     caseSilo: '',
     client: '',
     isMilestone: false,
-    milestoneType: '',
     mode: 'in-person',
     location: '',
     attendees: [] as string[],
     notes: '',
     reminders: true,
-    colorTag: 'blue',
+    colorTags: [] as string[],
     privacy: 'shared'
   });
 
   const [newAttendee, setNewAttendee] = useState('');
 
-  // Role-based appointment types
-  const getAppointmentTypes = () => {
-    const commonTypes = ['Team Meeting', 'Admin', 'Reminder'];
-    
-    switch (currentUser?.role) {
-      case 'psychologist':
-        return ['Client Session', 'Assessment', 'Clinical Review', ...commonTypes];
-      case 'lawyer':
-        return ['Legal Briefing', 'Case Review', 'Document Review', 'Court Appearance', ...commonTypes];
-      case 'claimant':
-        return ['Consultation', 'Appointment'];
-      default:
-        return commonTypes;
-    }
-  };
+  // Appointment types for all users
+  const appointmentTypes = [
+    'Client Session',
+    'Assessment Session', 
+    'Team Meeting (Internal)',
+    'Team Meeting (External)',
+    'Supervision',
+    'Administrative Task',
+    'Other'
+  ];
 
   const timeSlots = Array.from({ length: 40 }, (_, i) => {
     const hour = Math.floor(i / 4) + 9;
@@ -71,14 +64,14 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
   });
 
   const durationOptions = ['15', '30', '45', '60', '90', '120'];
-  const milestoneTypes = ['Key Session', 'Document', 'Assessment', 'Report', 'Decision'];
   const recurringTypes = ['Daily', 'Weekly', 'Bi-weekly', 'Monthly'];
   const colorTags = [
-    { value: 'green', label: 'Clinical', color: 'bg-green-500' },
-    { value: 'blue', label: 'Legal', color: 'bg-blue-500' },
-    { value: 'yellow', label: 'Admin', color: 'bg-yellow-500' },
-    { value: 'red', label: 'Urgent', color: 'bg-red-500' },
-    { value: 'purple', label: 'Personal', color: 'bg-purple-500' }
+    { value: 'clinical', label: 'Clinical', color: 'bg-green-500' },
+    { value: 'legal', label: 'Legal', color: 'bg-blue-500' },
+    { value: 'admin', label: 'Admin', color: 'bg-yellow-500' },
+    { value: 'urgent', label: 'Urgent', color: 'bg-red-500' },
+    { value: 'personal', label: 'Personal', color: 'bg-purple-500' },
+    { value: 'ndis', label: 'NDIS', color: 'bg-orange-500' }
   ];
 
   const mockCaseSilos = ['Case #2024-001: John Doe - Work Injury', 'Case #2024-002: Jane Smith - MVA', 'Case #2024-003: Bob Wilson - Stress Claim'];
@@ -99,6 +92,23 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
       ...prev,
       attendees: prev.attendees.filter(a => a !== attendee)
     }));
+  };
+
+  // Check if client-facing appointment type
+  const isClientFacing = formData.appointmentType === 'Client Session' || formData.appointmentType === 'Assessment Session';
+
+  // Generate smart suggestions based on appointment type
+  const getSmartSuggestion = () => {
+    switch (formData.appointmentType) {
+      case 'Client Session':
+        return 'Would you like to review the DASS-21 result before this meeting?';
+      case 'Assessment Session':
+        return 'Consider preparing assessment materials and reviewing previous session notes.';
+      case 'Team Meeting (Internal)':
+        return 'Review agenda items and prepare case updates for discussion.';
+      default:
+        return 'Would you like to review the DASS-21 result before this meeting?';
+    }
   };
 
   const handleSave = () => {
@@ -127,32 +137,32 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
               <h3 className="font-semibold text-lg">1. Appointment Basics</h3>
               
               <div>
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  placeholder="e.g., Jane Smith – Return to Work Plan"
-                  value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  disabled={isLimitedUser}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="type">Type</Label>
+                <Label htmlFor="appointmentType">Appointment Type *</Label>
                 <Select
-                  value={formData.type}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
+                  value={formData.appointmentType}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, appointmentType: value }))}
                   disabled={isLimitedUser}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select appointment type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {getAppointmentTypes().map(type => (
+                    {appointmentTypes.map(type => (
                       <SelectItem key={type} value={type}>{type}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="sessionTitle">Session Title</Label>
+                <Input
+                  id="sessionTitle"
+                  placeholder="e.g., Jane Smith – Trauma Intake, or Weekly Case Review"
+                  value={formData.sessionTitle}
+                  onChange={(e) => setFormData(prev => ({ ...prev, sessionTitle: e.target.value }))}
+                  disabled={isLimitedUser}
+                />
               </div>
 
               <div className="grid grid-cols-3 gap-2">
@@ -248,70 +258,58 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
               )}
             </div>
 
-            {/* Case/Client Association */}
-            {!isLimitedUser && (
+            {/* Case/Client Association - Only for client-facing appointments */}
+            {!isLimitedUser && isClientFacing && (
               <div className="space-y-3">
                 <h3 className="font-semibold text-lg">2. Case/Client Association</h3>
                 
                 <div>
-                  <Label htmlFor="caseSilo">Link to Case Silo</Label>
-                  <Select
-                    value={formData.caseSilo}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, caseSilo: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select case silo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {mockCaseSilos.map(caseSilo => (
-                        <SelectItem key={caseSilo} value={caseSilo}>{caseSilo}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="client">Link to Client</Label>
-                  <Select
+                  <Label htmlFor="client">Client Search Field</Label>
+                  <Input
+                    id="client"
+                    placeholder="Enter client name"
                     value={formData.client}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, client: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select client" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {mockClients.map(client => (
-                        <SelectItem key={client} value={client}>{client}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    onChange={(e) => setFormData(prev => ({ ...prev, client: e.target.value }))}
+                  />
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="milestone"
-                      checked={formData.isMilestone}
-                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isMilestone: checked }))}
-                    />
-                    <Label htmlFor="milestone">Mark this session as a Key Milestone</Label>
-                  </div>
-                  {formData.isMilestone && (
+                {formData.client && (
+                  <div>
+                    <Label htmlFor="caseSilo">Auto-Link to Case Silo</Label>
                     <Select
-                      value={formData.milestoneType}
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, milestoneType: value }))}
+                      value={formData.caseSilo}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, caseSilo: value }))}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select milestone type" />
+                        <SelectValue placeholder="Select case silo" />
                       </SelectTrigger>
                       <SelectContent>
-                        {milestoneTypes.map(type => (
-                          <SelectItem key={type} value={type}>{type}</SelectItem>
+                        {mockCaseSilos.map(caseSilo => (
+                          <SelectItem key={caseSilo} value={caseSilo}>{caseSilo}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                  )}
+                  </div>
+                )}
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="milestone"
+                    checked={formData.isMilestone}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isMilestone: checked }))}
+                  />
+                  <Label htmlFor="milestone">Mark this session as a Key Milestone</Label>
                 </div>
+              </div>
+            )}
+
+            {/* Non-client facing appointments show greyed out section */}
+            {!isLimitedUser && !isClientFacing && (
+              <div className="space-y-3 opacity-50">
+                <h3 className="font-semibold text-lg">2. Case/Client Association</h3>
+                <p className="text-sm text-muted-foreground">
+                  Client linking not available for this appointment type
+                </p>
               </div>
             )}
           </div>
@@ -323,7 +321,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
               <h3 className="font-semibold text-lg">3. Location & Modality</h3>
               
               <div>
-                <Label>Mode</Label>
+                <Label>Session Mode</Label>
                 <RadioGroup
                   value={formData.mode}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, mode: value }))}
@@ -346,37 +344,37 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
 
               <div>
                 <Label htmlFor="location">
-                  {formData.mode === 'in-person' ? 'Location' : 'Meeting Link/Phone'}
+                  Location {formData.mode === 'in-person' && '*'}
                 </Label>
                 <Input
                   id="location"
-                  placeholder={
-                    formData.mode === 'in-person' 
-                      ? "Enter address" 
-                      : formData.mode === 'telehealth' 
-                        ? "Enter Zoom link" 
-                        : "Enter phone number"
-                  }
+                  placeholder="Enter address"
                   value={formData.location}
                   onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                   disabled={isLimitedUser}
+                  required={formData.mode === 'in-person'}
                 />
               </div>
             </div>
 
-            {/* Collaborators / Attendees */}
+            {/* Invite Attendees */}
             {!isLimitedUser && (
               <div className="space-y-3">
-                <h3 className="font-semibold text-lg">4. Collaborators / Attendees</h3>
+                <h3 className="font-semibold text-lg">4. Invite Attendees</h3>
                 
                 <div>
                   <Label htmlFor="attendees">Invite Others</Label>
                   <div className="flex gap-2">
                     <Input
-                      placeholder="Enter email or name"
+                      placeholder="Enter email or name (comma or Enter to separate)"
                       value={newAttendee}
                       onChange={(e) => setNewAttendee(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && addAttendee()}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' || e.key === ',') {
+                          e.preventDefault();
+                          addAttendee();
+                        }
+                      }}
                     />
                     <Button type="button" size="sm" onClick={addAttendee}>
                       <Plus className="h-4 w-4" />
@@ -412,10 +410,10 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
                 />
               </div>
 
-              {!isLimitedUser && (
+              {!isLimitedUser && formData.appointmentType && (
                 <div className="p-3 bg-blue-50 rounded-lg">
                   <p className="text-sm text-blue-700">
-                    💡 <strong>Confee Suggestion:</strong> Would you like to review the DASS-21 result before this meeting?
+                    💡 <strong>Confee Suggestion:</strong> {getSmartSuggestion()}
                   </p>
                 </div>
               )}
@@ -435,17 +433,25 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
               </div>
 
               <div>
-                <Label>Colour Tag / Category</Label>
-                <div className="flex gap-2 mt-2">
+                <Label>Colour Tag / Category (multi-select)</Label>
+                <div className="flex flex-wrap gap-2 mt-2">
                   {colorTags.map(tag => (
                     <button
                       key={tag.value}
                       className={cn(
-                        "px-3 py-1 rounded text-sm text-white",
+                        "px-3 py-1 rounded text-sm text-white transition-all",
                         tag.color,
-                        formData.colorTag === tag.value ? 'ring-2 ring-offset-2 ring-blue-500' : ''
+                        formData.colorTags.includes(tag.value) ? 'ring-2 ring-offset-2 ring-blue-500 scale-105' : 'opacity-70 hover:opacity-100'
                       )}
-                      onClick={() => setFormData(prev => ({ ...prev, colorTag: tag.value }))}
+                      onClick={() => {
+                        const isSelected = formData.colorTags.includes(tag.value);
+                        setFormData(prev => ({
+                          ...prev,
+                          colorTags: isSelected 
+                            ? prev.colorTags.filter(t => t !== tag.value)
+                            : [...prev.colorTags, tag.value]
+                        }));
+                      }}
                     >
                       {tag.label}
                     </button>
@@ -454,22 +460,22 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
               </div>
 
               {!isLimitedUser && (
-                <div>
-                  <Label>Privacy Control</Label>
-                  <Select
-                    value={formData.privacy}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, privacy: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="private">Private (user only)</SelectItem>
-                      <SelectItem value="shared">Shared with Case Silo participants</SelectItem>
-                      <SelectItem value="team">Team only</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div>
+                    <Label>Privacy Control</Label>
+                    <Select
+                      value={formData.privacy}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, privacy: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="shared">Shared with Case Silo team</SelectItem>
+                        <SelectItem value="private">Private to session organiser</SelectItem>
+                        <SelectItem value="internal">Internal use only</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
               )}
             </div>
           </div>
@@ -480,7 +486,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={!formData.title || !formData.type}>
+          <Button onClick={handleSave} disabled={!formData.appointmentType || (formData.mode === 'in-person' && !formData.location)}>
             Save Appointment
           </Button>
         </div>
