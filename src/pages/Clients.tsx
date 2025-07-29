@@ -3,16 +3,16 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { Users, User, FileText, ClipboardCheck, FileCheck, File } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
+import AddClientDialog from '@/components/clients/AddClientDialog';
 
 interface Client {
   id: string;
@@ -183,20 +183,6 @@ const Clients = () => {
   const [editMode, setEditMode] = useState(false);
   const [editedClient, setEditedClient] = useState<Partial<Client>>({});
   const [isNewDialogOpen, setIsNewDialogOpen] = useState(false);
-  const [newClient, setNewClient] = useState<Partial<Client>>({
-    name: '',
-    dateOfBirth: '',
-    email: '',
-    phone: '',
-    address: '',
-    dateOfInjury: '',
-    injuryType: '',
-    referralSource: '',
-    notes: '',
-    assessments: [],
-    interviews: [],
-    documents: []
-  });
   const [activeTab, setActiveTab] = useState('profile');
 
   const handleSelectClient = (client: Client) => {
@@ -226,50 +212,24 @@ const Clients = () => {
     setEditMode(!editMode);
   };
 
-  const handleCreateClient = () => {
-    if (!newClient.name || !newClient.dateOfBirth) {
-      toast({
-        title: "Missing information",
-        description: "Please fill in all required fields",
-        variant: "destructive"
-      });
-      return;
-    }
-
+  const handleCreateClient = (clientData: any) => {
     const client: Client = {
-      id: Date.now().toString(),
-      name: newClient.name || '',
-      dateOfBirth: newClient.dateOfBirth || '',
-      email: newClient.email || '',
-      phone: newClient.phone || '',
-      address: newClient.address || '',
-      dateOfInjury: newClient.dateOfInjury || '',
-      injuryType: newClient.injuryType || '',
-      referralSource: newClient.referralSource || '',
-      notes: newClient.notes || '',
+      id: clientData.id,
+      name: clientData.name,
+      dateOfBirth: clientData.dateOfBirth,
+      email: clientData.email,
+      phone: clientData.phone,
+      address: clientData.address,
+      dateOfInjury: clientData.dateOfInjury,
+      injuryType: clientData.injuryType,
+      referralSource: clientData.referralSource,
+      notes: clientData.notes,
       assessments: [],
       interviews: [],
       documents: []
     };
 
     setClients([...clients, client]);
-    setIsNewDialogOpen(false);
-    setNewClient({
-      name: '',
-      dateOfBirth: '',
-      email: '',
-      phone: '',
-      address: '',
-      dateOfInjury: '',
-      injuryType: '',
-      referralSource: '',
-      notes: ''
-    });
-    
-    toast({
-      title: "Client added",
-      description: "New client has been added successfully",
-    });
   };
 
   const getDocumentIcon = (type: string) => {
@@ -627,124 +587,13 @@ const Clients = () => {
               </p>
             </div>
             
-            <Dialog open={isNewDialogOpen} onOpenChange={setIsNewDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>Add New Client</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add New Client</DialogTitle>
-                  <DialogDescription>
-                    Enter the client's information below to create a new client record
-                  </DialogDescription>
-                </DialogHeader>
-                
-                <ScrollArea className="h-[60vh]">
-                  <div className="space-y-4 py-2 pr-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name *</Label>
-                      <Input 
-                        id="name" 
-                        value={newClient.name} 
-                        onChange={(e) => setNewClient({...newClient, name: e.target.value})}
-                        placeholder="Enter client's full name" 
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="dob">Date of Birth *</Label>
-                      <Input 
-                        id="dob" 
-                        type="date"
-                        value={newClient.dateOfBirth} 
-                        onChange={(e) => setNewClient({...newClient, dateOfBirth: e.target.value})}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input 
-                        id="email" 
-                        type="email"
-                        value={newClient.email} 
-                        onChange={(e) => setNewClient({...newClient, email: e.target.value})}
-                        placeholder="Enter client's email" 
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone</Label>
-                      <Input 
-                        id="phone" 
-                        value={newClient.phone} 
-                        onChange={(e) => setNewClient({...newClient, phone: e.target.value})}
-                        placeholder="Enter client's phone number" 
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="address">Address</Label>
-                      <Input 
-                        id="address" 
-                        value={newClient.address} 
-                        onChange={(e) => setNewClient({...newClient, address: e.target.value})}
-                        placeholder="Enter client's address" 
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="dateOfInjury">Date of Injury/Incident</Label>
-                      <Input 
-                        id="dateOfInjury" 
-                        type="date"
-                        value={newClient.dateOfInjury} 
-                        onChange={(e) => setNewClient({...newClient, dateOfInjury: e.target.value})}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="injuryType">Injury Type</Label>
-                      <Input 
-                        id="injuryType" 
-                        value={newClient.injuryType} 
-                        onChange={(e) => setNewClient({...newClient, injuryType: e.target.value})}
-                        placeholder="E.g., Workplace Injury, Motor Vehicle Accident" 
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="referralSource">Referral Source</Label>
-                      <Input 
-                        id="referralSource" 
-                        value={newClient.referralSource} 
-                        onChange={(e) => setNewClient({...newClient, referralSource: e.target.value})}
-                        placeholder="E.g., Insurance Company, Law Firm" 
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="notes">Clinical Notes</Label>
-                      <Textarea 
-                        id="notes" 
-                        value={newClient.notes} 
-                        onChange={(e) => setNewClient({...newClient, notes: e.target.value})}
-                        placeholder="Enter any initial clinical notes" 
-                        rows={4}
-                      />
-                    </div>
-                  </div>
-                </ScrollArea>
-                
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsNewDialogOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleCreateClient}>
-                    Create Client
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <Button onClick={() => setIsNewDialogOpen(true)}>Add New Client</Button>
+            
+            <AddClientDialog
+              isOpen={isNewDialogOpen}
+              onOpenChange={setIsNewDialogOpen}
+              onClientCreated={handleCreateClient}
+            />
           </div>
           
           <Card>
