@@ -573,6 +573,27 @@ export type Database = {
           },
         ]
       }
+      security_questions: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          question: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          question: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          question?: string
+        }
+        Relationships: []
+      }
       timeline_items: {
         Row: {
           case_silo_id: string
@@ -627,15 +648,155 @@ export type Database = {
           },
         ]
       }
+      user_profiles: {
+        Row: {
+          address: Json | null
+          apple_id: string | null
+          assigned_practitioner_id: string | null
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          created_by: string | null
+          date_of_birth: string | null
+          email: string
+          email_verified: boolean | null
+          emergency_contact: Json | null
+          full_name: string
+          google_id: string | null
+          id: string
+          is_active: boolean
+          is_password_assigned: boolean | null
+          last_login: string | null
+          license_number: string | null
+          microsoft_id: string | null
+          organization: string | null
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          security_answer_1: string | null
+          security_answer_2: string | null
+          security_question_1_id: string | null
+          security_question_2_id: string | null
+          specializations: string[] | null
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          address?: Json | null
+          apple_id?: string | null
+          assigned_practitioner_id?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth?: string | null
+          email: string
+          email_verified?: boolean | null
+          emergency_contact?: Json | null
+          full_name: string
+          google_id?: string | null
+          id?: string
+          is_active?: boolean
+          is_password_assigned?: boolean | null
+          last_login?: string | null
+          license_number?: string | null
+          microsoft_id?: string | null
+          organization?: string | null
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          security_answer_1?: string | null
+          security_answer_2?: string | null
+          security_question_1_id?: string | null
+          security_question_2_id?: string | null
+          specializations?: string[] | null
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          address?: Json | null
+          apple_id?: string | null
+          assigned_practitioner_id?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth?: string | null
+          email?: string
+          email_verified?: boolean | null
+          emergency_contact?: Json | null
+          full_name?: string
+          google_id?: string | null
+          id?: string
+          is_active?: boolean
+          is_password_assigned?: boolean | null
+          last_login?: string | null
+          license_number?: string | null
+          microsoft_id?: string | null
+          organization?: string | null
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          security_answer_1?: string | null
+          security_answer_2?: string | null
+          security_question_1_id?: string | null
+          security_question_2_id?: string | null
+          specializations?: string[] | null
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_assigned_practitioner_id_fkey"
+            columns: ["assigned_practitioner_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_profiles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_profiles_security_question_1_id_fkey"
+            columns: ["security_question_1_id"]
+            isOneToOne: false
+            referencedRelation: "security_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_profiles_security_question_2_id_fkey"
+            columns: ["security_question_2_id"]
+            isOneToOne: false
+            referencedRelation: "security_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_access_client_data: {
+        Args: { client_profile_id: string }
+        Returns: boolean
+      }
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
     }
     Enums: {
-      [_ in never]: never
+      user_role:
+        | "client"
+        | "psychologist"
+        | "counsellor"
+        | "social_worker"
+        | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -762,6 +923,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: [
+        "client",
+        "psychologist",
+        "counsellor",
+        "social_worker",
+        "admin",
+      ],
+    },
   },
 } as const
