@@ -164,34 +164,75 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
                   disabled={isLimitedUser}
                 />
               </div>
+            </div>
 
+            {/* Case/Client Association - Move after session title */}
+            {!isLimitedUser && isClientFacing && (
+              <div className="space-y-3">
+                <h3 className="font-semibold text-lg">2. Case/Client Association</h3>
+                
+                <div>
+                  <Label htmlFor="client">Client Search Field</Label>
+                  <Input
+                    id="client"
+                    placeholder="Enter client name"
+                    value={formData.client}
+                    onChange={(e) => setFormData(prev => ({ ...prev, client: e.target.value }))}
+                  />
+                </div>
+
+                {formData.client && (
+                  <div>
+                    <Label htmlFor="caseSilo">Auto-Link to Case Silo</Label>
+                    <Select
+                      value={formData.caseSilo}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, caseSilo: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select case silo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {mockCaseSilos.map(caseSilo => (
+                          <SelectItem key={caseSilo} value={caseSilo}>{caseSilo}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="milestone"
+                    checked={formData.isMilestone}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isMilestone: checked }))}
+                  />
+                  <Label htmlFor="milestone">Mark this session as a Key Milestone</Label>
+                </div>
+              </div>
+            )}
+
+            {/* Non-client facing appointments show greyed out section */}
+            {!isLimitedUser && !isClientFacing && (
+              <div className="space-y-3 opacity-50">
+                <h3 className="font-semibold text-lg">2. Case/Client Association</h3>
+                <p className="text-sm text-muted-foreground">
+                  Client linking not available for this appointment type
+                </p>
+              </div>
+            )}
+
+            {/* Date and Time Section */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-lg">3. Date & Time</h3>
+              
               <div className="grid grid-cols-3 gap-2">
                 <div>
                   <Label>Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !formData.date && "text-muted-foreground"
-                        )}
-                        disabled={isLimitedUser}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {formData.date ? format(formData.date, "PPP") : "Pick date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={formData.date}
-                        onSelect={(date) => date && setFormData(prev => ({ ...prev, date }))}
-                        initialFocus
-                        className="p-3 pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <Input
+                    value={formData.date ? format(formData.date, "PPP") : ""}
+                    disabled
+                    className="bg-muted"
+                  />
                 </div>
 
                 <div>
@@ -258,60 +299,6 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
               )}
             </div>
 
-            {/* Case/Client Association - Only for client-facing appointments */}
-            {!isLimitedUser && isClientFacing && (
-              <div className="space-y-3">
-                <h3 className="font-semibold text-lg">2. Case/Client Association</h3>
-                
-                <div>
-                  <Label htmlFor="client">Client Search Field</Label>
-                  <Input
-                    id="client"
-                    placeholder="Enter client name"
-                    value={formData.client}
-                    onChange={(e) => setFormData(prev => ({ ...prev, client: e.target.value }))}
-                  />
-                </div>
-
-                {formData.client && (
-                  <div>
-                    <Label htmlFor="caseSilo">Auto-Link to Case Silo</Label>
-                    <Select
-                      value={formData.caseSilo}
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, caseSilo: value }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select case silo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {mockCaseSilos.map(caseSilo => (
-                          <SelectItem key={caseSilo} value={caseSilo}>{caseSilo}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="milestone"
-                    checked={formData.isMilestone}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isMilestone: checked }))}
-                  />
-                  <Label htmlFor="milestone">Mark this session as a Key Milestone</Label>
-                </div>
-              </div>
-            )}
-
-            {/* Non-client facing appointments show greyed out section */}
-            {!isLimitedUser && !isClientFacing && (
-              <div className="space-y-3 opacity-50">
-                <h3 className="font-semibold text-lg">2. Case/Client Association</h3>
-                <p className="text-sm text-muted-foreground">
-                  Client linking not available for this appointment type
-                </p>
-              </div>
-            )}
           </div>
 
           {/* Right Column */}
