@@ -236,7 +236,7 @@ const Schedule = () => {
                             <div className="truncate text-[10px] opacity-80">{appointment.title}</div>
                             {/* Status indicator oval */}
                             {appointment.arrivalStatus && appointment.arrivalStatus !== '' && (
-                              <div className={`absolute bottom-1 right-1 w-3 h-2 rounded-full ${
+                              <div className={`absolute bottom-0 right-1 w-4 h-3 rounded-full border border-white ${
                                 appointment.arrivalStatus === 'Arrived' ? 'bg-green-500' :
                                 appointment.arrivalStatus === 'Late' ? 'bg-yellow-500' :
                                 appointment.arrivalStatus === 'Rescheduled' ? 'bg-blue-500' :
