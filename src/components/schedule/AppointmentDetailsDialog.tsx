@@ -110,7 +110,9 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
 
   const presentingIssuesOptions = [
     'Anxiety', 'PTSD', 'Work stress', 'Depression', 'Grief', 'Relationship issues',
-    'Substance abuse', 'Eating disorders', 'Sleep disorders', 'Anger management'
+    'Substance abuse', 'Eating disorders', 'Sleep disorders', 'Anger management',
+    'Bullying / Abuse', 'Neurodivergence', 'Chronic Pain / Injury', 'Legal or Compensation Stress',
+    'Isolation / Loneliness', 'Life Transitions', 'Financial Stress', 'Gender / Sexual Identity', 'Academic Pressure'
   ];
 
   const dischargeReasonOptions = [
@@ -236,9 +238,9 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
 
                 <div>
                   <Label>Presenting Issues (Tags)</Label>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div className="grid grid-cols-3 gap-1 mt-2">
                     {presentingIssuesOptions.map((issue) => (
-                      <label key={issue} className="flex items-center space-x-2">
+                      <label key={issue} className="flex items-center space-x-1.5">
                         <input
                           type="checkbox"
                           checked={presentingIssues.includes(issue)}
@@ -251,7 +253,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                           }}
                           className="rounded"
                         />
-                        <span className="text-sm">{issue}</span>
+                        <span className="text-xs">{issue}</span>
                       </label>
                     ))}
                   </div>
