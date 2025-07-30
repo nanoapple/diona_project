@@ -382,7 +382,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
             )}
 
             {/* Notes & Smart Suggestions */}
-            <div className="space-y-3 p-4 bg-blue-200/70 rounded-lg border border-blue-300/70 shadow-sm">
+            <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
               <h3 className="font-semibold text-lg">5. Notes & Smart Suggestions</h3>
               
               <div>
@@ -398,8 +398,8 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
               </div>
 
               {!isLimitedUser && formData.appointmentType && (
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-blue-700">
+                <div className="p-3 bg-blue-200/70 border border-blue-300/70 rounded-lg">
+                  <p className="text-sm text-blue-800">
                     💡 <strong>Confee Suggestion:</strong> {getSmartSuggestion()}
                   </p>
                 </div>
