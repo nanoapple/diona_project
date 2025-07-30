@@ -22,6 +22,7 @@ import NotFound from "./pages/NotFound";
 import ClientDetails from "./pages/ClientDetails";
 import LegalTasks from "./pages/LegalTasks";
 import Schedule from "./pages/Schedule";
+import AllAssessments from "./pages/AllAssessments";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/ai-assistant" element={<AiAssistant />} />
               <Route path="/documents" element={<Documents />} />
               <Route path="/assessments" element={<Assessments />} />
+              <Route path="/all-assessments" element={<AllAssessments />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/clients" element={<Clients />} />
               <Route path="/client-details/:clientId" element={<ClientDetails />} />

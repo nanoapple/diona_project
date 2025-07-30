@@ -206,15 +206,11 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
     return alphabetLetters.filter(letter => availableLetters.has(letter));
   };
 
-  return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-[80vw] max-h-[80vh] w-[80vw] h-[80vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>Select Assessment Scale</DialogTitle>
-          </DialogHeader>
+  // If used as a page (open=true and no dialog control), render without dialog wrapper
+  const isPageMode = open && !onOpenChange;
 
-        <div className="flex-1 flex flex-col space-y-4 overflow-hidden">
+  const content = (
+    <div className={`${isPageMode ? 'h-full' : 'flex-1'} flex flex-col space-y-4 overflow-hidden`}>
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -345,9 +341,23 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
               </div>
             )}
           </div>
-        </div>
-        </DialogContent>
-      </Dialog>
+    </div>
+  );
+
+  return (
+    <>
+      {isPageMode ? (
+        content
+      ) : (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+          <DialogContent className="max-w-[80vw] max-h-[80vh] w-[80vw] h-[80vh] flex flex-col">
+            <DialogHeader>
+              <DialogTitle>Select Assessment Scale</DialogTitle>
+            </DialogHeader>
+            {content}
+          </DialogContent>
+        </Dialog>
+      )}
 
       <PCL5Assessment 
         open={showPCL5Assessment}

@@ -196,65 +196,33 @@ const Assessments = () => {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4">
-        {/* Calendar Widget */}
-        <Card className="w-full md:w-[300px] md:h-fit">
-          <CardHeader>
-            <CardTitle>Schedule</CardTitle>
-            <CardDescription>View upcoming assessments</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className="w-full justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? formatDate(date.toISOString()) : "Select date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </CardContent>
-          <CardFooter>
-            <Button variant="outline" className="w-full" onClick={() => {
-              toast({
-                title: "Feature coming soon",
-                description: "Schedule management will be available in a future update.",
-              });
-            }}>
-              View Schedule
-            </Button>
-          </CardFooter>
-        </Card>
-
-        {/* Assessments Tabs */}
-        <Card className="flex-1">
-          <CardHeader>
-            <div className="flex justify-between items-start">
-              <div>
-                <CardTitle>My Assessments</CardTitle>
-                <CardDescription>
-                  {currentUser?.role === "psychologist" 
-                    ? "Assessments for your clients" 
-                    : "Your psychological assessments"}
-                </CardDescription>
-              </div>
+      {/* Assessments Card */}
+      <Card className="w-full">
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle>My Assessments</CardTitle>
+              <CardDescription>
+                {currentUser?.role === "psychologist" 
+                  ? "Assessments for your clients" 
+                  : "Your psychological assessments"}
+              </CardDescription>
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline"
+                onClick={() => window.location.href = '/all-assessments'}
+              >
+                All Assessments
+              </Button>
               {currentUser?.role === "psychologist" && (
                 <Button onClick={() => setAddDialogOpen(true)}>
                   <Plus className="mr-2 h-4 w-4" /> Add/Assign Assessment
                 </Button>
               )}
             </div>
-          </CardHeader>
+          </div>
+        </CardHeader>
           <CardContent>
             <Tabs defaultValue="pending">
               <TabsList className="mb-4">
@@ -373,8 +341,7 @@ const Assessments = () => {
               </TabsContent>
             </Tabs>
           </CardContent>
-        </Card>
-      </div>
+      </Card>
 
       {currentUser?.role === "claimant" && (
         <Card>
