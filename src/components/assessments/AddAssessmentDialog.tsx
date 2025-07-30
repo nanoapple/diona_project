@@ -128,6 +128,9 @@ export function AddAssessmentDialog({
     setSelectedScale(scale);
     setShowScaleSelector(false);
     
+    // Close the main dialog first to prevent z-index issues
+    onOpenChange(false);
+    
     // Automatically proceed with assessment creation
     setTimeout(() => {
       handleAddAssessment();
