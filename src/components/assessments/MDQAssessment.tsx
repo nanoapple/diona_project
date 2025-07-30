@@ -161,7 +161,7 @@ const questions: Question[] = [
 ];
 
 export const MDQAssessment = ({ open, onOpenChange, clientName }: MDQAssessmentProps) => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(-1); // Start with instruction page
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [showResults, setShowResults] = useState(false);
 
@@ -170,6 +170,11 @@ export const MDQAssessment = ({ open, onOpenChange, clientName }: MDQAssessmentP
   };
 
   const handleNext = () => {
+    if (currentQuestion === -1) {
+      setCurrentQuestion(0);
+      return;
+    }
+    
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
@@ -178,7 +183,7 @@ export const MDQAssessment = ({ open, onOpenChange, clientName }: MDQAssessmentP
   };
 
   const handlePrevious = () => {
-    if (currentQuestion > 0) {
+    if (currentQuestion > -1) {
       setCurrentQuestion(prev => prev - 1);
     }
   };
@@ -233,7 +238,7 @@ export const MDQAssessment = ({ open, onOpenChange, clientName }: MDQAssessmentP
   };
 
   const resetAssessment = () => {
-    setCurrentQuestion(0);
+    setCurrentQuestion(-1);
     setAnswers({});
     setShowResults(false);
   };
@@ -243,9 +248,9 @@ export const MDQAssessment = ({ open, onOpenChange, clientName }: MDQAssessmentP
     onOpenChange(false);
   };
 
-  const progress = ((currentQuestion + 1) / questions.length) * 100;
-  const currentQuestionData = questions[currentQuestion];
-  const canProceed = answers[currentQuestionData?.id] !== undefined;
+  const progress = currentQuestion === -1 ? 0 : ((currentQuestion + 1) / questions.length) * 100;
+  const currentQuestionData = currentQuestion >= 0 ? questions[currentQuestion] : null;
+  const canProceed = currentQuestion === -1 || (currentQuestionData && answers[currentQuestionData.id] !== undefined);
 
   if (showResults) {
     const result = calculateScore();
@@ -334,38 +339,60 @@ export const MDQAssessment = ({ open, onOpenChange, clientName }: MDQAssessmentP
         <div className="space-y-6">
           <div className="space-y-2">
             <div className="flex justify-between text-sm text-muted-foreground">
-              <span>Question {currentQuestion + 1} of {questions.length}</span>
+              <span>{currentQuestion === -1 ? "Instructions" : `Question ${currentQuestion + 1} of ${questions.length}`}</span>
               <span>{Math.round(progress)}% complete</span>
             </div>
             <Progress value={progress} className="h-2" />
           </div>
 
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium leading-relaxed">
-              {currentQuestionData.text}
-            </h3>
-
-            <RadioGroup
-              value={answers[currentQuestionData.id]?.toString() || ""}
-              onValueChange={(value) => handleAnswer(currentQuestionData.id, parseInt(value))}
-              className="space-y-3"
-            >
-              {currentQuestionData.options.map((option, index) => (
-                <div key={index} className="flex items-center space-x-2 p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-                  <RadioGroupItem value={option.value.toString()} id={`option-${index}`} />
-                  <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">
-                    {option.text}
-                  </Label>
+          {currentQuestion === -1 ? (
+            <div className="space-y-6 text-center">
+              <div className="text-xl font-semibold">About the MDQ</div>
+              <div className="space-y-4 text-left">
+                <p className="text-muted-foreground">
+                  The Mood Disorder Questionnaire (MDQ) was developed as a screening instrument for bipolar spectrum disorders. 
+                  It includes 13 yes/no questions about bipolar symptoms and two additional questions about symptom co-occurrence and impaired functioning.
+                </p>
+                <p className="text-muted-foreground">
+                  The MDQ takes about 5 minutes to complete and is most supported for use as a screening tool in Bipolar I disorder. 
+                  Any positive screening should be followed up with a comprehensive clinical assessment.
+                </p>
+                <div className="bg-muted p-4 rounded-lg">
+                  <h4 className="font-medium mb-2">Instructions:</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Please answer each question as honestly as possible. Think about times when you were in a "high" mood or felt very energetic.
+                  </p>
                 </div>
-              ))}
-            </RadioGroup>
-          </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium leading-relaxed">
+                {currentQuestionData.text}
+              </h3>
+
+              <RadioGroup
+                value={answers[currentQuestionData.id]?.toString() || ""}
+                onValueChange={(value) => handleAnswer(currentQuestionData.id, parseInt(value))}
+                className="space-y-3"
+              >
+                {currentQuestionData.options.map((option, index) => (
+                  <div key={index} className="flex items-center space-x-2 p-3 rounded-lg border hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value={option.value.toString()} id={`option-${index}`} />
+                    <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">
+                      {option.text}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+          )}
 
           <div className="flex justify-between">
             <Button
               variant="outline"
               onClick={handlePrevious}
-              disabled={currentQuestion === 0}
+              disabled={currentQuestion === -1}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Previous
