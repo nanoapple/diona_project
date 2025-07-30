@@ -229,20 +229,22 @@ const Schedule = () => {
                         onClick={() => handleAppointmentClick(appointment)}
                       >
                         {isFirstSlot && (
-                          <div className="text-black font-medium relative">
+                          <div className="text-black font-medium">
                             <div className="flex items-center gap-1 truncate">
                               {appointment.startTime} {appointment.clientName}
                             </div>
                             <div className="truncate text-[10px] opacity-80">{appointment.title}</div>
-                            {/* Status indicator oval */}
-                            {appointment.arrivalStatus && appointment.arrivalStatus !== '' && (
-                              <div className={`absolute bottom-0 right-1 w-4 h-3 rounded-full border border-white ${
-                                appointment.arrivalStatus === 'Arrived' ? 'bg-green-500' :
-                                appointment.arrivalStatus === 'Late' ? 'bg-yellow-500' :
-                                appointment.arrivalStatus === 'Rescheduled' ? 'bg-blue-500' :
-                                appointment.arrivalStatus === 'Missed' ? 'bg-red-500' : ''
-                              }`} />
-                            )}
+                          </div>
+                        )}
+                        {/* Status indicator in the last slot */}
+                        {isLastSlot && appointment.arrivalStatus && appointment.arrivalStatus !== '' && (
+                          <div className="flex justify-end pr-1">
+                            <div className={`w-4 h-2 rounded-full ${
+                              appointment.arrivalStatus === 'Arrived' ? 'bg-green-500' :
+                              appointment.arrivalStatus === 'Late' ? 'bg-yellow-500' :
+                              appointment.arrivalStatus === 'Rescheduled' ? 'bg-blue-500' :
+                              appointment.arrivalStatus === 'Missed' ? 'bg-red-500' : ''
+                            }`} />
                           </div>
                         )}
                         {!isFirstSlot && slot.display && (
