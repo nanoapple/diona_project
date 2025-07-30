@@ -31,7 +31,7 @@ interface AppointmentDetailsDialogProps {
 
 const AppointmentDetailsDialog = ({ open, onOpenChange, appointment }: AppointmentDetailsDialogProps) => {
   const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
-  const [arrivalStatus, setArrivalStatus] = useState<'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | 'Pending'>(appointment?.arrivalStatus || 'Pending');
+  const [arrivalStatus, setArrivalStatus] = useState<'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | 'Pending' | ''>(appointment?.arrivalStatus || '');
 
   if (!appointment) return null;
 
@@ -126,27 +126,27 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment }: Appointme
 
             {/* Arrival Status */}
             <div>
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-4">
                 <span className="font-medium">Arrival Status:</span>
+                <Select value={arrivalStatus} onValueChange={handleArrivalStatusChange}>
+                  <SelectTrigger className="w-48 bg-background border shadow-sm">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border shadow-md z-50">
+                    {arrivalStatusOptions.map(option => (
+                      <SelectItem 
+                        key={option.value} 
+                        value={option.value}
+                        className="hover:bg-muted"
+                      >
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getArrivalStatusColor(option.value)}`}>
+                          {option.label}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <Select value={arrivalStatus} onValueChange={handleArrivalStatusChange}>
-                <SelectTrigger className="w-48 bg-background border shadow-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-background border shadow-md z-50">
-                  {arrivalStatusOptions.map(option => (
-                    <SelectItem 
-                      key={option.value} 
-                      value={option.value}
-                      className="hover:bg-muted"
-                    >
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getArrivalStatusColor(option.value)}`}>
-                        {option.label}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
 
             {/* Contextual Info */}

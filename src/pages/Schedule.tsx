@@ -4,7 +4,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { format, startOfWeek, endOfWeek, addDays, isSameWeek, isSameDay } from 'date-fns';
-import { Plus } from 'lucide-react';
+import { Plus, CheckCircle, AlertCircle, RotateCcw, XCircle } from 'lucide-react';
 import CreateAppointmentDialog from '@/components/schedule/CreateAppointmentDialog';
 import AppointmentDetailsDialog from '@/components/schedule/AppointmentDetailsDialog';
 
@@ -150,6 +150,22 @@ const Schedule = () => {
     setIsAppointmentDetailsOpen(true);
   };
 
+  // Function to get status icon
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'Arrived':
+        return <CheckCircle className="h-3 w-3 text-green-600" />;
+      case 'Late':
+        return <AlertCircle className="h-3 w-3 text-yellow-600" />;
+      case 'Rescheduled':
+        return <RotateCcw className="h-3 w-3 text-blue-600" />;
+      case 'Missed':
+        return <XCircle className="h-3 w-3 text-red-600" />;
+      default:
+        return null;
+    }
+  };
+
   // Mock stats for the selected week
   const weekStats = {
     clients: 12,
@@ -214,7 +230,10 @@ const Schedule = () => {
                       >
                         {isFirstSlot && (
                           <div className="text-black font-medium">
-                            <div className="truncate">{appointment.startTime} {appointment.clientName}</div>
+                            <div className="flex items-center gap-1 truncate">
+                              {appointment.startTime} {appointment.clientName}
+                              {appointment.arrivalStatus !== 'Pending' && getStatusIcon(appointment.arrivalStatus)}
+                            </div>
                             <div className="truncate text-[10px] opacity-80">{appointment.title}</div>
                           </div>
                         )}
