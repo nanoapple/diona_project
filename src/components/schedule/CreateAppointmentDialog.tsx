@@ -221,47 +221,6 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
               </div>
             )}
 
-            {/* Location & Modality */}
-            <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
-              <h3 className="font-semibold text-lg">4. Location & Modality</h3>
-              
-              <div>
-                <Label>Session Mode</Label>
-                <RadioGroup
-                  value={formData.mode}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, mode: value }))}
-                  disabled={isLimitedUser}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="in-person" id="in-person" />
-                    <Label htmlFor="in-person">In-person</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="telehealth" id="telehealth" />
-                    <Label htmlFor="telehealth">Telehealth (Zoom)</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="phone" id="phone" />
-                    <Label htmlFor="phone">Phone</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <div>
-                <Label htmlFor="location">
-                  Location {formData.mode === 'in-person' && '*'}
-                </Label>
-                <Input
-                  id="location"
-                  placeholder="Enter address"
-                  value={formData.location}
-                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                  disabled={isLimitedUser}
-                  required={formData.mode === 'in-person'}
-                />
-              </div>
-            </div>
-
             {/* Date and Time Section */}
             <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
               <h3 className="font-semibold text-lg">3. Date & Time</h3>
@@ -338,6 +297,47 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
                   )}
                 </div>
               )}
+            </div>
+
+            {/* Location & Modality */}
+            <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
+              <h3 className="font-semibold text-lg">4. Location & Modality</h3>
+              
+              <div>
+                <Label>Session Mode</Label>
+                <RadioGroup
+                  value={formData.mode}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, mode: value }))}
+                  disabled={isLimitedUser}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="in-person" id="in-person" />
+                    <Label htmlFor="in-person">In-person</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="telehealth" id="telehealth" />
+                    <Label htmlFor="telehealth">Telehealth (Zoom)</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="phone" id="phone" />
+                    <Label htmlFor="phone">Phone</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <div>
+                <Label htmlFor="location">
+                  Location {formData.mode === 'in-person' && '*'}
+                </Label>
+                <Input
+                  id="location"
+                  placeholder="Enter address"
+                  value={formData.location}
+                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                  disabled={isLimitedUser}
+                  required={formData.mode === 'in-person'}
+                />
+              </div>
             </div>
 
           </div>
