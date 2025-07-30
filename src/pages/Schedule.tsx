@@ -254,11 +254,11 @@ const Schedule = () => {
                         {/* Status indicator in the last slot */}
                         {isLastSlot && appointment.arrivalStatus && appointment.arrivalStatus !== '' && (
                           <div className="absolute bottom-0 right-1">
-                            <div className={`px-1 py-0.5 text-[8px] font-bold text-white rounded ${
-                              appointment.arrivalStatus === 'Arrived' ? 'bg-green-600' :
-                              appointment.arrivalStatus === 'Late' ? 'bg-yellow-600' :
-                              appointment.arrivalStatus === 'Rescheduled' ? 'bg-blue-600' :
-                              appointment.arrivalStatus === 'Missed' ? 'bg-red-600' : ''
+                            <div className={`px-1 py-0.5 text-[10px] font-medium text-white rounded-sm border ${
+                              appointment.arrivalStatus === 'Arrived' ? 'bg-green-600 border-green-600' :
+                              appointment.arrivalStatus === 'Late' ? 'bg-yellow-600 border-yellow-600' :
+                              appointment.arrivalStatus === 'Rescheduled' ? 'bg-blue-600 border-blue-600' :
+                              appointment.arrivalStatus === 'Missed' ? 'bg-red-600 border-red-600' : ''
                             }`}>
                               {appointment.arrivalStatus}
                             </div>
