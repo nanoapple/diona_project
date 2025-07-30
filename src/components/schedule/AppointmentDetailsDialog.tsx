@@ -2,6 +2,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { Calendar, Clock, MapPin, Phone, Video, User, PlayCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState } from 'react';
@@ -34,6 +38,13 @@ interface AppointmentDetailsDialogProps {
 const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpdate }: AppointmentDetailsDialogProps) => {
   const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
   const [arrivalStatus, setArrivalStatus] = useState<'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | ''>(appointment?.arrivalStatus || '');
+  
+  // State for additional fields
+  const [referralSource, setReferralSource] = useState('');
+  const [presentingIssues, setPresentingIssues] = useState<string[]>([]);
+  const [consentConfirmed, setConsentConfirmed] = useState(false);
+  const [dischargeReason, setDischargeReason] = useState('');
+  const [followUpPlan, setFollowUpPlan] = useState('');
 
   if (!appointment) return null;
 
@@ -86,14 +97,52 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
     }
   };
 
+  const getSessionTypeColor = (type: string) => {
+    if (type === 'General Session') return 'text-orange-600';
+    if (type === 'Intake Session') return 'text-emerald-600';
+    if (type === 'Discharge Session') return 'text-rose-600';
+    if (type === 'Assessment Session') return 'text-blue-600';
+    if (type.includes('Team Meeting')) return 'text-green-600';
+    if (type === 'Supervision') return 'text-purple-600';
+    if (type === 'Administrative Task') return 'text-yellow-600';
+    return 'text-gray-600';
+  };
+
+  const presentingIssuesOptions = [
+    'Anxiety', 'PTSD', 'Work stress', 'Depression', 'Grief', 'Relationship issues',
+    'Substance abuse', 'Eating disorders', 'Sleep disorders', 'Anger management'
+  ];
+
+  const dischargeReasonOptions = [
+    { value: '01', label: '01 Service completed' },
+    { value: '02', label: '02 Transferred/referred to another service' },
+    { value: '03', label: '03 Left without notice' },
+    { value: '04', label: '04 Left against advice' },
+    { value: '05', label: '05 Left Involuntarily (non-compliance)' },
+    { value: '06', label: '06 Moved out of area' },
+    { value: '07', label: '07 Sanctioned by drug court/court diversion program' },
+    { value: '08', label: '08 Imprisoned, other than drug court sanction' },
+    { value: '09', label: '09 Released from prison' },
+    { value: '10', label: '10 Died' },
+    { value: '98', label: '98 Other' },
+    { value: '99', label: '99 Not stated/inadequately described' }
+  ];
+
+  const followUpOptions = [
+    'None', 'Periodic check-in', 'Referred to GP', 'Referred to specialist', 'Other service referral'
+  ];
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">
               The {appointment.appointmentNumber} appointment of {appointment.financialYear}
             </DialogTitle>
+            <div className={`text-xl font-bold ${getSessionTypeColor(appointment.type)}`}>
+              {appointment.type}
+            </div>
           </DialogHeader>
           
           <div className="space-y-4">
@@ -159,6 +208,101 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                 <div className="font-medium mb-2">Contextual Info:</div>
                 <div className="bg-yellow-50 p-3 rounded text-sm">
                   {appointment.notes}
+                </div>
+              </div>
+            )}
+
+            {/* Additional Fields for Intake Session */}
+            {appointment.type === 'Intake Session' && (
+              <div className="space-y-4 border-t pt-4">
+                <h3 className="font-medium text-emerald-600">Intake Session Details</h3>
+                
+                <div>
+                  <Label htmlFor="referralSource">Referral Source</Label>
+                  <Select value={referralSource} onValueChange={setReferralSource}>
+                    <SelectTrigger className="bg-background border shadow-sm">
+                      <SelectValue placeholder="Select or type referral source" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border shadow-md z-50">
+                      <SelectItem value="gp">GP</SelectItem>
+                      <SelectItem value="ndis">NDIS</SelectItem>
+                      <SelectItem value="self">Self</SelectItem>
+                      <SelectItem value="employer">Employer</SelectItem>
+                      <SelectItem value="family">Family/Friend</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label>Presenting Issues (Tags)</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {presentingIssuesOptions.map((issue) => (
+                      <label key={issue} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={presentingIssues.includes(issue)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setPresentingIssues([...presentingIssues, issue]);
+                            } else {
+                              setPresentingIssues(presentingIssues.filter(i => i !== issue));
+                            }
+                          }}
+                          className="rounded"
+                        />
+                        <span className="text-sm">{issue}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="consent" 
+                    checked={consentConfirmed}
+                    onCheckedChange={setConsentConfirmed}
+                  />
+                  <Label htmlFor="consent">Consent Confirmed</Label>
+                </div>
+              </div>
+            )}
+
+            {/* Additional Fields for Discharge Session */}
+            {appointment.type === 'Discharge Session' && (
+              <div className="space-y-4 border-t pt-4">
+                <h3 className="font-medium text-rose-600">Discharge Session Details</h3>
+                
+                <div>
+                  <Label htmlFor="dischargeReason">Reason for Discharge</Label>
+                  <Select value={dischargeReason} onValueChange={setDischargeReason}>
+                    <SelectTrigger className="bg-background border shadow-sm">
+                      <SelectValue placeholder="Select discharge reason" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border shadow-md z-50">
+                      {dischargeReasonOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="followUpPlan">Follow-up Plan (Optional)</Label>
+                  <Select value={followUpPlan} onValueChange={setFollowUpPlan}>
+                    <SelectTrigger className="bg-background border shadow-sm">
+                      <SelectValue placeholder="Select follow-up plan" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border shadow-md z-50">
+                      {followUpOptions.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             )}
