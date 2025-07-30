@@ -88,7 +88,8 @@ const Schedule = () => {
       date: weekDays[1]?.date, // Tuesday
       startTime: '10:15',
       endTime: '11:00',
-      type: 'in-person' as const,
+      type: 'Client Session' as const,
+      deliveryMethod: 'in-person' as const,
       arrivalStatus: 'Arrived' as const,
       notes: 'First session focusing on work-related stress and anxiety management techniques.',
       appointmentNumber: 3,
@@ -108,7 +109,8 @@ const Schedule = () => {
       date: weekDays[3]?.date, // Thursday
       startTime: '14:30',
       endTime: '15:15',
-      type: 'telehealth' as const,
+      type: 'Client Session' as const,
+      deliveryMethod: 'telehealth' as const,
       arrivalStatus: '' as any, // Blank status
       notes: 'Continuation of CBT therapy for anxiety disorders. Review homework assignments.',
       appointmentNumber: 7,
@@ -121,23 +123,24 @@ const Schedule = () => {
     },
     {
       id: 'apt3',
-      title: 'Crisis Session',
-      clientName: 'Bob Wilson',
-      clientGender: 'Male',
-      clientDOB: '10/12/1978',
+      title: 'Team Meeting',
+      clientName: '',
+      clientGender: '',
+      clientDOB: '',
       date: weekDays[0]?.date, // Monday
       startTime: '16:00',
       endTime: '17:00',
-      type: 'phone' as const,
+      type: 'Team Meeting (Internal)' as const,
+      deliveryMethod: 'in-person' as const,
       arrivalStatus: 'Late' as const,
-      notes: 'Emergency session to address acute stress response following workplace incident.',
-      appointmentNumber: 1,
+      notes: 'Weekly team meeting to discuss case progress and administrative updates.',
+      appointmentNumber: 0,
       financialYear: 'Yr 24/25',
       dayName: 'Mon',
       startSlot: 28, // 16:00 (4:00 PM)
       duration: 4, // 60 minutes
-      sessionNoteDone: true, // For demonstration
-      assessmentDone: false // For demonstration
+      sessionNoteDone: false, // No session notes for team meetings
+      assessmentDone: false // No assessments for team meetings
     }
   ]);
 
@@ -163,6 +166,16 @@ const Schedule = () => {
   const handleAppointmentClick = (appointment: any) => {
     setSelectedAppointment(appointment);
     setIsAppointmentDetailsOpen(true);
+  };
+
+  // Function to get appointment color based on type
+  const getAppointmentColor = (type: string) => {
+    if (type === 'Client Session') return 'bg-orange-200 hover:bg-orange-300';
+    if (type === 'Assessment Session') return 'bg-blue-200 hover:bg-blue-300';
+    if (type.includes('Team Meeting')) return 'bg-green-200 hover:bg-green-300';
+    if (type === 'Supervision') return 'bg-purple-200 hover:bg-purple-300';
+    if (type === 'Administrative Task') return 'bg-yellow-200 hover:bg-yellow-300';
+    return 'bg-gray-200 hover:bg-gray-300';
   };
 
   // Function to get status icon
@@ -235,11 +248,7 @@ const Schedule = () => {
                     return (
                       <div
                         key={slotIndex}
-                        className={`px-2 py-1 text-xs cursor-pointer transition-colors relative ${
-                          appointment.type === 'in-person' ? 'bg-orange-200 hover:bg-orange-300' :
-                          appointment.type === 'telehealth' ? 'bg-green-200 hover:bg-green-300' :
-                          'bg-purple-200 hover:bg-purple-300'
-                        } ${!isLastSlot ? 'border-b-0' : 'border-b border-gray-400'}`}
+                        className={`px-2 py-1 text-xs cursor-pointer transition-colors relative ${getAppointmentColor(appointment.type)} ${!isLastSlot ? 'border-b-0' : 'border-b border-gray-400'}`}
                         style={{ height: '20px', minHeight: '20px', maxHeight: '20px' }}
                         onClick={() => handleAppointmentClick(appointment)}
                       >
