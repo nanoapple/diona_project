@@ -223,7 +223,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
 
             {/* Location & Modality */}
             <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
-              <h3 className="font-semibold text-lg">3. Location & Modality</h3>
+              <h3 className="font-semibold text-lg">4. Location & Modality</h3>
               
               <div>
                 <Label>Session Mode</Label>
@@ -264,7 +264,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
 
             {/* Date and Time Section */}
             <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
-              <h3 className="font-semibold text-lg">4. Date & Time</h3>
+              <h3 className="font-semibold text-lg">3. Date & Time</h3>
               
               <div className="grid grid-cols-3 gap-2">
                 <div>
@@ -346,7 +346,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
           <div className="space-y-4">
             {/* Notes & Smart Suggestions */}
             <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
-              <h3 className="font-semibold text-lg">4. Notes & Smart Suggestions</h3>
+              <h3 className="font-semibold text-lg">5. Notes & Smart Suggestions</h3>
               
               <div>
                 <Label htmlFor="notes">Agenda / Notes</Label>
@@ -371,7 +371,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
 
             {/* Reminders & Visual Labels */}
             <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
-              <h3 className="font-semibold text-lg">5. Reminders & Visual Labels</h3>
+              <h3 className="font-semibold text-lg">6. Reminders & Visual Labels</h3>
               
               <div className="flex items-center space-x-2">
                 <Switch
