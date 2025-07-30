@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { format, startOfWeek, endOfWeek, addDays, isSameWeek, isSameDay } from 'date-fns';
 import { Plus } from 'lucide-react';
 import CreateAppointmentDialog from '@/components/schedule/CreateAppointmentDialog';
+import AppointmentDetailsDialog from '@/components/schedule/AppointmentDetailsDialog';
 
 const Schedule = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -14,6 +15,8 @@ const Schedule = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogDate, setDialogDate] = useState<Date>();
   const [dialogTime, setDialogTime] = useState<string>();
+  const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
+  const [isAppointmentDetailsOpen, setIsAppointmentDetailsOpen] = useState(false);
 
   const handleDateClick = (date: Date | undefined) => {
     if (date) {
@@ -74,6 +77,79 @@ const Schedule = () => {
 
   const weekDays = generateWeekDays();
 
+  // Mock appointments data
+  const mockAppointments = [
+    {
+      id: 'apt1',
+      title: 'Initial Assessment',
+      clientName: 'John Doe',
+      clientGender: 'Male',
+      clientDOB: '15/03/1985',
+      date: weekDays[1]?.date, // Tuesday
+      startTime: '10:15',
+      endTime: '11:00',
+      type: 'in-person' as const,
+      arrivalStatus: 'Arrived' as const,
+      notes: 'First session focusing on work-related stress and anxiety management techniques.',
+      appointmentNumber: 3,
+      financialYear: 'Yr 24/25',
+      dayName: 'Tue',
+      startSlot: 5, // 10:15 is the 5th slot (starting from 9:00)
+      duration: 3 // 45 minutes = 3 slots
+    },
+    {
+      id: 'apt2',
+      title: 'Follow-up Session',
+      clientName: 'Jane Smith',
+      clientGender: 'Female',
+      clientDOB: '22/08/1992',
+      date: weekDays[3]?.date, // Thursday
+      startTime: '14:30',
+      endTime: '15:15',
+      type: 'telehealth' as const,
+      arrivalStatus: 'Pending' as const,
+      notes: 'Continuation of CBT therapy for anxiety disorders. Review homework assignments.',
+      appointmentNumber: 7,
+      financialYear: 'Yr 24/25',
+      dayName: 'Thu',
+      startSlot: 22, // 14:30 (2:30 PM)
+      duration: 3 // 45 minutes
+    },
+    {
+      id: 'apt3',
+      title: 'Crisis Session',
+      clientName: 'Bob Wilson',
+      clientGender: 'Male',
+      clientDOB: '10/12/1978',
+      date: weekDays[0]?.date, // Monday
+      startTime: '16:00',
+      endTime: '17:00',
+      type: 'phone' as const,
+      arrivalStatus: 'Late' as const,
+      notes: 'Emergency session to address acute stress response following workplace incident.',
+      appointmentNumber: 1,
+      financialYear: 'Yr 24/25',
+      dayName: 'Mon',
+      startSlot: 28, // 16:00 (4:00 PM)
+      duration: 4 // 60 minutes
+    }
+  ];
+
+  // Function to check if a slot has an appointment
+  const getAppointmentForSlot = (dayName: string, slotIndex: number) => {
+    return mockAppointments.find(apt => 
+      apt.dayName === dayName && 
+      slotIndex >= apt.startSlot && 
+      slotIndex < apt.startSlot + apt.duration
+    );
+  };
+
+  // Function to handle appointment click
+  const handleAppointmentClick = (appointment: any) => {
+    setSelectedAppointment(appointment);
+    setIsAppointmentDetailsOpen(true);
+  };
+
   // Mock stats for the selected week
   const weekStats = {
     clients: 12,
@@ -95,7 +171,7 @@ const Schedule = () => {
   return (
     <div className="h-screen flex flex-col p-4 pt-2 overflow-hidden">
       <div className="flex justify-between items-center mb-2">
-        <h1 className="text-3xl font-bold">Schedule</h1>
+        <h1 className="text-3xl font-bold">Appointments</h1>
         <div className="text-sm text-muted-foreground">
           Week of {format(selectedWeek, 'MMM d, yyyy')}
         </div>
@@ -118,6 +194,36 @@ const Schedule = () => {
                 {timeSlots.map((slot, slotIndex) => {
                   const slotId = `${day.dayName}-${slot.time}`;
                   const isSelected = selectedSlot === slotId;
+                  const appointment = getAppointmentForSlot(day.dayName, slotIndex);
+                  
+                  if (appointment) {
+                    // Check if this is the first slot of the appointment to show the full content
+                    const isFirstSlot = slotIndex === appointment.startSlot;
+                    const isLastSlot = slotIndex === appointment.startSlot + appointment.duration - 1;
+                    
+                    return (
+                      <div
+                        key={slotIndex}
+                        className={`px-2 py-1 text-xs cursor-pointer transition-colors relative ${
+                          appointment.type === 'in-person' ? 'bg-orange-200 hover:bg-orange-300' :
+                          appointment.type === 'telehealth' ? 'bg-green-200 hover:bg-green-300' :
+                          'bg-purple-200 hover:bg-purple-300'
+                        } ${!isLastSlot ? 'border-b-0' : 'border-b border-gray-400'}`}
+                        style={{ minHeight: '14px' }}
+                        onClick={() => handleAppointmentClick(appointment)}
+                      >
+                        {isFirstSlot && (
+                          <div className="text-black font-medium">
+                            <div className="truncate">{appointment.startTime} {appointment.clientName}</div>
+                            <div className="truncate text-[10px] opacity-80">{appointment.title}</div>
+                          </div>
+                        )}
+                        {!isFirstSlot && slot.display && (
+                          <span className="text-transparent select-none">{slot.display}</span>
+                        )}
+                      </div>
+                    );
+                  }
                   
                   return (
                     <div
@@ -234,6 +340,13 @@ const Schedule = () => {
         onOpenChange={setIsDialogOpen}
         selectedDate={dialogDate}
         selectedTime={dialogTime}
+      />
+
+      {/* Appointment Details Dialog */}
+      <AppointmentDetailsDialog
+        open={isAppointmentDetailsOpen}
+        onOpenChange={setIsAppointmentDetailsOpen}
+        appointment={selectedAppointment}
       />
     </div>
   );
