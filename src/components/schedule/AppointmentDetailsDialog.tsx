@@ -26,6 +26,7 @@ interface Appointment {
   notes: string;
   appointmentNumber: number;
   financialYear: string;
+  interpreterLanguage?: string;
 }
 
 interface AppointmentDetailsDialogProps {
@@ -142,8 +143,15 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
             <DialogTitle className="text-lg font-semibold">
               The {appointment.appointmentNumber} appointment of {appointment.financialYear}
             </DialogTitle>
-            <div className={`text-xl font-bold ${getSessionTypeColor(appointment.type)}`}>
-              {appointment.type}
+            <div className="flex justify-between items-center">
+              <div className={`text-xl font-bold ${getSessionTypeColor(appointment.type)}`}>
+                {appointment.type}
+              </div>
+              {appointment.interpreterLanguage && (
+                <div className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                  Interpreter: {appointment.interpreterLanguage}
+                </div>
+              )}
             </div>
           </DialogHeader>
           

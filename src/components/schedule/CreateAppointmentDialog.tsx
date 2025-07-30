@@ -42,6 +42,9 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
     reminders: true,
     colorTags: [] as string[],
     privacy: 'shared',
+    // Interpreter fields
+    interpreterNeeded: false,
+    interpreterLanguage: '',
     // Intake session specific fields
     referralSource: '',
     presentingIssues: [] as string[],
@@ -330,8 +333,68 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
 
             {/* Location & Modality */}
             <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
-              <h3 className="font-semibold text-lg">4. Location & Modality</h3>
+              <div className="flex justify-between items-center">
+                <h3 className="font-semibold text-lg">4. Location & Modality</h3>
+                {isClientFacing && (
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="interpreterNeeded"
+                      checked={formData.interpreterNeeded}
+                      onCheckedChange={(checked) => setFormData(prev => ({ 
+                        ...prev, 
+                        interpreterNeeded: checked,
+                        interpreterLanguage: checked ? prev.interpreterLanguage : ''
+                      }))}
+                      disabled={isLimitedUser}
+                    />
+                    <Label htmlFor="interpreterNeeded" className="text-sm">Interpreter needed</Label>
+                  </div>
+                )}
+              </div>
               
+              {/* Interpreter Language Selection */}
+              {isClientFacing && formData.interpreterNeeded && (
+                <div>
+                  <Label htmlFor="interpreterLanguage">Language</Label>
+                  <Select
+                    value={formData.interpreterLanguage}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, interpreterLanguage: value }))}
+                    disabled={isLimitedUser}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Arabic">Arabic</SelectItem>
+                      <SelectItem value="Bengali">Bengali</SelectItem>
+                      <SelectItem value="Cantonese">Cantonese</SelectItem>
+                      <SelectItem value="Filipino">Filipino</SelectItem>
+                      <SelectItem value="French">French</SelectItem>
+                      <SelectItem value="German">German</SelectItem>
+                      <SelectItem value="Greek">Greek</SelectItem>
+                      <SelectItem value="Gujarati">Gujarati</SelectItem>
+                      <SelectItem value="Hindi">Hindi</SelectItem>
+                      <SelectItem value="Indonesian">Indonesian</SelectItem>
+                      <SelectItem value="Italian">Italian</SelectItem>
+                      <SelectItem value="Japanese">Japanese</SelectItem>
+                      <SelectItem value="Korean">Korean</SelectItem>
+                      <SelectItem value="Malayalam">Malayalam</SelectItem>
+                      <SelectItem value="Mandarin">Mandarin</SelectItem>
+                      <SelectItem value="Nepali">Nepali</SelectItem>
+                      <SelectItem value="Persian (excl. Dari)">Persian (excl. Dari)</SelectItem>
+                      <SelectItem value="Portuguese">Portuguese</SelectItem>
+                      <SelectItem value="Punjabi">Punjabi</SelectItem>
+                      <SelectItem value="Sinhalese">Sinhalese</SelectItem>
+                      <SelectItem value="Spanish">Spanish</SelectItem>
+                      <SelectItem value="Tagalog">Tagalog</SelectItem>
+                      <SelectItem value="Tamil">Tamil</SelectItem>
+                      <SelectItem value="Urdu">Urdu</SelectItem>
+                      <SelectItem value="Vietnamese">Vietnamese</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <div>
                 <Label>Session Mode</Label>
                 <RadioGroup
