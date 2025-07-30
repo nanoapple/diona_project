@@ -221,9 +221,50 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
               </div>
             )}
 
+            {/* Location & Modality */}
+            <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
+              <h3 className="font-semibold text-lg">3. Location & Modality</h3>
+              
+              <div>
+                <Label>Session Mode</Label>
+                <RadioGroup
+                  value={formData.mode}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, mode: value }))}
+                  disabled={isLimitedUser}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="in-person" id="in-person" />
+                    <Label htmlFor="in-person">In-person</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="telehealth" id="telehealth" />
+                    <Label htmlFor="telehealth">Telehealth (Zoom)</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="phone" id="phone" />
+                    <Label htmlFor="phone">Phone</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <div>
+                <Label htmlFor="location">
+                  Location {formData.mode === 'in-person' && '*'}
+                </Label>
+                <Input
+                  id="location"
+                  placeholder="Enter address"
+                  value={formData.location}
+                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                  disabled={isLimitedUser}
+                  required={formData.mode === 'in-person'}
+                />
+              </div>
+            </div>
+
             {/* Date and Time Section */}
             <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
-              <h3 className="font-semibold text-lg">3. Date & Time</h3>
+              <h3 className="font-semibold text-lg">4. Date & Time</h3>
               
               <div className="grid grid-cols-3 gap-2">
                 <div>
@@ -303,87 +344,9 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
 
           {/* Right Column */}
           <div className="space-y-4">
-            {/* Location & Modality */}
-            <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
-              <h3 className="font-semibold text-lg">3. Location & Modality</h3>
-              
-              <div>
-                <Label>Session Mode</Label>
-                <RadioGroup
-                  value={formData.mode}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, mode: value }))}
-                  disabled={isLimitedUser}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="in-person" id="in-person" />
-                    <Label htmlFor="in-person">In-person</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="telehealth" id="telehealth" />
-                    <Label htmlFor="telehealth">Telehealth (Zoom)</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="phone" id="phone" />
-                    <Label htmlFor="phone">Phone</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <div>
-                <Label htmlFor="location">
-                  Location {formData.mode === 'in-person' && '*'}
-                </Label>
-                <Input
-                  id="location"
-                  placeholder="Enter address"
-                  value={formData.location}
-                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                  disabled={isLimitedUser}
-                  required={formData.mode === 'in-person'}
-                />
-              </div>
-            </div>
-
-            {/* Invite Attendees */}
-            {!isLimitedUser && (
-              <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
-                <h3 className="font-semibold text-lg">4. Invite Attendees</h3>
-                
-                <div>
-                  <Label htmlFor="attendees">Invite Others</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Enter email or name (comma or Enter to separate)"
-                      value={newAttendee}
-                      onChange={(e) => setNewAttendee(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter' || e.key === ',') {
-                          e.preventDefault();
-                          addAttendee();
-                        }
-                      }}
-                    />
-                    <Button type="button" size="sm" onClick={addAttendee}>
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {formData.attendees.map(attendee => (
-                      <div key={attendee} className="flex items-center gap-1 bg-blue-100 px-2 py-1 rounded text-sm">
-                        {attendee}
-                        <button onClick={() => removeAttendee(attendee)}>
-                          <X className="h-3 w-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Notes & Smart Suggestions */}
             <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
-              <h3 className="font-semibold text-lg">5. Notes & Smart Suggestions</h3>
+              <h3 className="font-semibold text-lg">4. Notes & Smart Suggestions</h3>
               
               <div>
                 <Label htmlFor="notes">Agenda / Notes</Label>
@@ -408,7 +371,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
 
             {/* Reminders & Visual Labels */}
             <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
-              <h3 className="font-semibold text-lg">6. Reminders & Visual Labels</h3>
+              <h3 className="font-semibold text-lg">5. Reminders & Visual Labels</h3>
               
               <div className="flex items-center space-x-2">
                 <Switch
