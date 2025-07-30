@@ -16,8 +16,9 @@ interface Appointment {
   date: Date;
   startTime: string;
   endTime: string;
-  type: 'in-person' | 'telehealth' | 'phone';
-  arrivalStatus: 'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | 'Pending';
+  type: string;
+  deliveryMethod: 'in-person' | 'telehealth' | 'phone';
+  arrivalStatus: 'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | '';
   notes: string;
   appointmentNumber: number;
   financialYear: string;
@@ -32,7 +33,7 @@ interface AppointmentDetailsDialogProps {
 
 const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpdate }: AppointmentDetailsDialogProps) => {
   const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
-  const [arrivalStatus, setArrivalStatus] = useState<'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | 'Pending' | ''>(appointment?.arrivalStatus || '');
+  const [arrivalStatus, setArrivalStatus] = useState<'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | ''>(appointment?.arrivalStatus || '');
 
   if (!appointment) return null;
 
@@ -49,14 +50,14 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   ];
 
   const handleArrivalStatusChange = (value: string) => {
-    setArrivalStatus(value as 'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | 'Pending' | '');
+    setArrivalStatus(value as 'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | '');
     if (appointment && onStatusUpdate) {
       onStatusUpdate(appointment.id, value);
     }
   };
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
+  const getTypeIcon = (deliveryMethod: string) => {
+    switch (deliveryMethod) {
       case 'in-person':
         return <MapPin className="h-4 w-4" />;
       case 'telehealth':
@@ -121,8 +122,8 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                   <span><strong>Time:</strong> {appointment.startTime} - {appointment.endTime}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  {getTypeIcon(appointment.type)}
-                  <span><strong>Type:</strong> {appointment.type.charAt(0).toUpperCase() + appointment.type.slice(1)}</span>
+                  {getTypeIcon(appointment.deliveryMethod)}
+                  <span><strong>Type:</strong> {appointment.type}</span>
                 </div>
               </div>
             </div>
@@ -162,16 +163,31 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
               </div>
             )}
 
-            {/* Start Session Button */}
+            {/* Session Actions */}
             <div className="flex justify-center pt-4">
-              <Button 
-                onClick={() => setIsNotesDialogOpen(true)}
-                className="flex items-center gap-2"
-                size="lg"
-              >
-                <PlayCircle className="h-5 w-5" />
-                Start Session
-              </Button>
+              {arrivalStatus === 'Arrived' || arrivalStatus === 'Late' ? (
+                <div className="text-center space-y-3">
+                  <div className="text-sm text-green-600 font-medium">
+                    ✓ Session completed
+                  </div>
+                  <Button 
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    size="lg"
+                  >
+                    Go to case silo
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  onClick={() => setIsNotesDialogOpen(true)}
+                  className="flex items-center gap-2"
+                  size="lg"
+                >
+                  <PlayCircle className="h-5 w-5" />
+                  Start Session
+                </Button>
+              )}
             </div>
           </div>
         </DialogContent>

@@ -141,6 +141,69 @@ const Schedule = () => {
       duration: 4, // 60 minutes
       sessionNoteDone: false, // No session notes for team meetings
       assessmentDone: false // No assessments for team meetings
+    },
+    {
+      id: 'apt4',
+      title: 'Initial Consultation',
+      clientName: 'Sarah Wilson',
+      clientGender: 'Female',
+      clientDOB: '05/11/1988',
+      date: weekDays[2]?.date, // Wednesday
+      startTime: '11:00',
+      endTime: '11:45',
+      type: 'Client Session' as const,
+      deliveryMethod: 'in-person' as const,
+      arrivalStatus: '' as any, // No status - not started
+      notes: 'First consultation to assess client needs and develop treatment plan.',
+      appointmentNumber: 1,
+      financialYear: 'Yr 24/25',
+      dayName: 'Wed',
+      startSlot: 8, // 11:00
+      duration: 3, // 45 minutes
+      sessionNoteDone: false,
+      assessmentDone: false
+    },
+    {
+      id: 'apt5',
+      title: 'Therapy Session',
+      clientName: 'Michael Brown',
+      clientGender: 'Male',
+      clientDOB: '18/07/1975',
+      date: weekDays[4]?.date, // Friday
+      startTime: '09:30',
+      endTime: '10:15',
+      type: 'Client Session' as const,
+      deliveryMethod: 'telehealth' as const,
+      arrivalStatus: '' as any, // No status - not started
+      notes: 'Cognitive behavioral therapy session for depression management.',
+      appointmentNumber: 5,
+      financialYear: 'Yr 24/25',
+      dayName: 'Fri',
+      startSlot: 2, // 09:30
+      duration: 3, // 45 minutes
+      sessionNoteDone: false,
+      assessmentDone: false
+    },
+    {
+      id: 'apt6',
+      title: 'Assessment Session',
+      clientName: 'Emma Davis',
+      clientGender: 'Female',
+      clientDOB: '12/09/1990',
+      date: weekDays[1]?.date, // Tuesday
+      startTime: '13:45',
+      endTime: '14:30',
+      type: 'Assessment Session' as const,
+      deliveryMethod: 'in-person' as const,
+      arrivalStatus: '' as any, // No status - not started
+      notes: 'Comprehensive psychological assessment for anxiety and mood disorders.',
+      appointmentNumber: 2,
+      financialYear: 'Yr 24/25',
+      dayName: 'Tue',
+      startSlot: 19, // 13:45
+      duration: 3, // 45 minutes
+      sessionNoteDone: false,
+      assessmentDone: false
     }
   ]);
 
