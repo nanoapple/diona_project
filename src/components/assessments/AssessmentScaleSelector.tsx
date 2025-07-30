@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 import { PCL5Assessment } from "./PCL5Assessment";
+import { AUDITAssessment } from "./AUDITAssessment";
 
 interface AssessmentScale {
   id: string;
@@ -28,6 +29,7 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
   const [selectedAlphabet, setSelectedAlphabet] = useState<string>("A");
   const [selectedCategory, setSelectedCategory] = useState<string>("Anxiety");
   const [showPCL5Assessment, setShowPCL5Assessment] = useState(false);
+  const [showAUDITAssessment, setShowAUDITAssessment] = useState(false);
 
   // Mock assessment scales data
   const assessmentScales: AssessmentScale[] = useMemo(() => [
@@ -38,6 +40,13 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
       category: "Cognition",
       description: "6 question scale to screen for adult ADHD",
       questions: 6
+    },
+    {
+      id: "audit",
+      name: "AUDIT",
+      category: "Addictions",
+      description: "Alcohol Use Disorders Identification Test for screening hazardous drinking",
+      questions: 10
     },
     {
       id: "apgar",
@@ -317,20 +326,22 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
                     </p>
                   )}
 
-                  <Button
-                    onClick={() => {
-                      if (scale.id === "pcl5") {
-                        setShowPCL5Assessment(true);
-                      } else {
-                        onSelectScale(scale);
-                      }
-                    }}
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                  >
-                    Calculate
-                  </Button>
+                   <Button
+                     onClick={() => {
+                       if (scale.id === "pcl5") {
+                         setShowPCL5Assessment(true);
+                       } else if (scale.id === "audit") {
+                         setShowAUDITAssessment(true);
+                       } else {
+                         onSelectScale(scale);
+                       }
+                     }}
+                     variant="outline"
+                     size="sm"
+                     className="w-full"
+                   >
+                     Calculate
+                   </Button>
                 </div>
               ))}
             </div>
@@ -362,6 +373,11 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
       <PCL5Assessment 
         open={showPCL5Assessment}
         onOpenChange={setShowPCL5Assessment}
+        clientName={clientName}
+      />
+      <AUDITAssessment 
+        open={showAUDITAssessment}
+        onOpenChange={setShowAUDITAssessment}
         clientName={clientName}
       />
     </>
