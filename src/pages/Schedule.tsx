@@ -234,7 +234,7 @@ const Schedule = () => {
                           appointment.type === 'telehealth' ? 'bg-green-200 hover:bg-green-300' :
                           'bg-purple-200 hover:bg-purple-300'
                         } ${!isLastSlot ? 'border-b-0' : 'border-b border-gray-400'}`}
-                        style={{ height: '14px', minHeight: '14px', maxHeight: '14px' }}
+                        style={{ height: '20px', minHeight: '20px', maxHeight: '20px' }}
                         onClick={() => handleAppointmentClick(appointment)}
                       >
                         {isFirstSlot && (
@@ -279,7 +279,7 @@ const Schedule = () => {
                           ? 'border-b border-gray-400 font-medium' 
                           : 'border-b border-dotted border-gray-300'
                       } ${isSelected ? 'bg-blue-200' : 'hover:bg-gray-100'}`}
-                      style={{ height: '14px', minHeight: '14px', maxHeight: '14px' }}
+                      style={{ height: '20px', minHeight: '20px', maxHeight: '20px' }}
                       onClick={() => handleSlotClick(slotId)}
                     >
                       {slot.display && (
