@@ -42,7 +42,7 @@ export default function AllAssessments() {
       <div className="flex-1 p-4">
         <AssessmentScaleSelector
           open={true}
-          onOpenChange={() => {}} // Always open on this page
+          onOpenChange={undefined} // Page mode - no dialog wrapper
           onSelectScale={handleSelectScale}
         />
       </div>
