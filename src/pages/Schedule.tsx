@@ -234,26 +234,34 @@ const Schedule = () => {
                           appointment.type === 'telehealth' ? 'bg-green-200 hover:bg-green-300' :
                           'bg-purple-200 hover:bg-purple-300'
                         } ${!isLastSlot ? 'border-b-0' : 'border-b border-gray-400'}`}
-                        style={{ minHeight: '14px' }}
+                        style={{ height: '14px', minHeight: '14px', maxHeight: '14px' }}
                         onClick={() => handleAppointmentClick(appointment)}
                       >
                         {isFirstSlot && (
-                          <div className="text-black font-medium">
-                            <div className="flex items-center gap-1 truncate">
-                              {appointment.startTime} {appointment.clientName}
+                          <div className="text-black font-medium overflow-hidden">
+                            <div className="truncate leading-3">
+                              {appointment.clientName}
                             </div>
-                            <div className="truncate text-[10px] opacity-80">{appointment.title}</div>
+                          </div>
+                        )}
+                        {!isFirstSlot && !isLastSlot && (
+                          <div className="text-black font-medium overflow-hidden">
+                            <div className="truncate leading-3 text-[10px] opacity-80">
+                              {appointment.notes}
+                            </div>
                           </div>
                         )}
                         {/* Status indicator in the last slot */}
                         {isLastSlot && appointment.arrivalStatus && appointment.arrivalStatus !== '' && (
-                          <div className="flex justify-end pr-1">
-                            <div className={`w-4 h-2 rounded-full ${
-                              appointment.arrivalStatus === 'Arrived' ? 'bg-green-500' :
-                              appointment.arrivalStatus === 'Late' ? 'bg-yellow-500' :
-                              appointment.arrivalStatus === 'Rescheduled' ? 'bg-blue-500' :
-                              appointment.arrivalStatus === 'Missed' ? 'bg-red-500' : ''
-                            }`} />
+                          <div className="absolute bottom-0 right-1">
+                            <div className={`px-1 py-0.5 text-[8px] font-bold text-white rounded ${
+                              appointment.arrivalStatus === 'Arrived' ? 'bg-green-600' :
+                              appointment.arrivalStatus === 'Late' ? 'bg-yellow-600' :
+                              appointment.arrivalStatus === 'Rescheduled' ? 'bg-blue-600' :
+                              appointment.arrivalStatus === 'Missed' ? 'bg-red-600' : ''
+                            }`}>
+                              {appointment.arrivalStatus}
+                            </div>
                           </div>
                         )}
                         {!isFirstSlot && slot.display && (
@@ -271,7 +279,7 @@ const Schedule = () => {
                           ? 'border-b border-gray-400 font-medium' 
                           : 'border-b border-dotted border-gray-300'
                       } ${isSelected ? 'bg-blue-200' : 'hover:bg-gray-100'}`}
-                      style={{ minHeight: '14px' }}
+                      style={{ height: '14px', minHeight: '14px', maxHeight: '14px' }}
                       onClick={() => handleSlotClick(slotId)}
                     >
                       {slot.display && (
