@@ -9,6 +9,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Assessment } from "@/types";
 import { v4 as uuidv4 } from '@/lib/utils';
 import { ChevronDown } from "lucide-react";
+import { AssessmentScaleSelector } from "./AssessmentScaleSelector";
 
 interface AddAssessmentDialogProps {
   open: boolean;
@@ -34,6 +35,8 @@ export function AddAssessmentDialog({
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedClient, setSelectedClient] = useState<string>("");
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const [showScaleSelector, setShowScaleSelector] = useState<boolean>(false);
+  const [selectedScale, setSelectedScale] = useState<any>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Mock client list
@@ -89,26 +92,46 @@ export function AddAssessmentDialog({
       return;
     }
 
+    if (!selectedScale) {
+      // Open the scale selector instead of showing error
+      setShowScaleSelector(true);
+      return;
+    }
+
     const now = new Date();
     const newAssessment: Assessment = {
       id: uuidv4(),
-      title: "Assessment", // Will be updated later when assessment details are added
+      title: selectedScale.name || "Assessment",
       patientName: selectedClient,
       status: mode === "add" ? "in_progress" : "not_started",
       assignedDate: now.toISOString(),
       date: now.toISOString(),
       completionPercentage: 0,
-      description: `${mode === "add" ? "In-session" : "Self-guided"} assessment`
+      description: `${selectedScale.name} - ${mode === "add" ? "In-session" : "Self-guided"} assessment`
     };
 
     onAddAssessment(newAssessment);
     
     toast({
       title: mode === "add" ? "Assessment added" : "Assessment assigned",
-      description: `The assessment has been ${mode === "add" ? "added to" : "assigned for"} ${selectedClient}.`,
+      description: `The ${selectedScale.name} has been ${mode === "add" ? "added for" : "assigned to"} ${selectedClient}.`,
     });
     
+    // Reset form
+    setSelectedClient("");
+    setSearchTerm("");
+    setSelectedScale(null);
     onOpenChange(false);
+  };
+
+  const handleScaleSelect = (scale: any) => {
+    setSelectedScale(scale);
+    setShowScaleSelector(false);
+    
+    // Automatically proceed with assessment creation
+    setTimeout(() => {
+      handleAddAssessment();
+    }, 100);
   };
 
 
@@ -179,9 +202,15 @@ export function AddAssessmentDialog({
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button onClick={handleAddAssessment} disabled={!selectedClient}>
-            {mode === "add" ? "Add Assessment" : "Assign Assessment"}
+            {selectedScale ? `Add ${selectedScale.name}` : (mode === "add" ? "Select Assessment Scale" : "Select Assessment Scale")}
           </Button>
         </DialogFooter>
+        
+        <AssessmentScaleSelector
+          open={showScaleSelector}
+          onOpenChange={setShowScaleSelector}
+          onSelectScale={handleScaleSelect}
+        />
       </DialogContent>
     </Dialog>
   );
