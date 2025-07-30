@@ -75,7 +75,13 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
   ];
 
   const mockCaseSilos = ['Case #2024-001: John Doe - Work Injury', 'Case #2024-002: Jane Smith - MVA', 'Case #2024-003: Bob Wilson - Stress Claim'];
-  const mockClients = ['John Doe', 'Jane Smith', 'Bob Wilson', 'Sarah Johnson', 'Mike Brown'];
+  const mockClients = [
+    { name: 'John Doe', mobile: '+61 412 345 678' },
+    { name: 'Jane Smith', mobile: '+61 423 456 789' },
+    { name: 'Bob Wilson', mobile: '+61 434 567 890' },
+    { name: 'Sarah Johnson', mobile: '+61 445 678 901' },
+    { name: 'Mike Brown', mobile: '+61 456 789 012' }
+  ];
 
   const addAttendee = () => {
     if (newAttendee.trim() && !formData.attendees.includes(newAttendee.trim())) {
@@ -173,12 +179,19 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
                 
                 <div>
                   <Label htmlFor="client">Client Search Field</Label>
-                  <Input
-                    id="client"
-                    placeholder="Enter client name"
+                  <Select
                     value={formData.client}
-                    onChange={(e) => setFormData(prev => ({ ...prev, client: e.target.value }))}
-                  />
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, client: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select client" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {mockClients.map(client => (
+                        <SelectItem key={client.name} value={client.name}>{client.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {formData.client && (
@@ -327,16 +340,45 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
 
               <div>
                 <Label htmlFor="location">
-                  Location {formData.mode === 'in-person' && '*'}
+                  {formData.mode === 'in-person' && 'Location *'}
+                  {formData.mode === 'telehealth' && 'Meeting Link'}
+                  {formData.mode === 'phone' && 'Client Mobile Number'}
                 </Label>
-                <Input
-                  id="location"
-                  placeholder="Enter address"
-                  value={formData.location}
-                  onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                  disabled={isLimitedUser}
-                  required={formData.mode === 'in-person'}
-                />
+                {formData.mode === 'phone' ? (
+                  <Select
+                    value={formData.location}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
+                    disabled={isLimitedUser || !formData.client}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={formData.client ? "Select client's mobile number" : "Please select a client first"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {mockClients
+                        .filter(client => client.name === formData.client)
+                        .map(client => (
+                          <SelectItem key={client.mobile} value={client.mobile}>
+                            {client.mobile}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    id="location"
+                    placeholder={
+                      formData.mode === 'in-person' 
+                        ? "Clinic" 
+                        : formData.mode === 'telehealth' 
+                        ? "Please provide the meeting link here." 
+                        : "Enter address"
+                    }
+                    value={formData.mode === 'in-person' && !formData.location ? 'Clinic' : formData.location}
+                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                    disabled={isLimitedUser}
+                    required={formData.mode === 'in-person'}
+                  />
+                )}
               </div>
             </div>
 
