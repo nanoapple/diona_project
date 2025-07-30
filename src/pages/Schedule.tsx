@@ -88,7 +88,7 @@ const Schedule = () => {
       date: weekDays[1]?.date, // Tuesday
       startTime: '10:15',
       endTime: '11:00',
-      type: 'Client Session' as const,
+      type: 'General Session' as const,
       deliveryMethod: 'in-person' as const,
       arrivalStatus: 'Arrived' as const,
       notes: 'First session focusing on work-related stress and anxiety management techniques.',
@@ -109,7 +109,7 @@ const Schedule = () => {
       date: weekDays[3]?.date, // Thursday
       startTime: '14:30',
       endTime: '15:15',
-      type: 'Client Session' as const,
+      type: 'General Session' as const,
       deliveryMethod: 'telehealth' as const,
       arrivalStatus: '' as any, // Blank status
       notes: 'Continuation of CBT therapy for anxiety disorders. Review homework assignments.',
@@ -151,7 +151,7 @@ const Schedule = () => {
       date: weekDays[2]?.date, // Wednesday
       startTime: '11:00',
       endTime: '11:45',
-      type: 'Client Session' as const,
+      type: 'Intake Session' as const,
       deliveryMethod: 'in-person' as const,
       arrivalStatus: '' as any, // No status - not started
       notes: 'First consultation to assess client needs and develop treatment plan.',
@@ -172,7 +172,7 @@ const Schedule = () => {
       date: weekDays[4]?.date, // Friday
       startTime: '09:30',
       endTime: '10:15',
-      type: 'Client Session' as const,
+      type: 'Discharge Session' as const,
       deliveryMethod: 'telehealth' as const,
       arrivalStatus: '' as any, // No status - not started
       notes: 'Cognitive behavioral therapy session for depression management.',
@@ -233,7 +233,9 @@ const Schedule = () => {
 
   // Function to get appointment color based on type
   const getAppointmentColor = (type: string) => {
-    if (type === 'Client Session') return 'bg-orange-200 hover:bg-orange-300';
+    if (type === 'General Session') return 'bg-orange-200 hover:bg-orange-300';
+    if (type === 'Intake Session') return 'bg-emerald-200 hover:bg-emerald-300';
+    if (type === 'Discharge Session') return 'bg-rose-200 hover:bg-rose-300';
     if (type === 'Assessment Session') return 'bg-blue-200 hover:bg-blue-300';
     if (type.includes('Team Meeting')) return 'bg-green-200 hover:bg-green-300';
     if (type === 'Supervision') return 'bg-purple-200 hover:bg-purple-300';
