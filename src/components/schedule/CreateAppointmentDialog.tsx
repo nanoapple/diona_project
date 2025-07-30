@@ -331,6 +331,12 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
               )}
             </div>
 
+
+
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-4">
             {/* Location & Modality */}
             <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
               <div className="flex justify-between items-center">
@@ -418,11 +424,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
               </div>
 
               <div>
-                <Label htmlFor="location">
-                  {formData.mode === 'in-person' && 'Location *'}
-                  {formData.mode === 'telehealth' && 'Meeting Link'}
-                  {formData.mode === 'phone' && 'Client Mobile Number'}
-                </Label>
+                <Label htmlFor="location">Location *</Label>
                 {formData.mode === 'phone' ? (
                   <Select
                     value={formData.location}
@@ -461,119 +463,6 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
               </div>
             </div>
 
-            {/* Intake Session Specific Fields */}
-            {formData.appointmentType === 'Intake Session' && (
-              <div className="space-y-3 p-4 bg-emerald-100/50 rounded-lg border border-emerald-200/60 shadow-sm">
-                <h3 className="font-semibold text-lg">Intake Session Details</h3>
-                
-                <div>
-                  <Label htmlFor="referralSource">Referral Source</Label>
-                  <Select
-                    value={formData.referralSource}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, referralSource: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select referral source" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="gp">GP</SelectItem>
-                      <SelectItem value="ndis">NDIS</SelectItem>
-                      <SelectItem value="self">Self</SelectItem>
-                      <SelectItem value="employer">Employer</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="presentingIssues">Presenting Issues (Tags)</Label>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {['Anxiety', 'PTSD', 'Work Stress', 'Depression', 'Trauma', 'Sleep Issues'].map(issue => (
-                      <Button
-                        key={issue}
-                        type="button"
-                        variant={formData.presentingIssues.includes(issue) ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => {
-                          setFormData(prev => ({
-                            ...prev,
-                            presentingIssues: prev.presentingIssues.includes(issue)
-                              ? prev.presentingIssues.filter(i => i !== issue)
-                              : [...prev.presentingIssues, issue]
-                          }));
-                        }}
-                      >
-                        {issue}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="consentConfirmed"
-                    checked={formData.consentConfirmed}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, consentConfirmed: checked }))}
-                  />
-                  <Label htmlFor="consentConfirmed">Consent Confirmed</Label>
-                </div>
-              </div>
-            )}
-
-            {/* Discharge Session Specific Fields */}
-            {formData.appointmentType === 'Discharge Session' && (
-              <div className="space-y-3 p-4 bg-rose-100/50 rounded-lg border border-rose-200/60 shadow-sm">
-                <h3 className="font-semibold text-lg">Discharge Session Details</h3>
-                
-                <div>
-                  <Label htmlFor="dischargeReason">Reason for Discharge</Label>
-                  <Select
-                    value={formData.dischargeReason}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, dischargeReason: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select discharge reason" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="01">01 Service completed</SelectItem>
-                      <SelectItem value="02">02 Transferred/referred to another service</SelectItem>
-                      <SelectItem value="03">03 Left without notice</SelectItem>
-                      <SelectItem value="04">04 Left against advice</SelectItem>
-                      <SelectItem value="05">05 Left Involuntarily (non-compliance)</SelectItem>
-                      <SelectItem value="06">06 Moved out of area</SelectItem>
-                      <SelectItem value="07">07 Sanctioned by drug court/court diversion program</SelectItem>
-                      <SelectItem value="08">08 Imprisoned, other than drug court sanction</SelectItem>
-                      <SelectItem value="09">09 Released from prison</SelectItem>
-                      <SelectItem value="10">10 Died</SelectItem>
-                      <SelectItem value="98">98 Other</SelectItem>
-                      <SelectItem value="99">99 Not stated/inadequately described</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="followUpPlan">Follow-up Plan (Optional)</Label>
-                  <Select
-                    value={formData.followUpPlan}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, followUpPlan: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select follow-up plan" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      <SelectItem value="periodic">Periodic check-in</SelectItem>
-                      <SelectItem value="referred">Referred to another service</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            )}
-
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-4">
             {/* Notes & Smart Suggestions */}
             <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
               <h3 className="font-semibold text-lg">5. Notes & Smart Suggestions</h3>
