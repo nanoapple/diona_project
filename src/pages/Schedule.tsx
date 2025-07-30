@@ -4,7 +4,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { format, startOfWeek, endOfWeek, addDays, isSameWeek, isSameDay } from 'date-fns';
-import { Plus, CheckCircle, AlertCircle, RotateCcw, XCircle } from 'lucide-react';
+import { Plus, CheckCircle, AlertCircle, RotateCcw, XCircle, Check } from 'lucide-react';
 import CreateAppointmentDialog from '@/components/schedule/CreateAppointmentDialog';
 import AppointmentDetailsDialog from '@/components/schedule/AppointmentDetailsDialog';
 
@@ -95,7 +95,9 @@ const Schedule = () => {
       financialYear: 'Yr 24/25',
       dayName: 'Tue',
       startSlot: 5, // 10:15 is the 5th slot (starting from 9:00)
-      duration: 3 // 45 minutes = 3 slots
+      duration: 3, // 45 minutes = 3 slots
+      sessionNoteDone: true, // For demonstration
+      assessmentDone: true // For demonstration
     },
     {
       id: 'apt2',
@@ -113,7 +115,9 @@ const Schedule = () => {
       financialYear: 'Yr 24/25',
       dayName: 'Thu',
       startSlot: 22, // 14:30 (2:30 PM)
-      duration: 3 // 45 minutes
+      duration: 3, // 45 minutes
+      sessionNoteDone: false,
+      assessmentDone: false
     },
     {
       id: 'apt3',
@@ -131,7 +135,9 @@ const Schedule = () => {
       financialYear: 'Yr 24/25',
       dayName: 'Mon',
       startSlot: 28, // 16:00 (4:00 PM)
-      duration: 4 // 60 minutes
+      duration: 4, // 60 minutes
+      sessionNoteDone: true, // For demonstration
+      assessmentDone: false // For demonstration
     }
   ]);
 
@@ -253,7 +259,7 @@ const Schedule = () => {
                         )}
                         {/* Status indicator in the last slot */}
                         {isLastSlot && appointment.arrivalStatus && appointment.arrivalStatus !== '' && (
-                          <div className="absolute bottom-0.5 right-1">
+                          <div className="absolute top-1/2 right-1 transform -translate-y-1/2 flex items-center gap-1">
                             <div className={`px-1 text-[9px] font-medium text-white rounded-md border ${
                               appointment.arrivalStatus === 'Arrived' ? 'bg-green-600 border-green-600' :
                               appointment.arrivalStatus === 'Late' ? 'bg-yellow-600 border-yellow-600' :
@@ -262,6 +268,23 @@ const Schedule = () => {
                             }`}>
                               {appointment.arrivalStatus}
                             </div>
+                            {/* Show tick icons only for Arrived and Late status */}
+                            {(appointment.arrivalStatus === 'Arrived' || appointment.arrivalStatus === 'Late') && (
+                              <div className="flex items-center gap-0.5">
+                                {/* Green tick for session note completion */}
+                                {appointment.sessionNoteDone && (
+                                  <div className="w-3 h-3 bg-green-600 rounded-full flex items-center justify-center">
+                                    <Check size={6} className="text-white" />
+                                  </div>
+                                )}
+                                {/* Black tick for assessment completion */}
+                                {appointment.assessmentDone && (
+                                  <div className="w-3 h-3 bg-black rounded-full flex items-center justify-center">
+                                    <Check size={6} className="text-white" />
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         )}
                         {!isFirstSlot && slot.display && (
