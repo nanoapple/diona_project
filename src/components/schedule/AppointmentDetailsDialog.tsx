@@ -49,7 +49,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment }: Appointme
   ];
 
   const handleArrivalStatusChange = (value: string) => {
-    setArrivalStatus(value as 'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | 'Pending');
+    setArrivalStatus(value as 'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | 'Pending' | '');
   };
 
   const getTypeIcon = (type: string) => {

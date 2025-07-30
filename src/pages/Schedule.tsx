@@ -107,7 +107,7 @@ const Schedule = () => {
       startTime: '14:30',
       endTime: '15:15',
       type: 'telehealth' as const,
-      arrivalStatus: 'Pending' as const,
+      arrivalStatus: '' as any, // Blank status
       notes: 'Continuation of CBT therapy for anxiety disorders. Review homework assignments.',
       appointmentNumber: 7,
       financialYear: 'Yr 24/25',
@@ -229,12 +229,20 @@ const Schedule = () => {
                         onClick={() => handleAppointmentClick(appointment)}
                       >
                         {isFirstSlot && (
-                          <div className="text-black font-medium">
+                          <div className="text-black font-medium relative">
                             <div className="flex items-center gap-1 truncate">
                               {appointment.startTime} {appointment.clientName}
-                              {appointment.arrivalStatus !== 'Pending' && getStatusIcon(appointment.arrivalStatus)}
                             </div>
                             <div className="truncate text-[10px] opacity-80">{appointment.title}</div>
+                            {/* Status indicator oval */}
+                            {appointment.arrivalStatus && appointment.arrivalStatus !== '' && (
+                              <div className={`absolute bottom-1 right-1 w-3 h-2 rounded-full ${
+                                appointment.arrivalStatus === 'Arrived' ? 'bg-green-500' :
+                                appointment.arrivalStatus === 'Late' ? 'bg-yellow-500' :
+                                appointment.arrivalStatus === 'Rescheduled' ? 'bg-blue-500' :
+                                appointment.arrivalStatus === 'Missed' ? 'bg-red-500' : ''
+                              }`} />
+                            )}
                           </div>
                         )}
                         {!isFirstSlot && slot.display && (
