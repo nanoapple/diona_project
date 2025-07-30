@@ -136,76 +136,78 @@ export function AddAssessmentDialog({
 
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>{mode === "add" ? "Add Assessment" : "Assign Self-Guided Assessment"}</DialogTitle>
-          <DialogDescription>
-            {mode === "add" 
-              ? "Add an assessment to complete during the current session." 
-              : "Assign a self-guided assessment for the client to complete remotely."}
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>{mode === "add" ? "Add Assessment" : "Assign Self-Guided Assessment"}</DialogTitle>
+            <DialogDescription>
+              {mode === "add" 
+                ? "Add an assessment to complete during the current session." 
+                : "Assign a self-guided assessment for the client to complete remotely."}
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="space-y-6 pt-4">
-          <div className="flex items-center space-x-4">
-            <Label htmlFor="mode" className="flex-shrink-0">Mode:</Label>
-            <div className="flex items-center space-x-2">
-              <Label htmlFor="mode-toggle" className={mode === "add" ? "text-primary font-medium" : "text-muted-foreground"}>
-                In-session assessment
-              </Label>
-              <Switch
-                id="mode-toggle"
-                checked={mode === "assign"}
-                onCheckedChange={(checked) => setMode(checked ? "assign" : "add")}
-              />
-              <Label htmlFor="mode-toggle" className={mode === "assign" ? "text-primary font-medium" : "text-muted-foreground"}>
-                Self-Guided assessment
-              </Label>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium">Client Information</h3>
-            <div className="relative" ref={dropdownRef}>
-              <Label htmlFor="client-search">Client Name</Label>
-              <div className="relative">
-                <Input
-                  id="client-search"
-                  type="text"
-                  placeholder="Search for a client..."
-                  value={searchTerm}
-                  onChange={(e) => handleInputChange(e.target.value)}
-                  onFocus={() => setShowDropdown(true)}
-                  className="pr-8"
+          <div className="space-y-6 pt-4">
+            <div className="flex items-center space-x-4">
+              <Label htmlFor="mode" className="flex-shrink-0">Mode:</Label>
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="mode-toggle" className={mode === "add" ? "text-primary font-medium" : "text-muted-foreground"}>
+                  In-session assessment
+                </Label>
+                <Switch
+                  id="mode-toggle"
+                  checked={mode === "assign"}
+                  onCheckedChange={(checked) => setMode(checked ? "assign" : "add")}
                 />
-                <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Label htmlFor="mode-toggle" className={mode === "assign" ? "text-primary font-medium" : "text-muted-foreground"}>
+                  Self-Guided assessment
+                </Label>
               </div>
-              
-              {showDropdown && filteredClients.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-48 overflow-y-auto">
-                  {filteredClients.map((client, index) => (
-                    <div
-                      key={index}
-                      className="px-3 py-2 cursor-pointer hover:bg-muted text-sm"
-                      onClick={() => handleClientSelect(client)}
-                    >
-                      {client}
-                    </div>
-                  ))}
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium">Client Information</h3>
+              <div className="relative" ref={dropdownRef}>
+                <Label htmlFor="client-search">Client Name</Label>
+                <div className="relative">
+                  <Input
+                    id="client-search"
+                    type="text"
+                    placeholder="Search for a client..."
+                    value={searchTerm}
+                    onChange={(e) => handleInputChange(e.target.value)}
+                    onFocus={() => setShowDropdown(true)}
+                    className="pr-8"
+                  />
+                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 </div>
-              )}
+                
+                {showDropdown && filteredClients.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-48 overflow-y-auto">
+                    {filteredClients.map((client, index) => (
+                      <div
+                        key={index}
+                        className="px-3 py-2 cursor-pointer hover:bg-muted text-sm"
+                        onClick={() => handleClientSelect(client)}
+                      >
+                        {client}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={handleAddAssessment} disabled={!selectedClient}>
-            {selectedScale ? `Add ${selectedScale.name}` : (mode === "add" ? "Select Assessment Scale" : "Select Assessment Scale")}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button onClick={handleAddAssessment} disabled={!selectedClient}>
+              {selectedScale ? `Add ${selectedScale.name}` : (mode === "add" ? "Select Assessment Scale" : "Select Assessment Scale")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       <AssessmentScaleSelector
         open={showScaleSelector}
@@ -213,6 +215,6 @@ export function AddAssessmentDialog({
         onSelectScale={handleScaleSelect}
         clientName={selectedClient || clientName}
       />
-    </Dialog>
+    </>
   );
 }
