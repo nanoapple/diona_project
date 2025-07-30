@@ -77,8 +77,8 @@ const Schedule = () => {
 
   const weekDays = generateWeekDays();
 
-  // Mock appointments data
-  const mockAppointments = [
+  // Mock appointments data - now using state to allow updates
+  const [appointments, setAppointments] = useState([
     {
       id: 'apt1',
       title: 'Initial Assessment',
@@ -133,11 +133,20 @@ const Schedule = () => {
       startSlot: 28, // 16:00 (4:00 PM)
       duration: 4 // 60 minutes
     }
-  ];
+  ]);
+
+  // Handler to update appointment status
+  const handleStatusUpdate = (appointmentId: string, status: string) => {
+    setAppointments(prev => prev.map(apt => 
+      apt.id === appointmentId 
+        ? { ...apt, arrivalStatus: status as any }
+        : apt
+    ));
+  };
 
   // Function to check if a slot has an appointment
   const getAppointmentForSlot = (dayName: string, slotIndex: number) => {
-    return mockAppointments.find(apt => 
+    return appointments.find(apt => 
       apt.dayName === dayName && 
       slotIndex >= apt.startSlot && 
       slotIndex < apt.startSlot + apt.duration
@@ -376,6 +385,7 @@ const Schedule = () => {
         open={isAppointmentDetailsOpen}
         onOpenChange={setIsAppointmentDetailsOpen}
         appointment={selectedAppointment}
+        onStatusUpdate={handleStatusUpdate}
       />
     </div>
   );

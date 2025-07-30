@@ -27,9 +27,10 @@ interface AppointmentDetailsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   appointment: Appointment | null;
+  onStatusUpdate?: (appointmentId: string, status: string) => void;
 }
 
-const AppointmentDetailsDialog = ({ open, onOpenChange, appointment }: AppointmentDetailsDialogProps) => {
+const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpdate }: AppointmentDetailsDialogProps) => {
   const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
   const [arrivalStatus, setArrivalStatus] = useState<'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | 'Pending' | ''>(appointment?.arrivalStatus || '');
 
@@ -41,7 +42,6 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment }: Appointme
   }
 
   const arrivalStatusOptions = [
-    { value: 'Pending' as const, label: 'Pending' },
     { value: 'Arrived' as const, label: 'Arrived' },
     { value: 'Late' as const, label: 'Late' },
     { value: 'Rescheduled' as const, label: 'Rescheduled' },
@@ -50,6 +50,9 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment }: Appointme
 
   const handleArrivalStatusChange = (value: string) => {
     setArrivalStatus(value as 'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | 'Pending' | '');
+    if (appointment && onStatusUpdate) {
+      onStatusUpdate(appointment.id, value);
+    }
   };
 
   const getTypeIcon = (type: string) => {
