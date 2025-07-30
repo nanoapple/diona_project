@@ -10,6 +10,7 @@ import { BPRSAssessment } from "./BPRSAssessment";
 import { EPDSAssessment } from "./EPDSAssessment";
 import { MDQAssessment } from "./MDQAssessment";
 import { GAD7Assessment } from "./GAD7Assessment";
+import { MoCAAssessment } from "./MoCAAssessment";
 
 interface AssessmentScale {
   id: string;
@@ -38,6 +39,7 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
   const [showEPDSAssessment, setShowEPDSAssessment] = useState(false);
   const [showMDQAssessment, setShowMDQAssessment] = useState(false);
   const [showGAD7Assessment, setShowGAD7Assessment] = useState(false);
+  const [showMoCAAssessment, setShowMoCAAssessment] = useState(false);
 
   // Mock assessment scales data
   const assessmentScales: AssessmentScale[] = useMemo(() => [
@@ -154,6 +156,13 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
       name: "Mini-Mental State Examination (MMSE)",
       category: "Cognition",
       description: "30-item cognitive screening test",
+      questions: 30
+    },
+    {
+      id: "moca",
+      name: "Montreal Cognitive Assessment (MoCA)",
+      category: "Cognition",
+      description: "30-item cognitive screening tool for mild cognitive impairment",
       questions: 30
     },
 
@@ -353,11 +362,13 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
                          setShowEPDSAssessment(true);
                        } else if (scale.id === "mdq") {
                          setShowMDQAssessment(true);
-                       } else if (scale.id === "gad7") {
-                         setShowGAD7Assessment(true);
-                       } else {
-                         onSelectScale(scale);
-                       }
+                        } else if (scale.id === "gad7") {
+                          setShowGAD7Assessment(true);
+                        } else if (scale.id === "moca") {
+                          setShowMoCAAssessment(true);
+                        } else {
+                          onSelectScale(scale);
+                        }
                      }}
                      variant="outline"
                      size="sm"
@@ -421,6 +432,11 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
       <GAD7Assessment 
         open={showGAD7Assessment}
         onOpenChange={setShowGAD7Assessment}
+        clientName={clientName}
+      />
+      <MoCAAssessment 
+        open={showMoCAAssessment}
+        onOpenChange={setShowMoCAAssessment}
         clientName={clientName}
       />
     </>
