@@ -133,7 +133,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
           {/* Left Column */}
           <div className="space-y-4">
             {/* Appointment Basics */}
-            <div className="space-y-3 p-4 bg-blue-50/30 rounded-lg border border-blue-100/50 shadow-sm">
+            <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
               <h3 className="font-semibold text-lg">1. Appointment Basics</h3>
               
               <div>
@@ -168,7 +168,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
 
             {/* Case/Client Association - Move after session title */}
             {!isLimitedUser && isClientFacing && (
-              <div className="space-y-3 p-4 bg-blue-50/30 rounded-lg border border-blue-100/50 shadow-sm">
+              <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
                 <h3 className="font-semibold text-lg">2. Case/Client Association</h3>
                 
                 <div>
@@ -213,7 +213,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
 
             {/* Non-client facing appointments show greyed out section */}
             {!isLimitedUser && !isClientFacing && (
-              <div className="space-y-3 p-4 bg-blue-50/30 rounded-lg border border-blue-100/50 shadow-sm opacity-50">
+              <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm opacity-50">
                 <h3 className="font-semibold text-lg">2. Case/Client Association</h3>
                 <p className="text-sm text-muted-foreground">
                   Client linking not available for this appointment type
@@ -222,7 +222,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
             )}
 
             {/* Date and Time Section */}
-            <div className="space-y-3 p-4 bg-blue-50/30 rounded-lg border border-blue-100/50 shadow-sm">
+            <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
               <h3 className="font-semibold text-lg">3. Date & Time</h3>
               
               <div className="grid grid-cols-3 gap-2">
@@ -304,7 +304,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
           {/* Right Column */}
           <div className="space-y-4">
             {/* Location & Modality */}
-            <div className="space-y-3 p-4 bg-blue-50/30 rounded-lg border border-blue-100/50 shadow-sm">
+            <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
               <h3 className="font-semibold text-lg">3. Location & Modality</h3>
               
               <div>
@@ -346,7 +346,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
 
             {/* Invite Attendees */}
             {!isLimitedUser && (
-              <div className="space-y-3 p-4 bg-blue-50/30 rounded-lg border border-blue-100/50 shadow-sm">
+              <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
                 <h3 className="font-semibold text-lg">4. Invite Attendees</h3>
                 
                 <div>
@@ -382,7 +382,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
             )}
 
             {/* Notes & Smart Suggestions */}
-            <div className="space-y-3 p-4 bg-blue-50/30 rounded-lg border border-blue-100/50 shadow-sm">
+            <div className="space-y-3 p-4 bg-blue-200/70 rounded-lg border border-blue-300/70 shadow-sm">
               <h3 className="font-semibold text-lg">5. Notes & Smart Suggestions</h3>
               
               <div>
@@ -407,7 +407,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
             </div>
 
             {/* Reminders & Visual Labels */}
-            <div className="space-y-3 p-4 bg-blue-50/30 rounded-lg border border-blue-100/50 shadow-sm">
+            <div className="space-y-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200/60 shadow-sm">
               <h3 className="font-semibold text-lg">6. Reminders & Visual Labels</h3>
               
               <div className="flex items-center space-x-2">
