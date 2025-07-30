@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
+import { PCL5Assessment } from "./PCL5Assessment";
 
 interface AssessmentScale {
   id: string;
@@ -18,13 +19,15 @@ interface AssessmentScaleSelectorProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelectScale: (scale: AssessmentScale) => void;
+  clientName?: string;
 }
 
-export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale }: AssessmentScaleSelectorProps) {
+export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, clientName }: AssessmentScaleSelectorProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeView, setActiveView] = useState<"categories" | "alphabetical" | "mental-health">("alphabetical");
   const [selectedAlphabet, setSelectedAlphabet] = useState<string>("A");
   const [selectedCategory, setSelectedCategory] = useState<string>("Anxiety");
+  const [showPCL5Assessment, setShowPCL5Assessment] = useState(false);
 
   // Mock assessment scales data
   const assessmentScales: AssessmentScale[] = useMemo(() => [
@@ -204,11 +207,12 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale }: A
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[80vw] max-h-[80vh] w-[80vw] h-[80vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle>Select Assessment Scale</DialogTitle>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-[80vw] max-h-[80vh] w-[80vw] h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Select Assessment Scale</DialogTitle>
+          </DialogHeader>
 
         <div className="flex-1 flex flex-col space-y-4 overflow-hidden">
           {/* Search Bar */}
@@ -318,7 +322,13 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale }: A
                   )}
 
                   <Button
-                    onClick={() => onSelectScale(scale)}
+                    onClick={() => {
+                      if (scale.id === "pcl5") {
+                        setShowPCL5Assessment(true);
+                      } else {
+                        onSelectScale(scale);
+                      }
+                    }}
                     variant="outline"
                     size="sm"
                     className="w-full"
@@ -336,7 +346,14 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale }: A
             )}
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      <PCL5Assessment 
+        open={showPCL5Assessment}
+        onOpenChange={setShowPCL5Assessment}
+        clientName={clientName}
+      />
+    </>
   );
 }

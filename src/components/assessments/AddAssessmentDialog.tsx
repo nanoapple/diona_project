@@ -206,11 +206,12 @@ export function AddAssessmentDialog({
           </Button>
         </DialogFooter>
         
-        <AssessmentScaleSelector
-          open={showScaleSelector}
-          onOpenChange={setShowScaleSelector}
-          onSelectScale={handleScaleSelect}
-        />
+      <AssessmentScaleSelector
+        open={showScaleSelector}
+        onOpenChange={setShowScaleSelector}
+        onSelectScale={handleScaleSelect}
+        clientName={selectedClient || clientName}
+      />
       </DialogContent>
     </Dialog>
   );
