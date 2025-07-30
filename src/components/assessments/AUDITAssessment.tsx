@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -193,7 +194,10 @@ export const AUDITAssessment = ({ open, onOpenChange, clientName }: AUDITAssessm
     setShowResults(false);
   };
 
-  if (!open) return null;
+  const handleClose = () => {
+    resetAssessment();
+    onOpenChange(false);
+  };
 
   const progress = ((currentQuestion + 1) / questions.length) * 100;
   const currentQuestionData = questions[currentQuestion];
@@ -204,20 +208,16 @@ export const AUDITAssessment = ({ open, onOpenChange, clientName }: AUDITAssessm
     const interpretation = getInterpretation(score);
 
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>AUDIT Assessment Results</span>
-              <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
-                ×
-              </Button>
-            </CardTitle>
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>AUDIT Assessment Results</DialogTitle>
             {clientName && (
-              <p className="text-sm text-muted-foreground">Client: {clientName}</p>
+              <div className="text-sm text-muted-foreground">Client: {clientName}</div>
             )}
-          </CardHeader>
-          <CardContent className="space-y-6">
+          </DialogHeader>
+          
+          <div className="space-y-6">
             <div className="text-center space-y-4">
               <div className="text-6xl font-bold text-primary">{score}</div>
               <div className="text-lg text-muted-foreground">Total Score (out of 40)</div>
@@ -252,34 +252,30 @@ export const AUDITAssessment = ({ open, onOpenChange, clientName }: AUDITAssessm
               <Button onClick={resetAssessment} variant="outline" className="flex-1">
                 Take Again
               </Button>
-              <Button onClick={() => onOpenChange(false)} className="flex-1">
+              <Button onClick={handleClose} className="flex-1">
                 Close
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     );
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-2xl">
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>AUDIT Assessment</span>
-            <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
-              ×
-            </Button>
-          </CardTitle>
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>AUDIT Assessment</DialogTitle>
           {clientName && (
-            <p className="text-sm text-muted-foreground">Client: {clientName}</p>
+            <div className="text-sm text-muted-foreground">Client: {clientName}</div>
           )}
-          <p className="text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground">
             Alcohol Use Disorders Identification Test
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-6">
+          </div>
+        </DialogHeader>
+
+        <div className="space-y-6">
           <div className="space-y-2">
             <div className="flex justify-between text-sm text-muted-foreground">
               <span>Question {currentQuestion + 1} of {questions.length}</span>
@@ -326,8 +322,8 @@ export const AUDITAssessment = ({ open, onOpenChange, clientName }: AUDITAssessm
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
