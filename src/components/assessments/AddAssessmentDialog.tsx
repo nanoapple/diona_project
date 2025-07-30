@@ -205,14 +205,14 @@ export function AddAssessmentDialog({
             {selectedScale ? `Add ${selectedScale.name}` : (mode === "add" ? "Select Assessment Scale" : "Select Assessment Scale")}
           </Button>
         </DialogFooter>
-        
+      </DialogContent>
+      
       <AssessmentScaleSelector
         open={showScaleSelector}
         onOpenChange={setShowScaleSelector}
         onSelectScale={handleScaleSelect}
         clientName={selectedClient || clientName}
       />
-      </DialogContent>
     </Dialog>
   );
 }
