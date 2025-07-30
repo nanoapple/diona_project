@@ -6,6 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 import { PCL5Assessment } from "./PCL5Assessment";
 import { AUDITAssessment } from "./AUDITAssessment";
+import { BPRSAssessment } from "./BPRSAssessment";
+import { EPDSAssessment } from "./EPDSAssessment";
+import { MDQAssessment } from "./MDQAssessment";
+import { GAD7Assessment } from "./GAD7Assessment";
 
 interface AssessmentScale {
   id: string;
@@ -30,6 +34,10 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
   const [selectedCategory, setSelectedCategory] = useState<string>("Anxiety");
   const [showPCL5Assessment, setShowPCL5Assessment] = useState(false);
   const [showAUDITAssessment, setShowAUDITAssessment] = useState(false);
+  const [showBPRSAssessment, setShowBPRSAssessment] = useState(false);
+  const [showEPDSAssessment, setShowEPDSAssessment] = useState(false);
+  const [showMDQAssessment, setShowMDQAssessment] = useState(false);
+  const [showGAD7Assessment, setShowGAD7Assessment] = useState(false);
 
   // Mock assessment scales data
   const assessmentScales: AssessmentScale[] = useMemo(() => [
@@ -56,6 +64,13 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
     },
     
     // B
+    {
+      id: "bprs",
+      name: "Brief Psychiatric Rating Scale (BPRS)",
+      category: "Psychosis",
+      description: "18-item clinical rating scale to assess severity of psychiatric symptoms",
+      questions: 18
+    },
     {
       id: "bmi",
       name: "BMI Calculator",
@@ -332,6 +347,14 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
                          setShowPCL5Assessment(true);
                        } else if (scale.id === "audit") {
                          setShowAUDITAssessment(true);
+                       } else if (scale.id === "bprs") {
+                         setShowBPRSAssessment(true);
+                       } else if (scale.id === "epds") {
+                         setShowEPDSAssessment(true);
+                       } else if (scale.id === "mdq") {
+                         setShowMDQAssessment(true);
+                       } else if (scale.id === "gad7") {
+                         setShowGAD7Assessment(true);
                        } else {
                          onSelectScale(scale);
                        }
@@ -378,6 +401,26 @@ export function AssessmentScaleSelector({ open, onOpenChange, onSelectScale, cli
       <AUDITAssessment 
         open={showAUDITAssessment}
         onOpenChange={setShowAUDITAssessment}
+        clientName={clientName}
+      />
+      <BPRSAssessment 
+        open={showBPRSAssessment}
+        onOpenChange={setShowBPRSAssessment}
+        clientName={clientName}
+      />
+      <EPDSAssessment 
+        open={showEPDSAssessment}
+        onOpenChange={setShowEPDSAssessment}
+        clientName={clientName}
+      />
+      <MDQAssessment 
+        open={showMDQAssessment}
+        onOpenChange={setShowMDQAssessment}
+        clientName={clientName}
+      />
+      <GAD7Assessment 
+        open={showGAD7Assessment}
+        onOpenChange={setShowGAD7Assessment}
         clientName={clientName}
       />
     </>
