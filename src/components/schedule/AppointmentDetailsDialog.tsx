@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar, Clock, MapPin, Phone, Video, User, PlayCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState } from 'react';
@@ -30,8 +31,26 @@ interface AppointmentDetailsDialogProps {
 
 const AppointmentDetailsDialog = ({ open, onOpenChange, appointment }: AppointmentDetailsDialogProps) => {
   const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
+  const [arrivalStatus, setArrivalStatus] = useState<'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | 'Pending'>(appointment?.arrivalStatus || 'Pending');
 
   if (!appointment) return null;
+
+  // Update local state when appointment changes
+  if (appointment && arrivalStatus !== appointment.arrivalStatus) {
+    setArrivalStatus(appointment.arrivalStatus);
+  }
+
+  const arrivalStatusOptions = [
+    { value: 'Pending' as const, label: 'Pending' },
+    { value: 'Arrived' as const, label: 'Arrived' },
+    { value: 'Late' as const, label: 'Late' },
+    { value: 'Rescheduled' as const, label: 'Rescheduled' },
+    { value: 'Missed' as const, label: 'Missed' }
+  ];
+
+  const handleArrivalStatusChange = (value: string) => {
+    setArrivalStatus(value as 'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | 'Pending');
+  };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -109,10 +128,25 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment }: Appointme
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="font-medium">Arrival Status:</span>
-                <Badge className={getArrivalStatusColor(appointment.arrivalStatus)}>
-                  {appointment.arrivalStatus}
-                </Badge>
               </div>
+              <Select value={arrivalStatus} onValueChange={handleArrivalStatusChange}>
+                <SelectTrigger className="w-48 bg-background border shadow-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-background border shadow-md z-50">
+                  {arrivalStatusOptions.map(option => (
+                    <SelectItem 
+                      key={option.value} 
+                      value={option.value}
+                      className="hover:bg-muted"
+                    >
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getArrivalStatusColor(option.value)}`}>
+                        {option.label}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Contextual Info */}
