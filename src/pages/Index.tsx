@@ -65,12 +65,12 @@ const Index = () => {
                 <h2 className="text-2xl font-bold mb-6 text-white">Our Platform Features</h2>
                 <ul className="space-y-4">
                   {[
-                    "AI-powered data analytics for impact measurement",
-                    "Secure cloud infrastructure and data management",
-                    "Custom CRM and donor management systems",
-                    "Automated reporting and compliance tools",
-                    "Real-time performance dashboards",
-                    "Collaborative project management platform"
+                    "Comprehensive allied health assessment tools and screening",
+                    "AI-powered client case management and progress tracking", 
+                    "Secure document management and stakeholder collaboration",
+                    "Automated reporting and compliance for Australian standards",
+                    "Integrated scheduling and appointment management system",
+                    "Real-time analytics dashboard for service delivery insights"
                   ].map((feature, index) => (
                     <li key={index} className="flex items-start">
                       <div className="bg-blue-500 rounded-full p-1 mr-3 mt-0.5 flex-shrink-0">
