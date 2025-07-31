@@ -32,7 +32,7 @@ const Index = () => {
       {/* Hero Section */}
       <div className="flex-grow bg-gradient-to-br from-purple-600 via-blue-600 to-purple-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
-          <div className="lg:grid lg:grid-cols-12 lg:gap-12">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
             <div className="lg:col-span-7 lg:text-left">
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6 leading-tight">
                 <span className="text-blue-200">D</span>ata and<br />
@@ -61,7 +61,7 @@ const Index = () => {
               </div>
             </div>
             <div className="mt-12 lg:mt-0 lg:col-span-5">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                 <h2 className="text-2xl font-bold mb-6 text-white">Our Platform Features</h2>
                 <ul className="space-y-4">
                   {[
@@ -73,10 +73,10 @@ const Index = () => {
                     "Real-time analytics dashboard for service delivery insights"
                   ].map((feature, index) => (
                     <li key={index} className="flex items-start">
-                      <div className="bg-blue-500 rounded-full p-1 mr-3 mt-0.5 flex-shrink-0">
-                        <CheckCircle className="h-4 w-4 text-white" />
+                      <div className="bg-blue-500 rounded-full p-1 mr-2 mt-0.5 flex-shrink-0">
+                        <CheckCircle className="h-3 w-3 text-white" />
                       </div>
-                      <span className="text-white/90">{feature}</span>
+                      <span className="text-white/90 text-sm leading-relaxed">{feature}</span>
                     </li>
                   ))}
                 </ul>
