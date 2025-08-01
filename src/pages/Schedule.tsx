@@ -318,10 +318,11 @@ const Schedule = () => {
   // Function to get appointment color based on type
   const getAppointmentColor = (type: string) => {
     if (type === 'General Session') return 'bg-orange-200 hover:bg-orange-300';
-    if (type === 'Intake Session') return 'bg-emerald-200 hover:bg-emerald-300';
+    if (type === 'Intake Session') return 'bg-green-200 hover:bg-green-300';
     if (type === 'Discharge Session') return 'bg-rose-200 hover:bg-rose-300';
     if (type === 'Assessment Session') return 'bg-blue-200 hover:bg-blue-300';
-    if (type.includes('Team Meeting')) return 'bg-green-200 hover:bg-green-300';
+    if (type === 'Team Meeting (Internal)') return 'bg-teal-200 hover:bg-teal-300';
+    if (type === 'Team Meeting (External)') return 'bg-cyan-200 hover:bg-cyan-300';
     if (type === 'Supervision') return 'bg-purple-200 hover:bg-purple-300';
     if (type === 'Administrative Task') return 'bg-yellow-200 hover:bg-yellow-300';
     return 'bg-gray-200 hover:bg-gray-300';
@@ -377,7 +378,7 @@ const Schedule = () => {
           <span>General Session</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-emerald-200"></div>
+          <div className="w-2 h-2 rounded-full bg-green-200"></div>
           <span>Intake Session</span>
         </div>
         <div className="flex items-center gap-1">
@@ -389,8 +390,12 @@ const Schedule = () => {
           <span>Assessment Session</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-green-200"></div>
-          <span>Team Meeting</span>
+          <div className="w-2 h-2 rounded-full bg-teal-200"></div>
+          <span>Team Meeting (Internal)</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 rounded-full bg-cyan-200"></div>
+          <span>Team Meeting (External)</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-purple-200"></div>
