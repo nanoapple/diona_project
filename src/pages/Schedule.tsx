@@ -10,7 +10,7 @@ import AppointmentDetailsDialog from '@/components/schedule/AppointmentDetailsDi
 
 const Schedule = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [selectedWeek, setSelectedWeek] = useState<Date>(new Date());
+  const [selectedWeek, setSelectedWeek] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogDate, setDialogDate] = useState<Date>();
