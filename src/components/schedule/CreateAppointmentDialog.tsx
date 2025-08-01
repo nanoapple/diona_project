@@ -69,6 +69,19 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
     'Other'
   ];
 
+  // Function to get appointment color based on type (matching Schedule component)
+  const getAppointmentColor = (type: string) => {
+    if (type === 'General Session') return 'hover:bg-orange-200';
+    if (type === 'Intake Session') return 'hover:bg-green-200';
+    if (type === 'Discharge Session') return 'hover:bg-rose-200';
+    if (type === 'Assessment Session') return 'hover:bg-blue-200';
+    if (type === 'Team Meeting (Internal)') return 'hover:bg-teal-200';
+    if (type === 'Team Meeting (External)') return 'hover:bg-cyan-200';
+    if (type === 'Supervision') return 'hover:bg-purple-200';
+    if (type === 'Administrative Task') return 'hover:bg-yellow-200';
+    return 'hover:bg-gray-200';
+  };
+
   const timeSlots = Array.from({ length: 40 }, (_, i) => {
     const hour = Math.floor(i / 4) + 9;
     const minute = (i % 4) * 15;
@@ -173,7 +186,13 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
                   </SelectTrigger>
                   <SelectContent>
                     {appointmentTypes.map(type => (
-                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                      <SelectItem 
+                        key={type} 
+                        value={type}
+                        className={cn("cursor-pointer", getAppointmentColor(type))}
+                      >
+                        {type}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
