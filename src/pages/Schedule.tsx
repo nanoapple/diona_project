@@ -464,7 +464,7 @@ const Schedule = () => {
                       onClick={() => handleSlotClick(slotId)}
                     >
                       {slot.display && (
-                        <span className={slot.isHour ? 'text-black' : 'text-white'}>
+                        <span className={`text-xs ${slot.isHour ? 'text-gray-800 font-medium' : 'text-gray-400 font-normal'}`}>
                           {slot.display}
                         </span>
                       )}
