@@ -63,9 +63,8 @@ const Sidebar = () => {
     
     const commonItems = [
       { to: "/dashboard", icon: CheckSquare, label: "Dashboard" },
-      { to: "/case-silo", icon: Archive, label: "Case Silo" },
-      { to: "/schedule", icon: Calendar, label: "Schedule" },
-      { to: "/profile", icon: User, label: "Profile" }
+      { to: "/schedule", icon: Calendar, label: "Appointment" },
+      { to: "/case-silo", icon: Archive, label: "Case Silo" }
     ];
 
     const roleSpecificItems = {
@@ -104,7 +103,7 @@ const Sidebar = () => {
       <div className="flex items-center justify-between p-4 border-b border-border">
         {!collapsed && (
           <div className="font-semibold text-xl">
-            <span className="text-gradient">Affirm</span>Claim
+            <span className="text-gradient">DI</span>ONA
           </div>
         )}
         <Button 
