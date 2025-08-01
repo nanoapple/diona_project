@@ -404,7 +404,7 @@ const Schedule = () => {
                         {isFirstSlot && (
                           <div className="text-black font-medium overflow-hidden">
                             <div className="truncate leading-3">
-                              {appointment.clientName}
+                              {appointment.startTime} {appointment.clientName}
                             </div>
                           </div>
                         )}
