@@ -123,24 +123,24 @@ const Schedule = () => {
     },
     {
       id: 'apt3',
-      title: 'Team Meeting',
-      clientName: '',
-      clientGender: '',
-      clientDOB: '',
+      title: 'Therapy Session',
+      clientName: 'Robert Johnson',
+      clientGender: 'Male',
+      clientDOB: '08/12/1982',
       date: weekDays[0]?.date, // Monday
-      startTime: '16:00',
-      endTime: '17:00',
-      type: 'Team Meeting (Internal)' as const,
+      startTime: '11:00',
+      endTime: '11:45',
+      type: 'General Session' as const,
       deliveryMethod: 'in-person' as const,
-      arrivalStatus: 'Late' as const,
-      notes: 'Weekly team meeting to discuss case progress and administrative updates.',
-      appointmentNumber: 0,
+      arrivalStatus: '' as any,
+      notes: 'Stress management and coping strategies discussion.',
+      appointmentNumber: 4,
       financialYear: 'Yr 24/25',
       dayName: 'Mon',
-      startSlot: 28, // 16:00 (4:00 PM)
-      duration: 4, // 60 minutes
-      sessionNoteDone: false, // No session notes for team meetings
-      assessmentDone: false // No assessments for team meetings
+      startSlot: 8, // 11:00
+      duration: 3, // 45 minutes
+      sessionNoteDone: false,
+      assessmentDone: false
     },
     {
       id: 'apt4',
@@ -172,7 +172,7 @@ const Schedule = () => {
       date: weekDays[4]?.date, // Friday
       startTime: '09:30',
       endTime: '10:15',
-      type: 'Discharge Session' as const,
+      type: 'General Session' as const,
       deliveryMethod: 'telehealth' as const,
       arrivalStatus: '' as any, // No status - not started
       notes: 'Cognitive behavioral therapy session for depression management.',
@@ -201,6 +201,90 @@ const Schedule = () => {
       financialYear: 'Yr 24/25',
       dayName: 'Tue',
       startSlot: 19, // 13:45
+      duration: 3, // 45 minutes
+      sessionNoteDone: false,
+      assessmentDone: false
+    },
+    {
+      id: 'apt7',
+      title: 'Therapy Session',
+      clientName: 'Lisa Anderson',
+      clientGender: 'Female',
+      clientDOB: '25/04/1991',
+      date: weekDays[0]?.date, // Monday
+      startTime: '14:00',
+      endTime: '14:45',
+      type: 'General Session' as const,
+      deliveryMethod: 'in-person' as const,
+      arrivalStatus: '' as any,
+      notes: 'PTSD treatment using EMDR therapy techniques.',
+      appointmentNumber: 8,
+      financialYear: 'Yr 24/25',
+      dayName: 'Mon',
+      startSlot: 20, // 14:00
+      duration: 3, // 45 minutes
+      sessionNoteDone: false,
+      assessmentDone: false
+    },
+    {
+      id: 'apt8',
+      title: 'Follow-up Session',
+      clientName: 'David Miller',
+      clientGender: 'Male',
+      clientDOB: '16/01/1979',
+      date: weekDays[2]?.date, // Wednesday
+      startTime: '15:30',
+      endTime: '16:15',
+      type: 'General Session' as const,
+      deliveryMethod: 'telehealth' as const,
+      arrivalStatus: '' as any,
+      notes: 'Progress review and adjustment of treatment goals.',
+      appointmentNumber: 12,
+      financialYear: 'Yr 24/25',
+      dayName: 'Wed',
+      startSlot: 26, // 15:30
+      duration: 3, // 45 minutes
+      sessionNoteDone: false,
+      assessmentDone: false
+    },
+    {
+      id: 'apt9',
+      title: 'Group Session',
+      clientName: 'Michelle Torres',
+      clientGender: 'Female',
+      clientDOB: '03/06/1987',
+      date: weekDays[3]?.date, // Thursday
+      startTime: '10:00',
+      endTime: '10:45',
+      type: 'General Session' as const,
+      deliveryMethod: 'in-person' as const,
+      arrivalStatus: '' as any,
+      notes: 'Group therapy session focusing on social anxiety management.',
+      appointmentNumber: 6,
+      financialYear: 'Yr 24/25',
+      dayName: 'Thu',
+      startSlot: 4, // 10:00
+      duration: 3, // 45 minutes
+      sessionNoteDone: false,
+      assessmentDone: false
+    },
+    {
+      id: 'apt10',
+      title: 'Therapy Session',
+      clientName: 'Thomas Wilson',
+      clientGender: 'Male',
+      clientDOB: '29/10/1984',
+      date: weekDays[4]?.date, // Friday
+      startTime: '13:00',
+      endTime: '13:45',
+      type: 'General Session' as const,
+      deliveryMethod: 'in-person' as const,
+      arrivalStatus: '' as any,
+      notes: 'Anger management and emotional regulation techniques.',
+      appointmentNumber: 9,
+      financialYear: 'Yr 24/25',
+      dayName: 'Fri',
+      startSlot: 16, // 13:00
       duration: 3, // 45 minutes
       sessionNoteDone: false,
       assessmentDone: false
