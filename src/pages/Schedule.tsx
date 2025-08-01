@@ -17,6 +17,7 @@ const Schedule = () => {
   const [dialogTime, setDialogTime] = useState<string>();
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [isAppointmentDetailsOpen, setIsAppointmentDetailsOpen] = useState(false);
+  const [showWeekends, setShowWeekends] = useState(true);
 
   const handleDateClick = (date: Date | undefined) => {
     if (date) {
@@ -366,8 +367,18 @@ const Schedule = () => {
     <div className="h-screen flex flex-col p-4 pt-2 overflow-hidden">
       <div className="flex justify-between items-center mb-2">
         <h1 className="text-3xl font-bold">Appointments</h1>
-        <div className="text-sm text-muted-foreground">
-          Week of {format(selectedWeek, 'MMM d, yyyy')}
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowWeekends(!showWeekends)}
+            className="text-xs"
+          >
+            {showWeekends ? 'Hide Weekends' : 'Show Weekends'}
+          </Button>
+          <div className="text-sm text-muted-foreground">
+            Week of {format(selectedWeek, 'MMM d, yyyy')}
+          </div>
         </div>
       </div>
 
@@ -412,8 +423,8 @@ const Schedule = () => {
       </div>
 
       {/* Main content area - condensed weekday panels */}
-      <div className="h-[calc(65vh-80px)] grid grid-cols-7 gap-2 mb-4">
-        {weekDays.map((day, index) => (
+      <div className={`h-[calc(65vh-80px)] grid ${showWeekends ? 'grid-cols-7' : 'grid-cols-5'} gap-2 mb-4`}>
+        {weekDays.filter(day => showWeekends || !day.isWeekend).map((day, index) => (
           <Card 
             key={index} 
             className={`${day.isWeekend ? 'bg-green-50' : 'bg-blue-50'} rounded-lg overflow-hidden`}
