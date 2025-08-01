@@ -71,15 +71,15 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
 
   // Function to get appointment color based on type (matching Schedule component)
   const getAppointmentColor = (type: string) => {
-    if (type === 'General Session') return 'hover:bg-orange-200';
-    if (type === 'Intake Session') return 'hover:bg-green-200';
-    if (type === 'Discharge Session') return 'hover:bg-rose-200';
-    if (type === 'Assessment Session') return 'hover:bg-blue-200';
-    if (type === 'Team Meeting (Internal)') return 'hover:bg-teal-200';
-    if (type === 'Team Meeting (External)') return 'hover:bg-cyan-200';
-    if (type === 'Supervision') return 'hover:bg-purple-200';
-    if (type === 'Administrative Task') return 'hover:bg-yellow-200';
-    return 'hover:bg-gray-200';
+    if (type === 'General Session') return 'data-[highlighted]:bg-orange-200 hover:bg-orange-100';
+    if (type === 'Intake Session') return 'data-[highlighted]:bg-green-200 hover:bg-green-100';
+    if (type === 'Discharge Session') return 'data-[highlighted]:bg-rose-200 hover:bg-rose-100';
+    if (type === 'Assessment Session') return 'data-[highlighted]:bg-blue-200 hover:bg-blue-100';
+    if (type === 'Team Meeting (Internal)') return 'data-[highlighted]:bg-teal-200 hover:bg-teal-100';
+    if (type === 'Team Meeting (External)') return 'data-[highlighted]:bg-cyan-200 hover:bg-cyan-100';
+    if (type === 'Supervision') return 'data-[highlighted]:bg-purple-200 hover:bg-purple-100';
+    if (type === 'Administrative Task') return 'data-[highlighted]:bg-yellow-200 hover:bg-yellow-100';
+    return 'data-[highlighted]:bg-gray-200 hover:bg-gray-100';
   };
 
   const timeSlots = Array.from({ length: 40 }, (_, i) => {
