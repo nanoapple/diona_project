@@ -375,27 +375,27 @@ const Schedule = () => {
       <div className="flex flex-wrap gap-3 mb-4 text-xs">
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-orange-200"></div>
-          <span>General Session</span>
+          <span>General</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-green-200"></div>
-          <span>Intake Session</span>
+          <span>Intake</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-rose-200"></div>
-          <span>Discharge Session</span>
+          <span>Discharge</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-blue-200"></div>
-          <span>Assessment Session</span>
+          <span>Assessment</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-teal-200"></div>
-          <span>Team Meeting (Internal)</span>
+          <span>Internal Meeting</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-cyan-200"></div>
-          <span>Team Meeting (External)</span>
+          <span>External Meeting</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-purple-200"></div>
@@ -403,7 +403,7 @@ const Schedule = () => {
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-yellow-200"></div>
-          <span>Administrative Task</span>
+          <span>Admin</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-gray-200"></div>
