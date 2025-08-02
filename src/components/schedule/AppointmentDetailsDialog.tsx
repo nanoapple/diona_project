@@ -374,15 +374,15 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
             renderAppointmentDetails()
           ) : (
             <div className="h-[70vh]">
-              <ResizablePanelGroup direction="vertical">
-                {/* Top Panel - Add Case Note */}
-                <ResizablePanel defaultSize={60} minSize={30}>
-                  <div className="p-4 bg-blue-50/30 border-b border-blue-200">
+              <ResizablePanelGroup direction="horizontal">
+                {/* Left Panel - Add Case Note */}
+                <ResizablePanel defaultSize={50} minSize={30}>
+                  <div className="p-4 bg-blue-50/30 border-r border-blue-200 h-full">
                     <div className="flex items-center gap-2 mb-4">
                       <MessageSquare className="h-5 w-5 text-primary" />
                       <h3 className="text-lg font-semibold">Add Case Note</h3>
                     </div>
-                    <div className="bg-white rounded-lg p-4 h-full border overflow-y-auto">
+                    <div className="bg-white rounded-lg p-4 h-[calc(100%-4rem)] border overflow-y-auto">
                       <p className="text-sm text-muted-foreground mb-4">
                         Choose how you'd like to create your case note:
                       </p>
@@ -436,14 +436,14 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                 
                 <ResizableHandle withHandle />
                 
-                {/* Bottom Panel - Add Assessment */}
-                <ResizablePanel defaultSize={40} minSize={30}>
-                  <div className="p-4 bg-green-50/30">
+                {/* Right Panel - Add Assessment */}
+                <ResizablePanel defaultSize={50} minSize={30}>
+                  <div className="p-4 bg-green-50/30 h-full">
                     <div className="flex items-center gap-2 mb-4">
                       <ClipboardList className="h-5 w-5 text-primary" />
                       <h3 className="text-lg font-semibold">Add Assessment</h3>
                     </div>
-                    <div className="bg-white rounded-lg p-4 h-full border overflow-y-auto">
+                    <div className="bg-white rounded-lg p-4 h-[calc(100%-4rem)] border overflow-y-auto">
                       <div className="space-y-4">
                         <div className="flex items-center space-x-4">
                           <Label className="flex-shrink-0">Mode:</Label>
