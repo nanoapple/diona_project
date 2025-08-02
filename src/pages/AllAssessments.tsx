@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { AssessmentScaleSelector } from "@/components/assessments/AssessmentScaleSelector";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 interface AssessmentScale {
   id: string;
@@ -15,6 +16,16 @@ interface AssessmentScale {
 
 export default function AllAssessments() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate component mounting time
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSelectScale = (scale: AssessmentScale) => {
     console.log("Selected scale:", scale);
@@ -40,11 +51,15 @@ export default function AllAssessments() {
 
       {/* Content - Fill remaining space */}
       <div className="flex-1 p-4">
-        <AssessmentScaleSelector
-          open={true}
-          onOpenChange={undefined} // Page mode - no dialog wrapper
-          onSelectScale={handleSelectScale}
-        />
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <AssessmentScaleSelector
+            open={true}
+            onOpenChange={undefined} // Page mode - no dialog wrapper
+            onSelectScale={handleSelectScale}
+          />
+        )}
       </div>
     </div>
   );
