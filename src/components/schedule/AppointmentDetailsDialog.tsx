@@ -6,12 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Clock, MapPin, Phone, Video, User, PlayCircle, MessageSquare, ClipboardList, Mic, FileText } from 'lucide-react';
+import { Calendar, Clock, MapPin, Phone, Video, User, PlayCircle, MessageSquare, ClipboardList, Mic, FileText, MicOff, Upload, Loader2, Edit } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState } from 'react';
-import AddNotesDialog from '@/components/caseSilo/AddNotesDialog';
 import { AddAssessmentDialog } from '@/components/assessments/AddAssessmentDialog';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import { useToast } from '@/components/ui/use-toast';
 
 interface Appointment {
   id: string;
@@ -38,8 +38,63 @@ interface AppointmentDetailsDialogProps {
   onStatusUpdate?: (appointmentId: string, status: string) => void;
 }
 
+type NoteMode = 'selection' | 'write' | 'dictate' | 'ocr';
+
+const noteStructure = [
+  {
+    id: 'presenting_concerns',
+    title: '1. Presenting Concerns',
+    description: 'Concise summary of key issue(s) prompting the session/referral.'
+  },
+  {
+    id: 'presentation_mental_state',
+    title: '2. Presentation, Mental State & Affect',
+    description: 'Brief observations of mood, energy, behaviour, and emotional tone.'
+  },
+  {
+    id: 'cognitive_themes',
+    title: '3. Cognitive Themes & Thought Style',
+    description: 'Cognitive functions, distortions, insight, internal conflicts.'
+  },
+  {
+    id: 'functional_impact',
+    title: '4. Functional Impact',
+    description: 'ADLs; Work/school performance; Relationships; Role functioning'
+  },
+  {
+    id: 'psychological_history',
+    title: '5. Psychological History & Maintaining Factors',
+    description: 'Brief background and perpetuating dynamics.'
+  },
+  {
+    id: 'treatment_focus',
+    title: '6. Treatment Focus & Interventions',
+    description: 'Current modality used, strategies applied, therapeutic stance.'
+  },
+  {
+    id: 'progress_indicators',
+    title: '7. Progress Indicators (optional)',
+    description: 'Client feedback, symptom trajectory, compliance with tasks, new insight.'
+  },
+  {
+    id: 'barriers_to_change',
+    title: '8. Barriers to Change',
+    description: 'Any ambivalence, structural or internalised blocks to therapy or recovery.'
+  },
+  {
+    id: 'risk_protective_factors',
+    title: '9. Risk & Protective Factors',
+    description: 'Suicidal ideation, psychosocial strengths, medication stability'
+  },
+  {
+    id: 'plan_next_steps',
+    title: '10. Plan / Next Steps',
+    description: 'Short-term goals, upcoming focus, coordination needs, home practice.'
+  }
+];
+
 const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpdate }: AppointmentDetailsDialogProps) => {
-  const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
+  const { toast } = useToast();
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false);
   const [showSplitView, setShowSplitView] = useState(false);
   const [arrivalStatus, setArrivalStatus] = useState<'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | ''>(appointment?.arrivalStatus || '');
@@ -50,6 +105,14 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   const [consentConfirmed, setConsentConfirmed] = useState(false);
   const [dischargeReason, setDischargeReason] = useState('');
   const [followUpPlan, setFollowUpPlan] = useState('');
+
+  // Note-taking state
+  const [noteMode, setNoteMode] = useState<NoteMode>('selection');
+  const [noteData, setNoteData] = useState<Record<string, string>>({});
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   if (!appointment) return null;
 
@@ -74,6 +137,144 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   // Handle adding assessment 
   const handleAddAssessment = (assessment: any) => {
     console.log('Assessment added:', assessment);
+  };
+
+  // Note-taking helper functions
+  const handleModeSelect = (selectedMode: NoteMode) => {
+    setNoteMode(selectedMode);
+    setNoteData({});
+    setAudioFile(null);
+    setUploadedFile(null);
+  };
+
+  const handleNoteChange = (sectionId: string, value: string) => {
+    setNoteData(prev => ({
+      ...prev,
+      [sectionId]: value
+    }));
+  };
+
+  const handleRecordingToggle = () => {
+    if (isRecording) {
+      setIsRecording(false);
+      const mockAudioFile = new File([''], 'recording.wav', { type: 'audio/wav' });
+      setAudioFile(mockAudioFile);
+      toast({
+        title: "Recording stopped",
+        description: "Your recording has been saved. Click 'Summarise' to process it.",
+      });
+    } else {
+      setIsRecording(true);
+      toast({
+        title: "Recording started",
+        description: "Start speaking about your session...",
+      });
+    }
+  };
+
+  const handleSummarize = async () => {
+    setIsProcessing(true);
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    const mockSummary = {
+      presenting_concerns: "Client presents with persistent anxiety and sleep disturbances following workplace incident.",
+      presentation_mental_state: "Appeared tense, fidgety, with flat affect. Energy levels reported as low.",
+      cognitive_themes: "Evident catastrophic thinking patterns, rumination about future incidents.",
+      functional_impact: "Significant impairment in work performance, avoiding driving, strained relationships.",
+      psychological_history: "No prior mental health treatment. Recent trauma appears to be precipitating factor.",
+      treatment_focus: "CBT approach focusing on trauma processing and anxiety management techniques.",
+      progress_indicators: "Client engaged well, completed homework assignments, slight improvement noted.",
+      barriers_to_change: "Fear of retraumatization, financial stress affecting session attendance.",
+      risk_protective_factors: "No suicidal ideation. Strong family support system, stable housing.",
+      plan_next_steps: "Continue weekly sessions, introduce exposure exercises, coordinate with GP."
+    };
+    
+    setNoteData(mockSummary);
+    setIsProcessing(false);
+    
+    toast({
+      title: "Summary complete",
+      description: "AI has summarized your recording. Please review and edit as needed.",
+    });
+  };
+
+  const handleOCR = async () => {
+    if (!uploadedFile) {
+      toast({
+        title: "No file selected",
+        description: "Please upload a handwritten note file first.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+    await new Promise(resolve => setTimeout(resolve, 2500));
+    
+    const mockOCRSummary = {
+      presenting_concerns: "Anxiety, sleep issues",
+      presentation_mental_state: "Tense, low energy",
+      cognitive_themes: "Catastrophic thinking",
+      functional_impact: "Work problems, avoidance",
+      psychological_history: "First time seeking help",
+      treatment_focus: "CBT, anxiety management",
+      progress_indicators: "Good engagement",
+      barriers_to_change: "Fear, financial stress",
+      risk_protective_factors: "No SI, family support",
+      plan_next_steps: "Weekly sessions, exposure work"
+    };
+    
+    setNoteData(mockOCRSummary);
+    setIsProcessing(false);
+    
+    toast({
+      title: "OCR processing complete",
+      description: "Handwritten notes have been processed. Please review and expand as needed.",
+    });
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setUploadedFile(file);
+      toast({
+        title: "File uploaded",
+        description: `${file.name} has been uploaded. Click 'OCR' to process.`,
+      });
+    }
+  };
+
+  const handleSaveNote = () => {
+    const finalNoteData = {
+      id: `note_${Date.now()}`,
+      content: noteMode === 'write' ? Object.values(noteData).join('\n\n') : 'Structured clinical note',
+      createdBy: "Dr. Smith",
+      createdAt: new Date().toISOString(),
+      isPrivate: true,
+      visibleTo: ["psychologist", "lawyer"],
+      type: noteMode,
+      structuredData: noteData
+    };
+
+    console.log('Note saved:', finalNoteData);
+    
+    // Reset state
+    setNoteMode('selection');
+    setNoteData({});
+    setAudioFile(null);
+    setUploadedFile(null);
+    
+    toast({
+      title: "Note saved",
+      description: "Your clinical note has been saved successfully.",
+    });
+  };
+
+  const handleBackToSelection = () => {
+    setNoteMode('selection');
+    setNoteData({});
+    setAudioFile(null);
+    setUploadedFile(null);
   };
 
   const arrivalStatusOptions = [
@@ -383,53 +584,270 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                       <h3 className="text-lg font-semibold">Add Case Note</h3>
                     </div>
                     <div className="bg-white rounded-lg p-4 h-[calc(100%-4rem)] border overflow-y-auto">
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Choose how you'd like to create your case note:
-                      </p>
-                      
-                      <div className="space-y-3">
-                        <Button
-                          variant="outline"
-                          className="w-full h-12 justify-start text-left"
-                          onClick={() => setIsNotesDialogOpen(true)}
-                        >
-                          <div className="flex items-center gap-3">
-                            <MessageSquare className="w-4 h-4 text-primary" />
-                            <div>
-                              <div className="font-medium text-sm">Write your own notes</div>
-                              <div className="text-xs text-muted-foreground">Manually enter structured clinical notes</div>
-                            </div>
+                      {noteMode === 'selection' && (
+                        <>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            Choose how you'd like to create your case note:
+                          </p>
+                          
+                          <div className="space-y-3">
+                            <Button
+                              variant="outline"
+                              className="w-full h-12 justify-start text-left"
+                              onClick={() => handleModeSelect('write')}
+                            >
+                              <div className="flex items-center gap-3">
+                                <Edit className="w-4 h-4 text-primary" />
+                                <div>
+                                  <div className="font-medium text-sm">Write your own notes</div>
+                                  <div className="text-xs text-muted-foreground">Manually enter structured clinical notes</div>
+                                </div>
+                              </div>
+                            </Button>
+                            
+                            <Button
+                              variant="outline"
+                              className="w-full h-12 justify-start text-left"
+                              onClick={() => handleModeSelect('dictate')}
+                            >
+                              <div className="flex items-center gap-3">
+                                <Mic className="w-4 h-4 text-primary" />
+                                <div>
+                                  <div className="font-medium text-sm">Dictate-transcribe-summarise</div>
+                                  <div className="text-xs text-muted-foreground">Record your session and let AI structure it</div>
+                                </div>
+                              </div>
+                            </Button>
+                            
+                            <Button
+                              variant="outline"
+                              className="w-full h-12 justify-start text-left"
+                              onClick={() => handleModeSelect('ocr')}
+                            >
+                              <div className="flex items-center gap-3">
+                                <FileText className="w-4 h-4 text-primary" />
+                                <div>
+                                  <div className="font-medium text-sm">Handwritten note OCR</div>
+                                  <div className="text-xs text-muted-foreground">Upload handwritten notes for OCR processing</div>
+                                </div>
+                              </div>
+                            </Button>
                           </div>
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          className="w-full h-12 justify-start text-left"
-                          onClick={() => setIsNotesDialogOpen(true)}
-                        >
-                          <div className="flex items-center gap-3">
-                            <Mic className="w-4 h-4 text-primary" />
-                            <div>
-                              <div className="font-medium text-sm">Dictate-transcribe-summarise</div>
-                              <div className="text-xs text-muted-foreground">Record your session and let AI structure it</div>
-                            </div>
+                        </>
+                      )}
+
+                      {noteMode === 'write' && (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 mb-4">
+                            <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
+                              ← Back
+                            </Button>
+                            <span className="font-medium">Write Clinical Notes</span>
                           </div>
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          className="w-full h-12 justify-start text-left"
-                          onClick={() => setIsNotesDialogOpen(true)}
-                        >
-                          <div className="flex items-center gap-3">
-                            <FileText className="w-4 h-4 text-primary" />
-                            <div>
-                              <div className="font-medium text-sm">Handwritten note OCR</div>
-                              <div className="text-xs text-muted-foreground">Upload handwritten notes for OCR processing</div>
-                            </div>
+                          
+                          <div className="space-y-4 max-h-96 overflow-y-auto">
+                            {noteStructure.map((section) => (
+                              <div key={section.id} className="space-y-2">
+                                <label className="text-sm font-medium">{section.title}</label>
+                                <p className="text-xs text-muted-foreground">{section.description}</p>
+                                <Textarea
+                                  placeholder={`Enter notes for ${section.title.split('.')[1]?.trim()}...`}
+                                  value={noteData[section.id] || ''}
+                                  onChange={(e) => handleNoteChange(section.id, e.target.value)}
+                                  className="min-h-20"
+                                />
+                              </div>
+                            ))}
                           </div>
-                        </Button>
-                      </div>
+                          
+                          <div className="flex gap-2 pt-4">
+                            <Button variant="outline" onClick={handleBackToSelection}>
+                              Cancel
+                            </Button>
+                            <Button 
+                              onClick={handleSaveNote} 
+                              disabled={!Object.values(noteData).some(value => value.trim().length > 0)}
+                            >
+                              Save Note
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {noteMode === 'dictate' && (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 mb-4">
+                            <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
+                              ← Back
+                            </Button>
+                            <span className="font-medium">Dictate Session Notes</span>
+                          </div>
+                          
+                          <div className="text-center">
+                            <p className="text-sm text-muted-foreground mb-4">
+                              Please try to dictate this session in detail by referring to the following structure. 
+                              AI will help you to summarise the notes as per the format.
+                            </p>
+                            
+                            <Button
+                              onClick={handleRecordingToggle}
+                              variant={isRecording ? "destructive" : "default"}
+                              size="lg"
+                              className="w-32 h-32 rounded-full"
+                              disabled={isProcessing}
+                            >
+                              {isRecording ? <MicOff className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
+                            </Button>
+                            
+                            <p className="text-sm mt-2">
+                              {isRecording ? "Recording..." : "Click to start recording"}
+                            </p>
+                            
+                            {audioFile && (
+                              <div className="mt-4 p-3 bg-muted rounded-lg">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-sm">{audioFile.name}</span>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    onClick={() => setAudioFile(null)}
+                                  >
+                                    Delete
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {audioFile && !isProcessing && Object.keys(noteData).length === 0 && (
+                            <Button 
+                              onClick={handleSummarize} 
+                              className="w-full"
+                              disabled={!audioFile}
+                            >
+                              Summarise
+                            </Button>
+                          )}
+                          
+                          {isProcessing && (
+                            <div className="flex items-center justify-center py-4">
+                              <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                              <span>AI is summarising your recording...</span>
+                            </div>
+                          )}
+                          
+                          {Object.keys(noteData).length > 0 && (
+                            <div className="space-y-4 max-h-64 overflow-y-auto">
+                              {noteStructure.map((section) => (
+                                <div key={section.id} className="space-y-2">
+                                  <label className="text-sm font-medium">{section.title}</label>
+                                  <Textarea
+                                    value={noteData[section.id] || ''}
+                                    onChange={(e) => handleNoteChange(section.id, e.target.value)}
+                                    className="min-h-16"
+                                    placeholder="AI generated content will appear here..."
+                                  />
+                                </div>
+                              ))}
+                              <div className="flex gap-2 pt-4">
+                                <Button variant="outline" onClick={handleBackToSelection}>
+                                  Cancel
+                                </Button>
+                                <Button onClick={handleSaveNote}>
+                                  Save Note
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {noteMode === 'ocr' && (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 mb-4">
+                            <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
+                              ← Back
+                            </Button>
+                            <span className="font-medium">OCR Handwritten Notes</span>
+                          </div>
+                          
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+                            <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                            <div className="space-y-2">
+                              <p className="text-sm font-medium">Upload handwritten notes</p>
+                              <p className="text-xs text-muted-foreground">Supported formats: JPG, PNG, PDF</p>
+                              <Input
+                                type="file"
+                                accept="image/*,.pdf"
+                                onChange={handleFileUpload}
+                                className="max-w-xs mx-auto"
+                              />
+                            </div>
+                            
+                            {uploadedFile && (
+                              <div className="mt-4 p-3 bg-muted rounded-lg">
+                                <div className="flex items-center justify-center gap-2">
+                                  <FileText className="w-4 h-4" />
+                                  <span className="text-sm">{uploadedFile.name}</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {uploadedFile && !isProcessing && Object.keys(noteData).length === 0 && (
+                            <Button 
+                              onClick={handleOCR} 
+                              className="w-full"
+                              disabled={!uploadedFile}
+                            >
+                              <FileText className="w-4 h-4 mr-2" />
+                              OCR
+                            </Button>
+                          )}
+                          
+                          {isProcessing && (
+                            <div className="flex items-center justify-center py-4">
+                              <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                              <span>AI is processing your handwritten notes...</span>
+                            </div>
+                          )}
+                          
+                          {Object.keys(noteData).length > 0 && (
+                            <>
+                              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                <p className="text-sm text-yellow-800">
+                                  <strong>Note:</strong> Based on the recognition of handwritten notes alone, 
+                                  the AI is limited in what it can summarise, so it needs more complete input from you.
+                                </p>
+                              </div>
+                              
+                              <div className="space-y-4 max-h-64 overflow-y-auto">
+                                {noteStructure.map((section) => (
+                                  <div key={section.id} className="space-y-2">
+                                    <label className="text-sm font-medium">{section.title}</label>
+                                    <p className="text-xs text-muted-foreground">{section.description}</p>
+                                    <Textarea
+                                      value={noteData[section.id] || ''}
+                                      onChange={(e) => handleNoteChange(section.id, e.target.value)}
+                                      className="min-h-16"
+                                      placeholder="Expand on the OCR results..."
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                              
+                              <div className="flex gap-2 pt-4">
+                                <Button variant="outline" onClick={handleBackToSelection}>
+                                  Cancel
+                                </Button>
+                                <Button onClick={handleSaveNote}>
+                                  Save Note
+                                </Button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </ResizablePanel>
@@ -489,16 +907,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
         </DialogContent>
       </Dialog>
 
-      {/* Separate dialogs for Add Notes and Add Assessment */}
-      <AddNotesDialog 
-        open={isNotesDialogOpen} 
-        onOpenChange={setIsNotesDialogOpen}
-        onSave={(noteData) => {
-          console.log('Note saved:', noteData);
-          setIsNotesDialogOpen(false);
-        }}
-      />
-
+      {/* Assessment Dialog */}
       <AddAssessmentDialog 
         open={isAssessmentDialogOpen} 
         onOpenChange={setIsAssessmentDialogOpen}
