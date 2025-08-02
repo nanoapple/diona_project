@@ -63,6 +63,13 @@ interface ClientFormData {
   concessionType: string;
   openingBalance: string;
 
+  // Legal Issues
+  hasLegalIssues: boolean;
+  courtOrder: boolean;
+  detention: boolean;
+  communityService: boolean;
+  legalNotes: string;
+
   // Billing & Invoicing
   invoiceTo: string;
   emailInvoiceTo: string;
@@ -126,6 +133,11 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
     appointmentNotes: '',
     concessionType: 'None',
     openingBalance: '0.00',
+    hasLegalIssues: false,
+    courtOrder: false,
+    detention: false,
+    communityService: false,
+    legalNotes: '',
     invoiceTo: '',
     emailInvoiceTo: '',
     invoiceExtraInfo: '',
@@ -329,10 +341,10 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
         </DialogHeader>
 
         <ScrollArea className="max-h-[calc(90vh-180px)] pr-4">
-          <div className="space-y-8">
+          <div className="space-y-6">
             {/* Personal Details */}
-            <section className="space-y-4 border-b border-border pb-6">
-              <h3 className="text-lg font-semibold text-slate-700">Personal Details</h3>
+            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
+              <h3 className="text-lg font-semibold text-slate-700">1. Personal Details</h3>
               
               {/* Top row: Title, First name, Last name */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3">
@@ -556,8 +568,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Contact Information */}
-            <section className="space-y-4 border-b border-border pb-6">
-              <h3 className="text-lg font-semibold text-slate-700">Contact Information</h3>
+            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
+              <h3 className="text-lg font-semibold text-slate-700">2. Contact Information</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 <div className="space-y-2">
@@ -685,8 +697,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Communication Preferences */}
-            <section className="space-y-4 border-b border-border pb-6">
-              <h3 className="text-lg font-semibold text-slate-700">Communication Preferences</h3>
+            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
+              <h3 className="text-lg font-semibold text-slate-700">3. Communication Preferences</h3>
               
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -741,8 +753,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Consent & Privacy */}
-            <section className="space-y-4 border-b border-border pb-6">
-              <h3 className="text-lg font-semibold text-slate-700">Consent & Privacy</h3>
+            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
+              <h3 className="text-lg font-semibold text-slate-700">4. Consent & Privacy</h3>
               
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
@@ -783,8 +795,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Clinical & Case Info */}
-            <section className="space-y-4 border-b border-border pb-6">
-              <h3 className="text-lg font-semibold text-slate-700">Clinical & Case Info</h3>
+            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
+              <h3 className="text-lg font-semibold text-slate-700">5. Clinical & Case Info</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 <div className="space-y-2">
@@ -849,9 +861,69 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
               </div>
             </section>
 
+            {/* Legal Issues */}
+            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
+              <h3 className="text-lg font-semibold text-slate-700">6. Legal Issues</h3>
+              
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="has-legal-issues"
+                    checked={formData.hasLegalIssues}
+                    onCheckedChange={(checked) => updateField('hasLegalIssues', checked)}
+                  />
+                  <Label htmlFor="has-legal-issues">Client is involved in legal issues</Label>
+                </div>
+
+                {formData.hasLegalIssues && (
+                  <div className="ml-6 space-y-4 border-l-2 border-blue-200 pl-4">
+                    <div className="grid grid-cols-1 gap-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="court-order"
+                          checked={formData.courtOrder}
+                          onCheckedChange={(checked) => updateField('courtOrder', checked)}
+                        />
+                        <Label htmlFor="court-order">Court Order</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="detention"
+                          checked={formData.detention}
+                          onCheckedChange={(checked) => updateField('detention', checked)}
+                        />
+                        <Label htmlFor="detention">Detention</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="community-service"
+                          checked={formData.communityService}
+                          onCheckedChange={(checked) => updateField('communityService', checked)}
+                        />
+                        <Label htmlFor="community-service">Community Service</Label>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="legal-notes">Legal Notes</Label>
+                      <Textarea
+                        id="legal-notes"
+                        value={formData.legalNotes}
+                        onChange={(e) => updateField('legalNotes', e.target.value)}
+                        rows={3}
+                        placeholder="Additional details about legal issues..."
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+
             {/* Billing & Invoicing */}
-            <section className="space-y-4 border-b border-border pb-6">
-              <h3 className="text-lg font-semibold text-slate-700">Billing & Invoicing</h3>
+            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
+              <h3 className="text-lg font-semibold text-slate-700">7. Billing & Invoicing</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 <div className="space-y-2">
@@ -889,9 +961,9 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
 
             {/* Emergency Contact */}
             <Collapsible open={emergencyContactOpen} onOpenChange={setEmergencyContactOpen}>
-              <section className="space-y-4 border-b border-border pb-6">
+              <section className="bg-blue-50 p-6 rounded-lg space-y-4">
                 <CollapsibleTrigger className="flex items-center justify-between w-full">
-                  <h3 className="text-lg font-semibold text-slate-700">Emergency Contact</h3>
+                  <h3 className="text-lg font-semibold text-slate-700">8. Emergency Contact</h3>
                   <ChevronDown className={cn(
                     "h-4 w-4 transition-transform",
                     emergencyContactOpen && "rotate-180"
@@ -943,9 +1015,9 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
 
             {/* Referral */}
             <Collapsible open={referralOpen} onOpenChange={setReferralOpen}>
-              <section className="space-y-4">
+              <section className="bg-blue-50 p-6 rounded-lg space-y-4">
                 <CollapsibleTrigger className="flex items-center justify-between w-full">
-                  <h3 className="text-lg font-semibold text-slate-700">Referral</h3>
+                  <h3 className="text-lg font-semibold text-slate-700">9. Referral</h3>
                   <ChevronDown className={cn(
                     "h-4 w-4 transition-transform",
                     referralOpen && "rotate-180"
