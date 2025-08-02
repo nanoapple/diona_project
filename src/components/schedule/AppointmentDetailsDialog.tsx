@@ -705,19 +705,16 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                               <span className="font-medium">Write Clinical Notes</span>
                             </div>
                             
-                            {/* Toggle Button */}
-                            <div className="flex items-center gap-2">
+                            {/* Toggle Switch */}
+                            <div className="flex items-center gap-3">
                               <span className={`text-sm ${isTemplateMode ? 'font-medium' : 'text-muted-foreground'}`}>
                                 Template
                               </span>
-                              <Toggle
-                                pressed={!isTemplateMode}
-                                onPressedChange={handleToggleMode}
+                              <Switch
+                                checked={!isTemplateMode}
+                                onCheckedChange={handleToggleMode}
                                 aria-label="Toggle between template and freestyle mode"
-                                className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                              >
-                                <div className="w-4 h-4" />
-                              </Toggle>
+                              />
                               <span className={`text-sm ${!isTemplateMode ? 'font-medium' : 'text-muted-foreground'}`}>
                                 Freestyle
                               </span>
