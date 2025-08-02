@@ -6,7 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Clock, MapPin, Phone, Video, User, PlayCircle, MessageSquare, ClipboardList, Mic, FileText, MicOff, Upload, Loader2, Edit } from 'lucide-react';
+import { Toggle } from '@/components/ui/toggle';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Calendar, Clock, MapPin, Phone, Video, User, PlayCircle, MessageSquare, ClipboardList, Mic, FileText, MicOff, Upload, Loader2, Edit, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { AddAssessmentDialog } from '@/components/assessments/AddAssessmentDialog';
@@ -113,6 +115,10 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isTemplateMode, setIsTemplateMode] = useState(true);
+  const [freestyleText, setFreestyleText] = useState('');
+  const [showWarningDialog, setShowWarningDialog] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'toggle' | 'back' | null>(null);
 
   if (!appointment) return null;
 
@@ -271,10 +277,63 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   };
 
   const handleBackToSelection = () => {
+    // Check if there's any data that might be lost
+    const hasData = Object.values(noteData).some(value => value && value.trim() !== '') || 
+                   freestyleText.trim() !== '' || 
+                   audioFile || 
+                   uploadedFile;
+    
+    if (hasData) {
+      setPendingAction('back');
+      setShowWarningDialog(true);
+    } else {
+      proceedWithBack();
+    }
+  };
+
+  const proceedWithBack = () => {
     setNoteMode('selection');
     setNoteData({});
     setAudioFile(null);
     setUploadedFile(null);
+    setFreestyleText('');
+    setIsTemplateMode(true);
+    setShowWarningDialog(false);
+    setPendingAction(null);
+  };
+
+  const handleToggleMode = () => {
+    // Check if there's any data that might be lost
+    const hasData = Object.values(noteData).some(value => value && value.trim() !== '') || 
+                   freestyleText.trim() !== '';
+    
+    if (hasData) {
+      setPendingAction('toggle');
+      setShowWarningDialog(true);
+    } else {
+      proceedWithToggle();
+    }
+  };
+
+  const proceedWithToggle = () => {
+    setIsTemplateMode(!isTemplateMode);
+    setNoteData({});
+    setFreestyleText('');
+    setShowWarningDialog(false);
+    setPendingAction(null);
+  };
+
+  const handleWarningConfirm = () => {
+    if (pendingAction === 'toggle') {
+      proceedWithToggle();
+    } else if (pendingAction === 'back') {
+      proceedWithBack();
+    }
+  };
+
+  const handleWarningCancel = () => {
+    setShowWarningDialog(false);
+    setPendingAction(null);
   };
 
   const arrivalStatusOptions = [
@@ -638,27 +697,58 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
 
                       {noteMode === 'write' && (
                         <div className="space-y-4">
-                          <div className="flex items-center gap-2 mb-4">
-                            <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
-                              ← Back
-                            </Button>
-                            <span className="font-medium">Write Clinical Notes</span>
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                              <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
+                                ← Back
+                              </Button>
+                              <span className="font-medium">Write Clinical Notes</span>
+                            </div>
+                            
+                            {/* Toggle Button */}
+                            <div className="flex items-center gap-2">
+                              <span className={`text-sm ${isTemplateMode ? 'font-medium' : 'text-muted-foreground'}`}>
+                                Template
+                              </span>
+                              <Toggle
+                                pressed={!isTemplateMode}
+                                onPressedChange={handleToggleMode}
+                                aria-label="Toggle between template and freestyle mode"
+                                className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                              >
+                                <div className="w-4 h-4" />
+                              </Toggle>
+                              <span className={`text-sm ${!isTemplateMode ? 'font-medium' : 'text-muted-foreground'}`}>
+                                Freestyle
+                              </span>
+                            </div>
                           </div>
                           
-                          <div className="space-y-4 max-h-96 overflow-y-auto">
-                            {noteStructure.map((section) => (
-                              <div key={section.id} className="space-y-2">
-                                <label className="text-sm font-medium">{section.title}</label>
-                                <p className="text-xs text-muted-foreground">{section.description}</p>
-                                <Textarea
-                                  placeholder={`Enter notes for ${section.title.split('.')[1]?.trim()}...`}
-                                  value={noteData[section.id] || ''}
-                                  onChange={(e) => handleNoteChange(section.id, e.target.value)}
-                                  className="min-h-20"
-                                />
-                              </div>
-                            ))}
-                          </div>
+                          {isTemplateMode ? (
+                            <div className="space-y-4 max-h-96 overflow-y-auto">
+                              {noteStructure.map((section) => (
+                                <div key={section.id} className="space-y-2">
+                                  <label className="text-sm font-medium">{section.title}</label>
+                                  <p className="text-xs text-muted-foreground">{section.description}</p>
+                                  <Textarea
+                                    placeholder={`Enter notes for ${section.title.split('.')[1]?.trim()}...`}
+                                    value={noteData[section.id] || ''}
+                                    onChange={(e) => handleNoteChange(section.id, e.target.value)}
+                                    className="min-h-20"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              <Textarea
+                                placeholder="Write your notes in freestyle format..."
+                                value={freestyleText}
+                                onChange={(e) => setFreestyleText(e.target.value)}
+                                className="min-h-[400px] resize-none"
+                              />
+                            </div>
+                          )}
                           
                           <div className="flex gap-2 pt-4">
                             <Button variant="outline" onClick={handleBackToSelection}>
@@ -666,7 +756,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                             </Button>
                             <Button 
                               onClick={handleSaveNote} 
-                              disabled={!Object.values(noteData).some(value => value.trim().length > 0)}
+                              disabled={isTemplateMode ? !Object.values(noteData).some(value => value.trim().length > 0) : !freestyleText.trim()}
                             >
                               Save Note
                             </Button>
@@ -918,6 +1008,32 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
           age: Math.floor((new Date().getTime() - new Date(appointment.clientDOB).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
         }}
       />
+
+      {/* Warning Dialog */}
+      <AlertDialog open={showWarningDialog} onOpenChange={setShowWarningDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              Warning: Data Loss
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingAction === 'toggle' 
+                ? "Switching between Template and Freestyle modes will clear your current notes. Are you sure you want to continue?"
+                : "Going back will clear all your current note data. Are you sure you want to continue?"
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleWarningCancel}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleWarningConfirm}>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
