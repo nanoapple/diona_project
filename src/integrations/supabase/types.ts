@@ -26,6 +26,7 @@ export type Database = {
           id: string
           location: string | null
           notes: string | null
+          session_notes_count: number | null
           start_time: string
           status: string
           title: string
@@ -42,6 +43,7 @@ export type Database = {
           id?: string
           location?: string | null
           notes?: string | null
+          session_notes_count?: number | null
           start_time: string
           status?: string
           title: string
@@ -58,6 +60,7 @@ export type Database = {
           id?: string
           location?: string | null
           notes?: string | null
+          session_notes_count?: number | null
           start_time?: string
           status?: string
           title?: string
@@ -212,39 +215,55 @@ export type Database = {
       }
       case_notes: {
         Row: {
+          appointment_id: string | null
           case_silo_id: string
           content: string
           created_at: string
           created_by: string
           id: string
           is_private: boolean | null
+          metadata: Json | null
           note_type: string | null
+          template_data: Json | null
           title: string
           updated_at: string
         }
         Insert: {
+          appointment_id?: string | null
           case_silo_id: string
           content: string
           created_at?: string
           created_by: string
           id?: string
           is_private?: boolean | null
+          metadata?: Json | null
           note_type?: string | null
+          template_data?: Json | null
           title: string
           updated_at?: string
         }
         Update: {
+          appointment_id?: string | null
           case_silo_id?: string
           content?: string
           created_at?: string
           created_by?: string
           id?: string
           is_private?: boolean | null
+          metadata?: Json | null
           note_type?: string | null
+          template_data?: Json | null
           title?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "case_notes_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "case_notes_case_silo_id_fkey"
             columns: ["case_silo_id"]
