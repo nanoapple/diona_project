@@ -18,7 +18,10 @@ import {
   Mic,
   Briefcase,
   ClipboardList,
-  Calendar
+  Calendar,
+  Brain,
+  BookOpen,
+  Database
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -64,7 +67,11 @@ const Sidebar = () => {
     const commonItems = [
       { to: "/dashboard", icon: CheckSquare, label: "Dashboard" },
       { to: "/schedule", icon: Calendar, label: "Appointment" },
-      { to: "/case-silo", icon: Archive, label: "Case Silo" }
+      { to: "/clients", icon: Users, label: "Clients" },
+      { to: "/case-silo", icon: Archive, label: "Case Silo" },
+      { to: "/jitai", icon: Brain, label: "J.I.T.A.I." },
+      { to: "/knowledge", icon: BookOpen, label: "Knowledge" },
+      { to: "/service-data", icon: Database, label: "Service Data" }
     ];
 
     const roleSpecificItems = {
@@ -75,13 +82,11 @@ const Sidebar = () => {
         { to: `/interview/${defaultCaseId}`, icon: Mic, label: "Interview" },
       ],
       lawyer: [
-        { to: "/clients", icon: Users, label: "Clients" },
         { to: "/legal-tasks", icon: ClipboardList, label: "Legal Tasks" },
         { to: "/ai-assistant", icon: MessageSquare, label: "AI Assistant" },
         { to: "/documents", icon: FileText, label: "Documents" },
       ],
       psychologist: [
-        { to: "/clients", icon: Users, label: "Clients" },
         { to: "/assessments", icon: ClipboardCheck, label: "Assessments" },
         { to: "/reports", icon: Book, label: "Reports" },
       ]

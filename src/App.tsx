@@ -23,6 +23,9 @@ import ClientDetails from "./pages/ClientDetails";
 import LegalTasks from "./pages/LegalTasks";
 import Schedule from "./pages/Schedule";
 import AllAssessments from "./pages/AllAssessments";
+import JITAI from "./pages/JITAI";
+import Knowledge from "./pages/Knowledge";
+import ServiceData from "./pages/ServiceData";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +54,9 @@ const App = () => (
               <Route path="/case-silo" element={<CaseSilo />} />
               <Route path="/interview/:caseId" element={<Interview />} />
               <Route path="/schedule" element={<Schedule />} />
+              <Route path="/jitai" element={<JITAI />} />
+              <Route path="/knowledge" element={<Knowledge />} />
+              <Route path="/service-data" element={<ServiceData />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
             <Route path="*" element={<NotFound />} />
