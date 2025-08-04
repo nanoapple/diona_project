@@ -728,6 +728,34 @@ const Dashboard = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
+            <CardTitle>Scheduled Appointments</CardTitle>
+            <CardDescription>Your upcoming client appointments</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div 
+                className="cursor-pointer hover:bg-accent rounded-lg p-2 -m-2 transition-colors"
+                onClick={() => navigate('/schedule')}
+              >
+                <div className="flex justify-between items-center">
+                  <div className="font-medium">John Doe - Follow-up</div>
+                  <div className="text-muted-foreground text-xs">Today</div>
+                </div>
+                <div className="text-sm text-muted-foreground">April 19, 2023 - 3:00 PM</div>
+              </div>
+              <div>
+                <div className="flex justify-between items-center">
+                  <div className="font-medium">Jane Smith - Initial Assessment</div>
+                  <div className="text-muted-foreground text-xs">Tomorrow</div>
+                </div>
+                <div className="text-sm text-muted-foreground">April 20, 2023 - 10:00 AM</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
             <CardTitle>Assessment Requests</CardTitle>
             <CardDescription>Pending psychological assessments</CardDescription>
           </CardHeader>
@@ -786,31 +814,6 @@ const Dashboard = () => {
               <div className="flex items-center gap-1">
                 <div className="w-2 h-2 bg-gray-300 rounded-sm"></div>
                 <span>Not Started</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle>Scheduled Appointments</CardTitle>
-            <CardDescription>Your upcoming client appointments</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between items-center">
-                  <div className="font-medium">John Doe - Follow-up</div>
-                  <div className="text-muted-foreground text-xs">Today</div>
-                </div>
-                <div className="text-sm text-muted-foreground">April 19, 2023 - 3:00 PM</div>
-              </div>
-              <div>
-                <div className="flex justify-between items-center">
-                  <div className="font-medium">Jane Smith - Initial Assessment</div>
-                  <div className="text-muted-foreground text-xs">Tomorrow</div>
-                </div>
-                <div className="text-sm text-muted-foreground">April 20, 2023 - 10:00 AM</div>
               </div>
             </div>
           </CardContent>
