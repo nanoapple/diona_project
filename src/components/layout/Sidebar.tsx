@@ -64,21 +64,23 @@ const Sidebar = () => {
   const getNavItems = () => {
     const defaultCaseId = getDefaultCaseId();
     
-    const commonItems = [
+    const allItems = [
       { to: "/dashboard", icon: CheckSquare, label: "Dashboard" },
       { to: "/schedule", icon: Calendar, label: "Appointment" },
       { to: "/clients", icon: Users, label: "Clients" },
       { to: "/case-silo", icon: Archive, label: "Case Silo" },
+      { to: "/assessments", icon: ClipboardCheck, label: "Assessments" },
+      { to: "/reports", icon: Book, label: "Reports" },
       { to: "/jitai", icon: Brain, label: "J.I.T.A.I." },
       { to: "/knowledge", icon: BookOpen, label: "Knowledge" },
       { to: "/service-data", icon: Database, label: "Service Data" }
     ];
 
+    // Add role-specific items based on user role
     const roleSpecificItems = {
       claimant: [
         { to: "/ai-assistant", icon: MessageSquare, label: "AI Assistant" },
         { to: "/documents", icon: FileText, label: "Documents" },
-        { to: "/assessments", icon: ClipboardCheck, label: "Assessments" },
         { to: `/interview/${defaultCaseId}`, icon: Mic, label: "Interview" },
       ],
       lawyer: [
@@ -86,15 +88,12 @@ const Sidebar = () => {
         { to: "/ai-assistant", icon: MessageSquare, label: "AI Assistant" },
         { to: "/documents", icon: FileText, label: "Documents" },
       ],
-      psychologist: [
-        { to: "/assessments", icon: ClipboardCheck, label: "Assessments" },
-        { to: "/reports", icon: Book, label: "Reports" },
-      ]
+      psychologist: []
     };
 
     return [
-      ...commonItems,
-      ...(currentUser?.role ? roleSpecificItems[currentUser.role] : [])
+      ...allItems,
+      ...(currentUser?.role ? roleSpecificItems[currentUser.role] || [] : [])
     ];
   };
 
