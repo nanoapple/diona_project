@@ -29,7 +29,7 @@ export default function Register() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "claimant" as UserRole,
+    role: "client" as UserRole,
   });
   const [formError, setFormError] = useState("");
   
@@ -167,9 +167,10 @@ export default function Register() {
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="claimant">Claimant</SelectItem>
-                  <SelectItem value="lawyer">Lawyer</SelectItem>
-                  <SelectItem value="psychologist">Psychologist</SelectItem>
+                  <SelectItem value="client">Client</SelectItem>
+                  <SelectItem value="therapist">Therapist</SelectItem>
+                  <SelectItem value="orgadmin">Organisation Admin</SelectItem>
+                  <SelectItem value="intake">Intake Officer</SelectItem>
                 </SelectContent>
               </Select>
             </div>

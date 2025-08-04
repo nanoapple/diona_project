@@ -43,10 +43,10 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-2">
-            <span className="text-gradient">Claim</span>Collab
+            <span className="text-gradient">DIONA</span>
           </h1>
           <p className="text-muted-foreground">
-            Collaborative platform for injury claims
+            Digital & Intelligence Optimisation for Nonprofit Advancement
           </p>
         </div>
         
@@ -128,9 +128,11 @@ const Login = () => {
               <div className="text-center text-sm">
                 <p className="text-muted-foreground">
                   Demo accounts: <br />
-                  <code>client@example.com</code>, <br />
-                  <code>psychologist@example.com</code>, <br />
-                  <code>counsellor@example.com</code> <br />
+                  <code>client@example.com</code> <br />
+                  <code>therapist@example.com</code> <br />
+                  <code>orgadmin@example.com</code> <br />
+                  <code>intake@example.com</code> <br />
+                  <br />
                   Password: <code>password</code>
                 </p>
               </div>
