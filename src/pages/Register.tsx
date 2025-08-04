@@ -30,6 +30,7 @@ export default function Register() {
     password: "",
     confirmPassword: "",
     role: "client" as UserRole,
+    specialization: "",
   });
   const [formError, setFormError] = useState("");
   
@@ -48,6 +49,14 @@ export default function Register() {
     setFormData({
       ...formData,
       role: value,
+      specialization: value === "therapist" ? formData.specialization : "",
+    });
+  };
+
+  const handleSpecializationChange = (value: string) => {
+    setFormData({
+      ...formData,
+      specialization: value,
     });
   };
 
@@ -174,6 +183,32 @@ export default function Register() {
                 </SelectContent>
               </Select>
             </div>
+            {formData.role === "therapist" && (
+              <div className="space-y-2">
+                <Label htmlFor="specialization">Specialization</Label>
+                <Select
+                  value={formData.specialization}
+                  onValueChange={handleSpecializationChange}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select specialization" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="art-therapy">Art therapy</SelectItem>
+                    <SelectItem value="counselling">Counselling</SelectItem>
+                    <SelectItem value="physiology">Physiology</SelectItem>
+                    <SelectItem value="genetic-counselling">Genetic counselling</SelectItem>
+                    <SelectItem value="music-therapy">Music therapy</SelectItem>
+                    <SelectItem value="nutrition-dietetics">Nutrition and dietetics</SelectItem>
+                    <SelectItem value="occupational-therapy">Occupational therapy</SelectItem>
+                    <SelectItem value="physiotherapy">Physiotherapy</SelectItem>
+                    <SelectItem value="psychology">Psychology</SelectItem>
+                    <SelectItem value="social-work">Social work</SelectItem>
+                    <SelectItem value="speech-pathology">Speech pathology</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </CardContent>
           <CardFooter className="flex flex-col">
             <Button type="submit" className="w-full" disabled={loading}>

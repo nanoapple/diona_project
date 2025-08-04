@@ -17,7 +17,7 @@ export interface Case {
 }
 
 // User role type
-export type UserRole = 'admin' | 'lawyer' | 'psychologist' | 'claimant';
+export type UserRole = 'admin' | 'lawyer' | 'psychologist' | 'claimant' | 'client' | 'therapist' | 'orgadmin' | 'intake';
 
 // Define ClaimStage type for CaseSilo
 export type ClaimStage = 

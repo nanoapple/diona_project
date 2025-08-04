@@ -76,12 +76,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           company: "Smith & Associates",
           title: "Senior Partner"
         },
-        "psychologist@example.com": {
-          id: "psych1",
-          email: "psychologist@example.com",
+        "therapist@example.com": {
+          id: "therapist1",
+          email: "therapist@example.com",
           name: "Dr. Emma Wilson",
-          role: "psychologist",
-          avatar: "https://i.pravatar.cc/150?u=psych",
+          role: "therapist",
+          avatar: "https://i.pravatar.cc/150?u=therapist",
           company: "Mind Wellness Clinic",
           title: "Clinical Psychologist"
         },
@@ -91,6 +91,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           name: "Sarah Johnson",
           role: "claimant",
           avatar: "https://i.pravatar.cc/150?u=client"
+        },
+        "client@example.com": {
+          id: "client2",
+          email: "client@example.com",
+          name: "Sarah Johnson",
+          role: "client",
+          avatar: "https://i.pravatar.cc/150?u=client"
+        },
+        "orgadmin@example.com": {
+          id: "orgadmin1",
+          email: "orgadmin@example.com",
+          name: "Admin User",
+          role: "orgadmin",
+          avatar: "https://i.pravatar.cc/150?u=orgadmin"
+        },
+        "intake@example.com": {
+          id: "intake1",
+          email: "intake@example.com",
+          name: "John Smith",
+          role: "intake",
+          avatar: "https://i.pravatar.cc/150?u=intake",
+          company: "Intake Services",
+          title: "Intake Officer"
         }
       };
 
