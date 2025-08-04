@@ -75,6 +75,7 @@ const progressStages = [
 const getTasksForStage = (stageIndex: number, userRole: string) => {
   switch(userRole) {
     case 'claimant':
+    case 'client':
       switch(stageIndex) {
         case 0: // Intake & Triage
           return [
@@ -146,6 +147,7 @@ const getTasksForStage = (stageIndex: number, userRole: string) => {
           return [];
       }
     case 'psychologist':
+    case 'therapist':
       switch(stageIndex) {
         case 0: // Intake & Triage
           return [
@@ -904,11 +906,16 @@ const Dashboard = () => {
 
     switch (currentUser?.role) {
       case 'claimant':
+      case 'client':
         return renderClaimantDashboard();
       case 'lawyer':
         return renderLawyerDashboard();
       case 'psychologist':
+      case 'therapist':
         return renderPsychologistDashboard();
+      case 'orgadmin':
+      case 'intake':
+        return renderLawyerDashboard(); // Show lawyer dashboard for admin roles
       default:
         return <div>Invalid user role</div>;
     }

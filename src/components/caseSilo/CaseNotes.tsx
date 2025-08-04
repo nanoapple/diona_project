@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Plus, Eye, EyeOff } from "lucide-react";
-import { CaseNote } from "@/types";
+import { CaseNote, UserRole } from "@/types";
 import { useToast } from "@/components/ui/use-toast";
 import CaseNoteItem from './CaseNoteItem';
 import NoteVerificationDialog from './NoteVerificationDialog';
@@ -14,7 +14,7 @@ interface CaseNotesProps {
   canView: boolean;
   canCreate: boolean;
   onCreateItem: () => void;
-  currentUserRole?: "admin" | "lawyer" | "psychologist" | "claimant";
+  currentUserRole?: UserRole;
 }
 
 // Sample clinical notes for demo purposes
@@ -88,7 +88,7 @@ const CaseNotes = ({ notes, canView, canCreate, onCreateItem, currentUserRole }:
     // If showing private notes and user can view them and their role is allowed to see this note
     return showPrivateNotes && 
            canView && 
-           note.visibleTo?.includes(currentUserRole as "admin" | "lawyer" | "psychologist" | "claimant");
+           note.visibleTo?.includes(currentUserRole as any);
   });
 
   const handleNoteClick = (note: CaseNote) => {
