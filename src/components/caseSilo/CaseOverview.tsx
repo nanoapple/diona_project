@@ -63,7 +63,7 @@ const getTagColorVariant = (tag: string) => {
 };
 
 const CaseOverview = ({ caseData }: CaseOverviewProps) => {
-  const [selectedFramework, setSelectedFramework] = useState("Bio-Psy-Soc");
+  const [selectedFramework, setSelectedFramework] = useState("5P model");
   const [showEditDialog, setShowEditDialog] = useState(false);
   
   // Framework data state
@@ -73,12 +73,12 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
       psychological: "He meets criteria for PTSD, with symptoms including intrusive thoughts, avoidance, emotional numbing, and hyperarousal. He also shows signs of depression and anxiety, along with cognitive distortions such as self-blame and catastrophic thinking. Coping is largely avoidant, and motivation to engage fully in therapy remains low.",
       social: "Michael lives alone and has become socially isolated. While he maintains remote contact with family, he has disengaged from church and community roles. Financial stress and cultural stigma about mental health contribute to feelings of shame and reinforce his withdrawal from social and spiritual supports."
     },
-    'WHO-ICF': {
-      bodyFunctions: "PTSD symptoms, disrupted sleep, chronic pain, emotional dysregulation",
-      activities: "Avoids driving, withdrawn from social and religious roles, unemployed",
-      participation: "Ceased volunteering, disengaged from community and church",
-      environmental: "Family support (remote), cultural stigma, insurance stress, spiritual disconnect",
-      personal: "Male, 34, Eastern Orthodox, identity loss, ambivalence about help-seeking"
+    '5P model': {
+      predisposing: "History of childhood trauma, genetic predisposition to anxiety, cultural stigma around mental health help-seeking",
+      precipitating: "Motor vehicle accident 6 months ago, work injury with ongoing bullying, recent financial stress",
+      perpetuating: "Avoidance behaviors, social isolation, inconsistent medication adherence, ongoing legal proceedings",
+      protective: "Strong family relationships (remote), spiritual/religious beliefs, stable housing, some insight into condition",
+      presenting: "PTSD symptoms following motor vehicle accident, depression, anxiety, chronic pain, sleep disturbances"
     },
     'PERMA+V': {
       positiveEmotions: { rating: 3, comment: "Brief moments of peace during prayer; otherwise low affect" },
@@ -140,37 +140,37 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
     const currentData = frameworkData[selectedFramework as keyof typeof frameworkData];
     
     switch (selectedFramework) {
-      case "WHO-ICF":
-        const whoData = currentData as { bodyFunctions: string; activities: string; participation: string; environmental: string; personal: string; };
+      case "5P model":
+        const fivePData = currentData as { predisposing: string; precipitating: string; perpetuating: string; protective: string; presenting: string; };
         return (
           <div>
             <Table>
               <TableHeader>
                 <TableRow className="h-10">
-                  <TableHead className="w-1/3 py-2">Domain</TableHead>
-                  <TableHead className="py-2">Summary</TableHead>
+                  <TableHead className="w-1/3 py-2">Factor</TableHead>
+                  <TableHead className="py-2">Description</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell className="font-medium py-3">Body Functions</TableCell>
-                  <TableCell className="py-3">{whoData.bodyFunctions}</TableCell>
+                  <TableCell className="font-medium py-3">Predisposing Factors</TableCell>
+                  <TableCell className="py-3">{fivePData.predisposing}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium py-3">Activities</TableCell>
-                  <TableCell className="py-3">{whoData.activities}</TableCell>
+                  <TableCell className="font-medium py-3">Precipitating Factors</TableCell>
+                  <TableCell className="py-3">{fivePData.precipitating}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium py-3">Participation</TableCell>
-                  <TableCell className="py-3">{whoData.participation}</TableCell>
+                  <TableCell className="font-medium py-3">Perpetuating Factors</TableCell>
+                  <TableCell className="py-3">{fivePData.perpetuating}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium py-3">Environmental Factors</TableCell>
-                  <TableCell className="py-3">{whoData.environmental}</TableCell>
+                  <TableCell className="font-medium py-3">Protective Factors</TableCell>
+                  <TableCell className="py-3">{fivePData.protective}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium py-3">Personal Factors</TableCell>
-                  <TableCell className="py-3">{whoData.personal}</TableCell>
+                  <TableCell className="font-medium py-3">Presenting Problem</TableCell>
+                  <TableCell className="py-3">{fivePData.presenting}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -311,8 +311,8 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
                 onValueChange={setSelectedFramework}
                 className="justify-start"
               >
-                <ToggleGroupItem value="WHO-ICF" aria-label="WHO-ICF Framework">
-                  WHO-ICF
+                <ToggleGroupItem value="5P model" aria-label="5P Model Framework">
+                  5P model
                 </ToggleGroupItem>
                 <ToggleGroupItem value="Bio-Psy-Soc" aria-label="Bio-Psycho-Social Framework">
                   Bio-Psy-Soc
@@ -409,7 +409,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
       <EditFrameworkDialog
         open={showEditDialog}
         onOpenChange={setShowEditDialog}
-        framework={selectedFramework as 'WHO-ICF' | 'Bio-Psy-Soc' | 'PERMA+V'}
+        framework={selectedFramework as '5P model' | 'Bio-Psy-Soc' | 'PERMA+V'}
         data={frameworkData[selectedFramework as keyof typeof frameworkData]}
         onSave={handleFrameworkSave}
       />

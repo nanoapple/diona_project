@@ -10,7 +10,7 @@ import { toast } from "@/components/ui/use-toast";
 interface EditFrameworkDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  framework: 'WHO-ICF' | 'Bio-Psy-Soc' | 'PERMA+V';
+  framework: '5P model' | 'Bio-Psy-Soc' | 'PERMA+V';
   data: any;
   onSave: (updatedData: any) => void;
 }
@@ -67,54 +67,54 @@ const EditFrameworkDialog = ({ open, onOpenChange, framework, data, onSave }: Ed
     </div>
   );
 
-  const renderWHOICFEdit = () => (
+  const render5PModelEdit = () => (
     <div className="space-y-4">
       <div>
-        <Label htmlFor="bodyFunctions">Body Functions</Label>
+        <Label htmlFor="predisposing">Predisposing Factors</Label>
         <Textarea
-          id="bodyFunctions"
-          value={editData.bodyFunctions || ''}
-          onChange={(e) => setEditData({...editData, bodyFunctions: e.target.value})}
+          id="predisposing"
+          value={editData.predisposing || ''}
+          onChange={(e) => setEditData({...editData, predisposing: e.target.value})}
           className="mt-1"
           rows={3}
         />
       </div>
       <div>
-        <Label htmlFor="activities">Activities</Label>
+        <Label htmlFor="precipitating">Precipitating Factors</Label>
         <Textarea
-          id="activities"
-          value={editData.activities || ''}
-          onChange={(e) => setEditData({...editData, activities: e.target.value})}
+          id="precipitating"
+          value={editData.precipitating || ''}
+          onChange={(e) => setEditData({...editData, precipitating: e.target.value})}
           className="mt-1"
           rows={3}
         />
       </div>
       <div>
-        <Label htmlFor="participation">Participation</Label>
+        <Label htmlFor="perpetuating">Perpetuating Factors</Label>
         <Textarea
-          id="participation"
-          value={editData.participation || ''}
-          onChange={(e) => setEditData({...editData, participation: e.target.value})}
+          id="perpetuating"
+          value={editData.perpetuating || ''}
+          onChange={(e) => setEditData({...editData, perpetuating: e.target.value})}
           className="mt-1"
           rows={3}
         />
       </div>
       <div>
-        <Label htmlFor="environmental">Environmental Factors</Label>
+        <Label htmlFor="protective">Protective Factors</Label>
         <Textarea
-          id="environmental"
-          value={editData.environmental || ''}
-          onChange={(e) => setEditData({...editData, environmental: e.target.value})}
+          id="protective"
+          value={editData.protective || ''}
+          onChange={(e) => setEditData({...editData, protective: e.target.value})}
           className="mt-1"
           rows={3}
         />
       </div>
       <div>
-        <Label htmlFor="personal">Personal Factors</Label>
+        <Label htmlFor="presenting">Presenting Problem</Label>
         <Textarea
-          id="personal"
-          value={editData.personal || ''}
-          onChange={(e) => setEditData({...editData, personal: e.target.value})}
+          id="presenting"
+          value={editData.presenting || ''}
+          onChange={(e) => setEditData({...editData, presenting: e.target.value})}
           className="mt-1"
           rows={3}
         />
@@ -324,7 +324,7 @@ const EditFrameworkDialog = ({ open, onOpenChange, framework, data, onSave }: Ed
         
         <div className="mt-4">
           {framework === 'Bio-Psy-Soc' && renderBioPsySocEdit()}
-          {framework === 'WHO-ICF' && renderWHOICFEdit()}
+          {framework === '5P model' && render5PModelEdit()}
           {framework === 'PERMA+V' && renderPERMAVEdit()}
         </div>
 
