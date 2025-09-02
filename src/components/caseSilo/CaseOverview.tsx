@@ -144,16 +144,6 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         const whoData = currentData as { bodyFunctions: string; activities: string; participation: string; environmental: string; personal: string; };
         return (
           <div>
-            <div className="flex justify-end mb-2">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setShowEditDialog(true)}
-                className="p-1 h-auto"
-              >
-                <Edit className="w-4 h-4" />
-              </Button>
-            </div>
             <Table>
               <TableHeader>
                 <TableRow className="h-10">
@@ -191,16 +181,6 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         const bioData = currentData as { biological: string; psychological: string; social: string; };
         return (
           <div>
-            <div className="flex justify-end mb-2">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setShowEditDialog(true)}
-                className="p-1 h-auto"
-              >
-                <Edit className="w-4 h-4" />
-              </Button>
-            </div>
             <Table>
               <TableHeader>
                 <TableRow className="h-10">
@@ -237,16 +217,6 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         };
         return (
           <div>
-            <div className="flex justify-end mb-2">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setShowEditDialog(true)}
-                className="p-1 h-auto"
-              >
-                <Edit className="w-4 h-4" />
-              </Button>
-            </div>
             <Table>
               <TableHeader>
                 <TableRow className="h-10">
@@ -334,22 +304,33 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
           
           {/* Framework content with tables */}
           <div className="p-3 border rounded-md bg-muted/30">
-            <ToggleGroup 
-              type="single" 
-              value={selectedFramework} 
-              onValueChange={setSelectedFramework}
-              className="justify-start mb-3"
-            >
-              <ToggleGroupItem value="WHO-ICF" aria-label="WHO-ICF Framework">
-                WHO-ICF
-              </ToggleGroupItem>
-              <ToggleGroupItem value="Bio-Psy-Soc" aria-label="Bio-Psycho-Social Framework">
-                Bio-Psy-Soc
-              </ToggleGroupItem>
-              <ToggleGroupItem value="PERMA+V" aria-label="PERMA+V Framework">
-                PERMA+V
-              </ToggleGroupItem>
-            </ToggleGroup>
+            <div className="flex items-center justify-between mb-3">
+              <ToggleGroup 
+                type="single" 
+                value={selectedFramework} 
+                onValueChange={setSelectedFramework}
+                className="justify-start"
+              >
+                <ToggleGroupItem value="WHO-ICF" aria-label="WHO-ICF Framework">
+                  WHO-ICF
+                </ToggleGroupItem>
+                <ToggleGroupItem value="Bio-Psy-Soc" aria-label="Bio-Psycho-Social Framework">
+                  Bio-Psy-Soc
+                </ToggleGroupItem>
+                <ToggleGroupItem value="PERMA+V" aria-label="PERMA+V Framework">
+                  PERMA+V
+                </ToggleGroupItem>
+              </ToggleGroup>
+              
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowEditDialog(true)}
+                className="p-1 h-auto"
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+            </div>
             
             {renderFrameworkContent()}
           </div>
