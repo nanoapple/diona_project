@@ -356,6 +356,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         
         {/* Right side - Client Genogram */}
         <div>
+          <h3 className="text-lg font-medium mb-3">Client Genogram</h3>
           <ClientGenogram clientId={caseData.id} />
         </div>
       </div>
