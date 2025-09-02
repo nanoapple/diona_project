@@ -144,8 +144,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         const whoData = currentData as { bodyFunctions: string; activities: string; participation: string; environmental: string; personal: string; };
         return (
           <div>
-            <div className="flex justify-between items-center mb-2">
-              <h4 className="text-md font-medium">WHO-ICF Snapshot</h4>
+            <div className="flex justify-end mb-2">
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -192,8 +191,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         const bioData = currentData as { biological: string; psychological: string; social: string; };
         return (
           <div>
-            <div className="flex justify-between items-center mb-2">
-              <h4 className="text-md font-medium">Biopsychosocial Summary – {caseData.claimantName}</h4>
+            <div className="flex justify-end mb-2">
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -239,8 +237,7 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
         };
         return (
           <div>
-            <div className="flex justify-between items-center mb-2">
-              <h4 className="text-md font-medium">PERMA+V Profile</h4>
+            <div className="flex justify-end mb-2">
               <Button 
                 variant="ghost" 
                 size="sm" 
