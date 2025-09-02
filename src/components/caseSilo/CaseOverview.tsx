@@ -89,21 +89,10 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
     }
   });
 
-  const getCaseProgress = (caseData: CaseSilo) => {
-    // Calculate progress based on documents, assessments and reports
-    const totalItems = 
-      caseData.documents.length + 
-      caseData.assessments.length + 
-      caseData.reports.length;
-    
-    // Count completed items
-    const completedAssessments = caseData.assessments.filter(a => a.status === 'completed').length;
-    const completedReports = caseData.reports.filter(r => r.status === 'completed').length;
-    
-    // Documents are always considered "completed" once uploaded
-    const completedItems = caseData.documents.length + completedAssessments + completedReports;
-    
-    return totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+  const getSessionCount = (caseData: CaseSilo) => {
+    // Calculate sessions based on case notes and appointments
+    // For now, return a mock value - in real app, this would come from appointments or session records
+    return Math.floor(Math.random() * 20) + 5; // Mock: 5-25 sessions
   };
 
   const renderTimelineItem = (item: any, type: string) => {
@@ -310,126 +299,66 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        {/* Case Summary - 2/5 width */}
-        <div className="md:col-span-2">
-          <h3 className="text-lg font-medium mb-3">Case Summary</h3>
-          <div className="space-y-3">
-            {/* Status field */}
-            <div className="flex justify-between p-2 bg-muted/20 rounded-md">
-              <span className="font-medium">Status</span>
-              <Badge variant={caseData.status === "active" ? "default" : "outline"}>
-                {caseData.status === "active" ? "Active" : "Expired"}
-              </Badge>
-            </div>
-            <div className="flex justify-between p-2 bg-muted/20 rounded-md">
-              <span className="font-medium">Created</span>
-              <span>{formatDate(caseData.createdDate)}</span>
-            </div>
-            <div className="flex justify-between p-2 bg-muted/20 rounded-md">
-              <span className="font-medium">Expiry</span>
-              <span>{formatDate(caseData.expiryDate)}</span>
-            </div>
-            <div className="flex justify-between p-2 bg-muted/20 rounded-md">
-              <span className="font-medium">Case Progress</span>
-              <span>{getCaseProgress(caseData)}%</span>
-            </div>
+    <div className="space-y-6">
+      {/* Case Summary - Full width */}
+      <div>
+        <h3 className="text-lg font-medium mb-3">Case Summary</h3>
+        <div className="grid grid-cols-3 gap-4">
+          {/* Status */}
+          <div className="flex flex-col items-center p-4 bg-muted/20 rounded-md">
+            <span className="text-sm font-medium text-muted-foreground mb-2">Status</span>
+            <Badge variant={caseData.status === "active" ? "default" : "outline"}>
+              {caseData.status === "active" ? "Active" : "Expired"}
+            </Badge>
           </div>
+          
+          {/* Created */}
+          <div className="flex flex-col items-center p-4 bg-muted/20 rounded-md">
+            <span className="text-sm font-medium text-muted-foreground mb-2">Created</span>
+            <span className="font-medium">{formatDate(caseData.createdDate)}</span>
+          </div>
+          
+          {/* No. of Sessions */}
+          <div className="flex flex-col items-center p-4 bg-muted/20 rounded-md">
+            <span className="text-sm font-medium text-muted-foreground mb-2">No. of Sessions</span>
+            <span className="font-medium text-2xl">{getSessionCount(caseData)}</span>
+          </div>
+        </div>
+      </div>
 
-          {/* Key Participants moved below Case Summary */}
-          <div className="mt-6">
-            <h3 className="text-lg font-medium mb-3">Key Participants</h3>
-            <div className="space-y-3">
-              {/* Core participants side-by-side */}
-              <div className="grid grid-cols-2 gap-3">
-                {/* Client */}
-                <div className="p-3 border rounded-md bg-primary/5 border-primary/20 shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">C</div>
-                    <div>
-                      <p className="font-medium">{caseData.claimantName}</p>
-                      <p className="text-xs text-muted-foreground">Claimant</p>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Practitioner */}
-                <div className="p-3 border rounded-md bg-primary/5 border-primary/20 shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">P</div>
-                    <div>
-                      <p className="font-medium">Psychologist Name</p>
-                      <p className="text-xs text-muted-foreground">Clinical Psychologist</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Other participants below */}
-              <div className="space-y-2">
-                {/* Lawyer */}
-                <div className="p-3 border rounded-md">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground font-medium">L</div>
-                    <div>
-                      <p className="font-medium">Lawyer Name</p>
-                      <p className="text-xs text-muted-foreground">Legal Representative</p>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* External contributors */}
-                {caseData.participants?.others && caseData.participants.others.length > 0 && 
-                  caseData.participants.others.map((contributor, index) => (
-                    <div key={contributor.id} className="p-3 border rounded-md">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground font-medium">
-                          {contributor.role.charAt(0)}
-                        </div>
-                        <div>
-                          <p className="font-medium">{contributor.email.split('@')[0]}</p>
-                          <p className="text-xs text-muted-foreground">{contributor.role}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                }
-              </div>
-            </div>
+      {/* Functioning Profile & Wellbeing Matrix - 50% width */}
+      <div className="grid grid-cols-2 gap-6">
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-lg font-medium">Functioning Profile & Wellbeing Matrix</h3>
+            <span className="text-sm text-muted-foreground">Last updated: 03-Mar-2025</span>
+          </div>
+          <ToggleGroup 
+            type="single" 
+            value={selectedFramework} 
+            onValueChange={setSelectedFramework}
+            className="justify-start mb-3"
+          >
+            <ToggleGroupItem value="WHO-ICF" aria-label="WHO-ICF Framework">
+              WHO-ICF
+            </ToggleGroupItem>
+            <ToggleGroupItem value="Bio-Psy-Soc" aria-label="Bio-Psycho-Social Framework">
+              Bio-Psy-Soc
+            </ToggleGroupItem>
+            <ToggleGroupItem value="PERMA+V" aria-label="PERMA+V Framework">
+              PERMA+V
+            </ToggleGroupItem>
+          </ToggleGroup>
+          
+          {/* Framework content with tables */}
+          <div className="p-3 border rounded-md bg-muted/30">
+            {renderFrameworkContent()}
           </div>
         </div>
         
-        {/* Right column - 3/5 width */}
-        <div className="md:col-span-3">
-          {/* Tri-state Toggle Button */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-medium">Functioning Profile & Wellbeing Matrix</h3>
-              <span className="text-sm text-muted-foreground">Last updated: 03-Mar-2025</span>
-            </div>
-            <ToggleGroup 
-              type="single" 
-              value={selectedFramework} 
-              onValueChange={setSelectedFramework}
-              className="justify-start"
-            >
-              <ToggleGroupItem value="WHO-ICF" aria-label="WHO-ICF Framework">
-                WHO-ICF
-              </ToggleGroupItem>
-              <ToggleGroupItem value="Bio-Psy-Soc" aria-label="Bio-Psycho-Social Framework">
-                Bio-Psy-Soc
-              </ToggleGroupItem>
-              <ToggleGroupItem value="PERMA+V" aria-label="PERMA+V Framework">
-                PERMA+V
-              </ToggleGroupItem>
-            </ToggleGroup>
-            
-            {/* Framework content with tables */}
-            <div className="mt-3 p-3 border rounded-md bg-muted/30">
-              {renderFrameworkContent()}
-            </div>
-          </div>
+        {/* Right side - Left blank for now */}
+        <div>
+          {/* This space is intentionally left blank */}
         </div>
       </div>
       
