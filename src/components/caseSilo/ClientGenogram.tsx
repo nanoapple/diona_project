@@ -35,13 +35,37 @@ const ClientGenogram = ({ clientId }: ClientGenogramProps) => {
         setLoading(true);
         setError(null);
         
-        const response = await fetch(`/api/genogram/${clientId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch genogram data');
-        }
+        // Mock data for now - replace with actual API call when backend is ready
+        const mockData: GenogramData = {
+          mermaid_code: `graph TD
+    %% Family of origin
+    Father[Father ♂] -.distant.-> Client[Client ♂<br/>Migrant, Depression, Bipolar hx, Smoker]
+    Mother((Mother ♀)) -.distant.-> Client
+    Brother[Brother ♂] -.distant.-> Client
+
+    %% First marriage (distant)
+    Client -.distant.-> ExWife((Ex-Wife ♀))
+    ExWife --- Son1[Son 1 ♂]
+    ExWife --- Son2[Son 2 ♂]
+
+    %% Current partner (normal)
+    Client --- Partner((Current Partner ♀))
+    Partner --- StepDaughter((Stepdaughter ♀))
+
+    %% Life events
+    Work[Work injury<br/>10 months ago<br/>Bullying] -->|Abuse| Client
+    Accident[Car accident<br/>Recent] ---|Current issue| Client
+    
+    %% Styles
+    style Client fill:#fdd,stroke:#f66,stroke-width:2px
+    style Work fill:#ffd,stroke:#fc3
+    style Accident fill:#ffd,stroke:#f93,stroke-width:4px`
+        };
         
-        const data: GenogramData = await response.json();
-        setGenogramData(data);
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        setGenogramData(mockData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -77,16 +101,37 @@ const ClientGenogram = ({ clientId }: ClientGenogramProps) => {
   const handleRetry = () => {
     setError(null);
     setLoading(true);
-    // Trigger re-fetch by updating a dependency
+    // Trigger re-fetch with mock data
     const fetchGenogram = async () => {
       try {
-        const response = await fetch(`/api/genogram/${clientId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch genogram data');
-        }
+        const mockData: GenogramData = {
+          mermaid_code: `graph TD
+    %% Family of origin
+    Father[Father ♂] -.distant.-> Client[Client ♂<br/>Migrant, Depression, Bipolar hx, Smoker]
+    Mother((Mother ♀)) -.distant.-> Client
+    Brother[Brother ♂] -.distant.-> Client
+
+    %% First marriage (distant)
+    Client -.distant.-> ExWife((Ex-Wife ♀))
+    ExWife --- Son1[Son 1 ♂]
+    ExWife --- Son2[Son 2 ♂]
+
+    %% Current partner (normal)
+    Client --- Partner((Current Partner ♀))
+    Partner --- StepDaughter((Stepdaughter ♀))
+
+    %% Life events
+    Work[Work injury<br/>10 months ago<br/>Bullying] -->|Abuse| Client
+    Accident[Car accident<br/>Recent] ---|Current issue| Client
+    
+    %% Styles
+    style Client fill:#fdd,stroke:#f66,stroke-width:2px
+    style Work fill:#ffd,stroke:#fc3
+    style Accident fill:#ffd,stroke:#f93,stroke-width:4px`
+        };
         
-        const data: GenogramData = await response.json();
-        setGenogramData(data);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setGenogramData(mockData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
