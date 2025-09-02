@@ -30,8 +30,9 @@ const Index = () => {
       </nav>
 
       {/* Hero Section */}
-      <div className="flex-grow bg-gradient-to-br from-primary via-primary to-primary/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
+      <div className="relative flex-grow bg-center bg-no-repeat bg-cover" style={{ backgroundImage: "url('/lovable-uploads/bb1e4279-c615-4dee-ba56-7d958a6eed40.png')" }}>
+        <div className="absolute inset-0 bg-primary/60" aria-hidden="true" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
             <div className="lg:col-span-7 lg:text-left">
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-primary-foreground mb-6 leading-tight">
@@ -54,7 +55,7 @@ const Index = () => {
                   </Button>
                 </Link>
                 <Link to="/login">
-                  <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 px-8 py-3 text-lg">
+                  <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 text-lg">
                     Learn More
                   </Button>
                 </Link>
