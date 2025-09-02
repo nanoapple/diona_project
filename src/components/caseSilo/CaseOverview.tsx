@@ -331,25 +331,26 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
             <h3 className="text-lg font-medium">Functioning Profile & Wellbeing Matrix</h3>
             <span className="text-sm text-muted-foreground">Last updated: 03-Mar-2025</span>
           </div>
-          <ToggleGroup 
-            type="single" 
-            value={selectedFramework} 
-            onValueChange={setSelectedFramework}
-            className="justify-start mb-3"
-          >
-            <ToggleGroupItem value="WHO-ICF" aria-label="WHO-ICF Framework">
-              WHO-ICF
-            </ToggleGroupItem>
-            <ToggleGroupItem value="Bio-Psy-Soc" aria-label="Bio-Psycho-Social Framework">
-              Bio-Psy-Soc
-            </ToggleGroupItem>
-            <ToggleGroupItem value="PERMA+V" aria-label="PERMA+V Framework">
-              PERMA+V
-            </ToggleGroupItem>
-          </ToggleGroup>
           
           {/* Framework content with tables */}
           <div className="p-3 border rounded-md bg-muted/30">
+            <ToggleGroup 
+              type="single" 
+              value={selectedFramework} 
+              onValueChange={setSelectedFramework}
+              className="justify-start mb-3"
+            >
+              <ToggleGroupItem value="WHO-ICF" aria-label="WHO-ICF Framework">
+                WHO-ICF
+              </ToggleGroupItem>
+              <ToggleGroupItem value="Bio-Psy-Soc" aria-label="Bio-Psycho-Social Framework">
+                Bio-Psy-Soc
+              </ToggleGroupItem>
+              <ToggleGroupItem value="PERMA+V" aria-label="PERMA+V Framework">
+                PERMA+V
+              </ToggleGroupItem>
+            </ToggleGroup>
+            
             {renderFrameworkContent()}
           </div>
         </div>
