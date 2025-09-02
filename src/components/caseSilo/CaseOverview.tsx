@@ -8,6 +8,7 @@ import { formatDate } from "@/lib/utils";
 import { FileText, ClipboardCheck, Book, MessageSquare, Edit } from "lucide-react";
 import { useState } from "react";
 import EditFrameworkDialog from "./EditFrameworkDialog";
+import ClientGenogram from "./ClientGenogram";
 
 interface CaseOverviewProps {
   caseData: CaseSilo;
@@ -356,9 +357,9 @@ const CaseOverview = ({ caseData }: CaseOverviewProps) => {
           </div>
         </div>
         
-        {/* Right side - Left blank for now */}
+        {/* Right side - Client Genogram */}
         <div>
-          {/* This space is intentionally left blank */}
+          <ClientGenogram clientId={caseData.id} />
         </div>
       </div>
       
