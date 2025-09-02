@@ -7,21 +7,21 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navigation */}
-      <nav className="bg-white">
+      <nav className="bg-white border-b border-border/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex-shrink-0 flex items-center">
-              <h1 className="text-2xl font-bold text-blue-600">
+              <h1 className="text-2xl font-bold text-primary">
                 Diona
               </h1>
             </div>
             <div className="hidden md:block">
               <div className="flex items-center space-x-4">
                 <Link to="/login">
-                  <Button variant="ghost" className="text-gray-700 hover:text-gray-900">Login</Button>
+                  <Button variant="ghost" className="text-foreground/70 hover:text-foreground">Login</Button>
                 </Link>
                 <Link to="/register">
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white">Register</Button>
+                  <Button className="bg-accent text-accent-foreground hover:bg-accent/90">Register</Button>
                 </Link>
               </div>
             </div>
@@ -30,18 +30,18 @@ const Index = () => {
       </nav>
 
       {/* Hero Section */}
-      <div className="flex-grow bg-gradient-to-br from-purple-600 via-blue-600 to-purple-700">
+      <div className="flex-grow bg-gradient-to-br from-primary via-primary to-primary/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
             <div className="lg:col-span-7 lg:text-left">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6 leading-tight">
-                <span className="text-blue-200">D</span>ata and<br />
-                <span className="text-blue-200">I</span>ntelligence<br />
-                <span className="text-blue-200">O</span>ptimisation for<br />
-                <span className="text-blue-200">N</span>onprofit<br />
-                <span className="text-blue-200">A</span>dvancement
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-primary-foreground mb-6 leading-tight">
+                <span className="text-accent">D</span>ata and<br />
+                <span className="text-accent">I</span>ntelligence<br />
+                <span className="text-accent">O</span>ptimisation for<br />
+                <span className="text-accent">N</span>onprofit<br />
+                <span className="text-accent">A</span>dvancement
               </h1>
-              <p className="mt-6 text-lg text-white/90 max-w-2xl">
+              <p className="mt-6 text-lg text-primary-foreground/90 max-w-2xl">
                 Diona connects nonprofits with cutting-edge data intelligence 
                 and technology solutions on a unified platform to streamline 
                 operations, enhance impact measurement, and accelerate 
@@ -49,20 +49,20 @@ const Index = () => {
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <Link to="/register">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg">
+                  <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 py-3 text-lg">
                     Get Started
                   </Button>
                 </Link>
                 <Link to="/login">
-                  <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-3 text-lg">
+                  <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 px-8 py-3 text-lg">
                     Learn More
                   </Button>
                 </Link>
               </div>
             </div>
             <div className="mt-12 lg:mt-0 lg:col-span-5">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                <h2 className="text-2xl font-bold mb-6 text-white">Our Platform Features</h2>
+              <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-6 border border-primary-foreground/20">
+                <h2 className="text-2xl font-bold mb-6 text-primary-foreground">Our Platform Features</h2>
                 <ul className="space-y-4">
                   {[
                     "Comprehensive allied health assessment tools and screening",
@@ -73,10 +73,10 @@ const Index = () => {
                     "Real-time analytics dashboard for service delivery insights"
                   ].map((feature, index) => (
                     <li key={index} className="flex items-start">
-                      <div className="bg-blue-500 rounded-full p-1 mr-2 mt-0.5 flex-shrink-0">
-                        <CheckCircle className="h-3 w-3 text-white" />
+                      <div className="bg-accent rounded-full p-1 mr-2 mt-0.5 flex-shrink-0">
+                        <CheckCircle className="h-3 w-3 text-accent-foreground" />
                       </div>
-                      <span className="text-white/90 text-sm leading-relaxed">{feature}</span>
+                      <span className="text-primary-foreground/90 text-sm leading-relaxed">{feature}</span>
                     </li>
                   ))}
                 </ul>
