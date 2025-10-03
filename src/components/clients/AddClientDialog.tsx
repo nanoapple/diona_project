@@ -31,7 +31,13 @@ interface ClientFormData {
   pronouns: string;
   customPronouns: string;
   culturalIdentity: string;
-  ndisNumber: string;
+
+  // NDIS Plan Details
+  ndisParticipantNumber: string;
+  ndisFundingType: string;
+  ndisStartDate: Date | undefined;
+  ndisEndDate: Date | undefined;
+  ndisAmountRemaining: string;
 
   // Contact Information
   email: string;
@@ -110,7 +116,11 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
     pronouns: '',
     customPronouns: '',
     culturalIdentity: '',
-    ndisNumber: '',
+    ndisParticipantNumber: '',
+    ndisFundingType: '',
+    ndisStartDate: undefined,
+    ndisEndDate: undefined,
+    ndisAmountRemaining: '',
     email: '',
     mobilePhone: '',
     alternatePhone: '',
@@ -554,17 +564,74 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
                     onChange={(e) => updateField('culturalIdentity', e.target.value)}
                   />
                 </div>
+              </div>
+            </section>
+
+            {/* NDIS Plan Details */}
+            <section className="bg-teal-50 p-6 rounded-lg space-y-4 border-l-4 border-teal-500">
+              <h3 className="text-lg font-semibold text-teal-700">NDIS Plan Details</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="ndisParticipantNumber" className="text-sm font-medium text-slate-700">Participant Number</Label>
+                  <Input
+                    id="ndisParticipantNumber"
+                    value={formData.ndisParticipantNumber}
+                    onChange={(e) => updateField('ndisParticipantNumber', e.target.value)}
+                    placeholder="Enter participant number"
+                    className="focus-visible:ring-2 focus-visible:ring-teal-500"
+                  />
+                </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="ndisNumber">NDIS Number</Label>
+                  <Label htmlFor="ndisFundingType" className="text-sm font-medium text-slate-700">Funding type</Label>
+                  <Select value={formData.ndisFundingType} onValueChange={(value) => updateField('ndisFundingType', value)}>
+                    <SelectTrigger className="focus-visible:ring-2 focus-visible:ring-teal-500">
+                      <SelectValue placeholder="Select funding type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Core Supports">Core Supports</SelectItem>
+                      <SelectItem value="Capacity Building">Capacity Building</SelectItem>
+                      <SelectItem value="Capital Supports">Capital Supports</SelectItem>
+                      <SelectItem value="Plan Management">Plan Management</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-slate-700">Start Date</Label>
+                  <DatePicker
+                    value={formData.ndisStartDate}
+                    onChange={(date) => updateField('ndisStartDate', date)}
+                    placeholder="Select start date"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-slate-700">End Date</Label>
+                  <DatePicker
+                    value={formData.ndisEndDate}
+                    onChange={(date) => updateField('ndisEndDate', date)}
+                    placeholder="Select end date"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ndisAmountRemaining" className="text-sm font-medium text-slate-700">Amount Remaining</Label>
                   <Input
-                    id="ndisNumber"
-                    value={formData.ndisNumber}
-                    onChange={(e) => updateField('ndisNumber', e.target.value)}
-                    placeholder="Optional"
+                    id="ndisAmountRemaining"
+                    type="text"
+                    value={formData.ndisAmountRemaining}
+                    onChange={(e) => updateField('ndisAmountRemaining', e.target.value)}
+                    placeholder="$0.00"
+                    className="focus-visible:ring-2 focus-visible:ring-teal-500"
                   />
                 </div>
               </div>
+
+              <p className="text-sm text-slate-600 italic mt-2">
+                * The remaining amount only reflects what has been invoiced and paid in coreplus
+              </p>
             </section>
 
             {/* Contact Information */}
