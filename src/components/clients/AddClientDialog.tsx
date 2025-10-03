@@ -68,7 +68,8 @@ interface ClientFormData {
   primaryReason: string;
   appointmentNotes: string;
   concessionType: string;
-  openingBalance: string;
+  insurer: string;
+  lawyerSolicitor: string;
 
   // Legal Issues
   hasLegalIssues: boolean;
@@ -144,7 +145,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
     primaryReason: '',
     appointmentNotes: '',
     concessionType: 'None',
-    openingBalance: '0.00',
+    insurer: '',
+    lawyerSolicitor: '',
     hasLegalIssues: false,
     courtOrder: false,
     detention: false,
@@ -903,7 +905,7 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 <div className="space-y-2">
-                  <Label>Date of Injury/Incident</Label>
+                  <Label>Date of Injury or Incident</Label>
                   <DatePicker
                     value={formData.dateOfInjury}
                     onChange={(date) => updateField('dateOfInjury', date)}
@@ -927,17 +929,23 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="opening-balance">Opening Balance</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2.5 text-muted-foreground">$</span>
-                    <Input
-                      id="opening-balance"
-                      value={formData.openingBalance}
-                      onChange={(e) => updateField('openingBalance', e.target.value)}
-                      className="pl-8"
-                      placeholder="0.00"
-                    />
-                  </div>
+                  <Label htmlFor="insurer">Insurer</Label>
+                  <Input
+                    id="insurer"
+                    value={formData.insurer}
+                    onChange={(e) => updateField('insurer', e.target.value)}
+                    placeholder="Enter insurer name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="lawyerSolicitor">Lawyer/Solicitor</Label>
+                  <Input
+                    id="lawyerSolicitor"
+                    value={formData.lawyerSolicitor}
+                    onChange={(e) => updateField('lawyerSolicitor', e.target.value)}
+                    placeholder="Enter lawyer/solicitor name"
+                  />
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
