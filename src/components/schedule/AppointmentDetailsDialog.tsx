@@ -392,7 +392,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   };
 
   const presentingIssuesOptions = [
-    'Anxiety', 'PTSD', 'Work stress', 'Depression', 'Grief', 'Relationship issues',
+    'Anxiety', 'PTSD', 'Work stress', 'Depression', 'OCD', 'Bipolar disorder', 'Grief', 'Relationship issues',
     'Substance abuse', 'Eating disorders', 'Sleep disorders', 'Anger management',
     'Bullying / Abuse', 'Neurodivergence', 'Chronic Pain / Injury', 'Legal or Compensation Stress',
     'Isolation / Loneliness', 'Life Transitions', 'Financial Stress', 'Gender / Sexual Identity', 'Academic Pressure'
@@ -509,7 +509,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
           </div>
 
           <div>
-            <Label>Presenting Issues (Tags)</Label>
+            <Label>Presenting Issues (referral)</Label>
             <div className="grid grid-cols-3 gap-1 mt-2">
               {presentingIssuesOptions.map((issue) => (
                 <label key={issue} className="flex items-center space-x-1.5">
