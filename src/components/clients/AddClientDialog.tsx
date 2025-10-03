@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Switch } from '@/components/ui/switch';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 import { CalendarIcon, ChevronDown, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -103,6 +104,7 @@ const DRAFT_KEY = 'addClientDraft';
 
 export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddClientDialogProps) {
   const { toast } = useToast();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<ClientFormData>({
     title: '',
     firstName: '',
@@ -297,6 +299,26 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
     }));
   };
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const sections = [
+    { id: 'section-1', label: 'Personal' },
+    { id: 'section-2', label: 'Contact' },
+    { id: 'section-3', label: 'Communication' },
+    { id: 'section-4', label: 'NDIS' },
+    { id: 'section-5', label: 'Consent' },
+    { id: 'section-6', label: 'Clinical' },
+    { id: 'section-7', label: 'Legal' },
+    { id: 'section-8', label: 'Billing' },
+    { id: 'section-9', label: 'Emergency' },
+    { id: 'section-10', label: 'Referral' },
+  ];
+
   const DatePicker = ({ value, onChange, placeholder, error }: { 
     value: Date | undefined; 
     onChange: (date: Date | undefined) => void; 
@@ -350,10 +372,24 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-180px)] pr-4">
+        {/* Section Navigation */}
+        <div className="flex flex-wrap gap-2 pb-4 border-b">
+          {sections.map((section) => (
+            <Badge
+              key={section.id}
+              variant="outline"
+              className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+              onClick={() => scrollToSection(section.id)}
+            >
+              {section.label}
+            </Badge>
+          ))}
+        </div>
+
+        <ScrollArea className="max-h-[calc(90vh-240px)] pr-4" ref={scrollAreaRef}>
           <div className="space-y-6">
             {/* Personal Details */}
-            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
+            <section id="section-1" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
               <h3 className="text-lg font-semibold text-slate-700">1. Personal Details</h3>
               
               {/* Top row: Title, First name, Last name */}
@@ -568,8 +604,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* NDIS Plan Details */}
-            <section className="bg-teal-50 p-6 rounded-lg space-y-4 border-l-4 border-teal-500">
-              <h3 className="text-lg font-semibold text-teal-700">NDIS Plan Details</h3>
+            <section id="section-4" className="bg-teal-50 p-6 rounded-lg space-y-4 border-l-4 border-teal-500 scroll-mt-4">
+              <h3 className="text-lg font-semibold text-teal-700">4. NDIS Plan Details</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 <div className="space-y-2">
@@ -635,7 +671,7 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Contact Information */}
-            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
+            <section id="section-2" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
               <h3 className="text-lg font-semibold text-slate-700">2. Contact Information</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
@@ -764,7 +800,7 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Communication Preferences */}
-            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
+            <section id="section-3" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
               <h3 className="text-lg font-semibold text-slate-700">3. Communication Preferences</h3>
               
               <div className="space-y-4">
@@ -820,8 +856,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Consent & Privacy */}
-            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
-              <h3 className="text-lg font-semibold text-slate-700">4. Consent & Privacy</h3>
+            <section id="section-5" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
+              <h3 className="text-lg font-semibold text-slate-700">5. Consent & Privacy</h3>
               
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
@@ -862,8 +898,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Clinical & Case Info */}
-            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
-              <h3 className="text-lg font-semibold text-slate-700">5. Clinical & Case Info</h3>
+            <section id="section-6" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
+              <h3 className="text-lg font-semibold text-slate-700">6. Clinical & Case Info</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 <div className="space-y-2">
@@ -929,8 +965,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Legal Issues */}
-            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
-              <h3 className="text-lg font-semibold text-slate-700">6. Legal Issues</h3>
+            <section id="section-7" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
+              <h3 className="text-lg font-semibold text-slate-700">7. Legal Issues</h3>
               
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
@@ -989,8 +1025,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Billing & Invoicing */}
-            <section className="bg-blue-50 p-6 rounded-lg space-y-4">
-              <h3 className="text-lg font-semibold text-slate-700">7. Billing & Invoicing</h3>
+            <section id="section-8" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
+              <h3 className="text-lg font-semibold text-slate-700">8. Billing & Invoicing</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 <div className="space-y-2">
@@ -1028,9 +1064,9 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
 
             {/* Emergency Contact */}
             <Collapsible open={emergencyContactOpen} onOpenChange={setEmergencyContactOpen}>
-              <section className="bg-blue-50 p-6 rounded-lg space-y-4">
+              <section id="section-9" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
                 <CollapsibleTrigger className="flex items-center justify-between w-full">
-                  <h3 className="text-lg font-semibold text-slate-700">8. Emergency Contact</h3>
+                  <h3 className="text-lg font-semibold text-slate-700">9. Emergency Contact</h3>
                   <ChevronDown className={cn(
                     "h-4 w-4 transition-transform",
                     emergencyContactOpen && "rotate-180"
@@ -1082,9 +1118,9 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
 
             {/* Referral */}
             <Collapsible open={referralOpen} onOpenChange={setReferralOpen}>
-              <section className="bg-blue-50 p-6 rounded-lg space-y-4">
+              <section id="section-10" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
                 <CollapsibleTrigger className="flex items-center justify-between w-full">
-                  <h3 className="text-lg font-semibold text-slate-700">9. Referral</h3>
+                  <h3 className="text-lg font-semibold text-slate-700">10. Referral</h3>
                   <ChevronDown className={cn(
                     "h-4 w-4 transition-transform",
                     referralOpen && "rotate-180"
