@@ -901,7 +901,7 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
 
             {/* Clinical & Case Info */}
             <section id="section-6" className="bg-rose-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-rose-500">
-              <h3 className="text-lg font-semibold text-rose-700">6. Clinical & Case Info</h3>
+              <h3 className="text-lg font-semibold text-rose-700">6. Injury or Incident</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 <div className="space-y-2">
