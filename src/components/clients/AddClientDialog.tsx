@@ -389,8 +389,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
         <ScrollArea className="max-h-[calc(90vh-240px)] pr-4" ref={scrollAreaRef}>
           <div className="space-y-6">
             {/* Personal Details */}
-            <section id="section-1" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
-              <h3 className="text-lg font-semibold text-slate-700">1. Personal Details</h3>
+            <section id="section-1" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-blue-500">
+              <h3 className="text-lg font-semibold text-blue-700">1. Personal Details</h3>
               
               {/* Top row: Title, First name, Last name */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3">
@@ -603,76 +603,9 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
               </div>
             </section>
 
-            {/* NDIS Plan Details */}
-            <section id="section-4" className="bg-teal-50 p-6 rounded-lg space-y-4 border-l-4 border-teal-500 scroll-mt-4">
-              <h3 className="text-lg font-semibold text-teal-700">4. NDIS Plan Details</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="ndisParticipantNumber" className="text-sm font-medium text-slate-700">Participant Number</Label>
-                  <Input
-                    id="ndisParticipantNumber"
-                    value={formData.ndisParticipantNumber}
-                    onChange={(e) => updateField('ndisParticipantNumber', e.target.value)}
-                    placeholder="Enter participant number"
-                    className="focus-visible:ring-2 focus-visible:ring-teal-500"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="ndisFundingType" className="text-sm font-medium text-slate-700">Funding type</Label>
-                  <Select value={formData.ndisFundingType} onValueChange={(value) => updateField('ndisFundingType', value)}>
-                    <SelectTrigger className="focus-visible:ring-2 focus-visible:ring-teal-500">
-                      <SelectValue placeholder="Select funding type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Core Supports">Core Supports</SelectItem>
-                      <SelectItem value="Capacity Building">Capacity Building</SelectItem>
-                      <SelectItem value="Capital Supports">Capital Supports</SelectItem>
-                      <SelectItem value="Plan Management">Plan Management</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-slate-700">Start Date</Label>
-                  <DatePicker
-                    value={formData.ndisStartDate}
-                    onChange={(date) => updateField('ndisStartDate', date)}
-                    placeholder="Select start date"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-slate-700">End Date</Label>
-                  <DatePicker
-                    value={formData.ndisEndDate}
-                    onChange={(date) => updateField('ndisEndDate', date)}
-                    placeholder="Select end date"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="ndisAmountRemaining" className="text-sm font-medium text-slate-700">Amount Remaining</Label>
-                  <Input
-                    id="ndisAmountRemaining"
-                    type="text"
-                    value={formData.ndisAmountRemaining}
-                    onChange={(e) => updateField('ndisAmountRemaining', e.target.value)}
-                    placeholder="$0.00"
-                    className="focus-visible:ring-2 focus-visible:ring-teal-500"
-                  />
-                </div>
-              </div>
-
-              <p className="text-sm text-slate-600 italic mt-2">
-                * The remaining amount only reflects what has been invoiced and paid in coreplus
-              </p>
-            </section>
-
             {/* Contact Information */}
-            <section id="section-2" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
-              <h3 className="text-lg font-semibold text-slate-700">2. Contact Information</h3>
+            <section id="section-2" className="bg-purple-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-purple-500">
+              <h3 className="text-lg font-semibold text-purple-700">2. Contact Information</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 <div className="space-y-2">
@@ -800,8 +733,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Communication Preferences */}
-            <section id="section-3" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
-              <h3 className="text-lg font-semibold text-slate-700">3. Communication Preferences</h3>
+            <section id="section-3" className="bg-green-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-green-500">
+              <h3 className="text-lg font-semibold text-green-700">3. Communication Preferences</h3>
               
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -855,9 +788,76 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
               </div>
             </section>
 
+            {/* NDIS Plan Details */}
+            <section id="section-4" className="bg-teal-50 p-6 rounded-lg space-y-4 border-l-4 border-teal-500 scroll-mt-4">
+              <h3 className="text-lg font-semibold text-teal-700">4. NDIS Plan Details</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="ndisParticipantNumber" className="text-sm font-medium text-slate-700">Participant Number</Label>
+                  <Input
+                    id="ndisParticipantNumber"
+                    value={formData.ndisParticipantNumber}
+                    onChange={(e) => updateField('ndisParticipantNumber', e.target.value)}
+                    placeholder="Enter participant number"
+                    className="focus-visible:ring-2 focus-visible:ring-teal-500"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ndisFundingType" className="text-sm font-medium text-slate-700">Funding type</Label>
+                  <Select value={formData.ndisFundingType} onValueChange={(value) => updateField('ndisFundingType', value)}>
+                    <SelectTrigger className="focus-visible:ring-2 focus-visible:ring-teal-500">
+                      <SelectValue placeholder="Select funding type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Core Supports">Core Supports</SelectItem>
+                      <SelectItem value="Capacity Building">Capacity Building</SelectItem>
+                      <SelectItem value="Capital Supports">Capital Supports</SelectItem>
+                      <SelectItem value="Plan Management">Plan Management</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-slate-700">Start Date</Label>
+                  <DatePicker
+                    value={formData.ndisStartDate}
+                    onChange={(date) => updateField('ndisStartDate', date)}
+                    placeholder="Select start date"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-slate-700">End Date</Label>
+                  <DatePicker
+                    value={formData.ndisEndDate}
+                    onChange={(date) => updateField('ndisEndDate', date)}
+                    placeholder="Select end date"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ndisAmountRemaining" className="text-sm font-medium text-slate-700">Amount Remaining</Label>
+                  <Input
+                    id="ndisAmountRemaining"
+                    type="text"
+                    value={formData.ndisAmountRemaining}
+                    onChange={(e) => updateField('ndisAmountRemaining', e.target.value)}
+                    placeholder="$0.00"
+                    className="focus-visible:ring-2 focus-visible:ring-teal-500"
+                  />
+                </div>
+              </div>
+
+              <p className="text-sm text-slate-600 italic mt-2">
+                * The remaining amount only reflects what has been invoiced and paid in coreplus
+              </p>
+            </section>
+
             {/* Consent & Privacy */}
-            <section id="section-5" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
-              <h3 className="text-lg font-semibold text-slate-700">5. Consent & Privacy</h3>
+            <section id="section-5" className="bg-amber-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-amber-500">
+              <h3 className="text-lg font-semibold text-amber-700">5. Consent & Privacy</h3>
               
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
@@ -898,8 +898,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Clinical & Case Info */}
-            <section id="section-6" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
-              <h3 className="text-lg font-semibold text-slate-700">6. Clinical & Case Info</h3>
+            <section id="section-6" className="bg-rose-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-rose-500">
+              <h3 className="text-lg font-semibold text-rose-700">6. Clinical & Case Info</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 <div className="space-y-2">
@@ -965,8 +965,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Legal Issues */}
-            <section id="section-7" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
-              <h3 className="text-lg font-semibold text-slate-700">7. Legal Issues</h3>
+            <section id="section-7" className="bg-indigo-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-indigo-500">
+              <h3 className="text-lg font-semibold text-indigo-700">7. Legal Issues</h3>
               
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
@@ -1025,8 +1025,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Billing & Invoicing */}
-            <section id="section-8" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
-              <h3 className="text-lg font-semibold text-slate-700">8. Billing & Invoicing</h3>
+            <section id="section-8" className="bg-cyan-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-cyan-500">
+              <h3 className="text-lg font-semibold text-cyan-700">8. Billing & Invoicing</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 <div className="space-y-2">
@@ -1064,9 +1064,9 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
 
             {/* Emergency Contact */}
             <Collapsible open={emergencyContactOpen} onOpenChange={setEmergencyContactOpen}>
-              <section id="section-9" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
+              <section id="section-9" className="bg-orange-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-orange-500">
                 <CollapsibleTrigger className="flex items-center justify-between w-full">
-                  <h3 className="text-lg font-semibold text-slate-700">9. Emergency Contact</h3>
+                  <h3 className="text-lg font-semibold text-orange-700">9. Emergency Contact</h3>
                   <ChevronDown className={cn(
                     "h-4 w-4 transition-transform",
                     emergencyContactOpen && "rotate-180"
@@ -1118,9 +1118,9 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
 
             {/* Referral */}
             <Collapsible open={referralOpen} onOpenChange={setReferralOpen}>
-              <section id="section-10" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4">
+              <section id="section-10" className="bg-violet-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-violet-500">
                 <CollapsibleTrigger className="flex items-center justify-between w-full">
-                  <h3 className="text-lg font-semibold text-slate-700">10. Referral</h3>
+                  <h3 className="text-lg font-semibold text-violet-700">10. Referral</h3>
                   <ChevronDown className={cn(
                     "h-4 w-4 transition-transform",
                     referralOpen && "rotate-180"
