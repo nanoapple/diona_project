@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 import { 
   LayoutDashboard, Users, Archive, Calendar, ClipboardCheck, FileText,
   ClipboardList, TrendingUp, BookOpen, UserPlus, MessageSquare, 
   Users2, Briefcase, Brain, Shield, Activity, DollarSign, Database,
   GraduationCap, Microscope, BarChart3, Code, Store, Lightbulb,
-  CheckCircle2, Clock, Lock
+  CheckCircle2, Clock, Lock, ChevronRight
 } from "lucide-react";
 
 interface Module {
@@ -23,6 +26,8 @@ interface ModuleCategory {
 }
 
 const ModuleMarketplace = () => {
+  const [selectedCategory, setSelectedCategory] = useState("Core Platform");
+  
   const categories: ModuleCategory[] = [
     {
       title: "Core Platform",
@@ -111,72 +116,128 @@ const ModuleMarketplace = () => {
     return <Badge variant="outline" className={colors[tier]}>{tier}</Badge>;
   };
 
+  const selectedCategoryData = categories.find(cat => cat.title === selectedCategory);
+  const totalModules = categories.reduce((acc, cat) => acc + cat.modules.length, 0);
+
   return (
-    <div className="container mx-auto py-8 max-w-7xl">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-foreground mb-2">Service Modules</h1>
-        <p className="text-xl text-muted-foreground">
-          Explore DIONA's modular ecosystem. Activate modules as you need them.
-        </p>
+    <div className="flex h-full bg-background">
+      {/* Left Sidebar - Categories */}
+      <div className="w-64 border-r border-border bg-card">
+        <div className="p-6 border-b border-border">
+          <h2 className="text-lg font-semibold text-foreground">Categories</h2>
+        </div>
+        <ScrollArea className="h-[calc(100vh-180px)]">
+          <div className="p-4 space-y-1">
+            <button
+              onClick={() => setSelectedCategory("All")}
+              className={cn(
+                "w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors",
+                selectedCategory === "All" 
+                  ? "bg-primary/10 text-primary font-medium" 
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              <span>All categories</span>
+              <span className="text-xs">{totalModules}</span>
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category.title}
+                onClick={() => setSelectedCategory(category.title)}
+                className={cn(
+                  "w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors",
+                  selectedCategory === category.title 
+                    ? "bg-primary/10 text-primary font-medium" 
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                <span>{category.title}</span>
+                <span className="text-xs">{category.modules.length}</span>
+              </button>
+            ))}
+          </div>
+        </ScrollArea>
       </div>
 
-      <div className="space-y-8">
-        {categories.map((category) => (
-          <Card key={category.title}>
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-8">
+          <div className="mb-8">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+              <Store size={16} />
+              <ChevronRight size={16} />
+              <span>{selectedCategory}</span>
+            </div>
+            <h1 className="text-4xl font-bold text-foreground mb-2">
+              {selectedCategory === "All" ? "All Modules" : selectedCategory}
+            </h1>
+            <p className="text-muted-foreground">
+              {selectedCategory === "All" 
+                ? `Explore all ${totalModules} modules in DIONA's ecosystem`
+                : selectedCategoryData 
+                  ? `${selectedCategoryData.modules.length} module${selectedCategoryData.modules.length !== 1 ? 's' : ''} available`
+                  : "Explore DIONA's modular ecosystem"
+              }
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {(selectedCategory === "All" 
+              ? categories.flatMap(cat => cat.modules) 
+              : selectedCategoryData?.modules || []
+            ).map((module) => {
+              const Icon = module.icon;
+              return (
+                <Card key={module.name} className="hover:shadow-lg transition-all hover:border-primary/50">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <div className="p-3 bg-primary/10 rounded-lg">
+                        <Icon size={24} className="text-primary" />
+                      </div>
+                      <div className="flex flex-col gap-1 items-end">
+                        {getStatusBadge(module.status)}
+                      </div>
+                    </div>
+                    <CardTitle className="text-lg">{module.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground line-clamp-2">{module.description}</p>
+                    <div className="flex items-center gap-2">
+                      {getTierBadge(module.tier)}
+                    </div>
+                    {module.status === 'active' && (
+                      <Button size="sm" variant="outline" className="w-full">
+                        Configure Module
+                      </Button>
+                    )}
+                    {module.status === 'planned' && (
+                      <Button size="sm" variant="ghost" className="w-full" disabled>
+                        Coming Soon
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Custom Module CTA */}
+          <Card className="mt-12 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
             <CardHeader>
-              <CardTitle className="text-2xl">{category.title}</CardTitle>
-              <CardDescription>
-                {category.modules.length} module{category.modules.length !== 1 ? 's' : ''} available
+              <CardTitle className="text-2xl">Need a Custom Module?</CardTitle>
+              <CardDescription className="text-base">
+                Join our Co-creation Lab or contact us about custom development for your specific needs
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {category.modules.map((module) => {
-                  const Icon = module.icon;
-                  return (
-                    <Card key={module.name} className="hover:shadow-md transition-shadow">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <div className="p-2 bg-primary/10 rounded-lg">
-                              <Icon size={20} className="text-primary" />
-                            </div>
-                            <CardTitle className="text-base">{module.name}</CardTitle>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <p className="text-sm text-muted-foreground">{module.description}</p>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {getStatusBadge(module.status)}
-                          {getTierBadge(module.tier)}
-                        </div>
-                        {module.status === 'active' && (
-                          <Button size="sm" variant="outline" className="w-full">
-                            Configure
-                          </Button>
-                        )}
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
+              <Button size="lg" className="gap-2">
+                <MessageSquare size={18} />
+                Contact Us
+              </Button>
             </CardContent>
           </Card>
-        ))}
+        </div>
       </div>
-
-      <Card className="mt-8 bg-primary/5">
-        <CardHeader>
-          <CardTitle>Need a Custom Module?</CardTitle>
-          <CardDescription>
-            Join our Co-creation Lab or contact us about custom development
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button>Contact Us</Button>
-        </CardContent>
-      </Card>
     </div>
   );
 };

@@ -127,31 +127,35 @@ const Sidebar = () => {
         ))}
       </div>
 
-      <div className="p-3 border-t border-border mt-auto space-y-2">
-        <Link to="/module-marketplace">
-          <Button
-            variant="default"
-            className="w-full justify-start mb-1 text-left flex items-center gap-3"
-          >
-            <Store size={18} />
-            {!collapsed && <span>Service Modules</span>}
-          </Button>
-        </Link>
+      <div className="mt-auto">
+        <div className="p-3 border-t border-border">
+          <Link to="/module-marketplace">
+            <Button
+              variant="default"
+              className="w-full justify-start mb-1 text-left flex items-center gap-3"
+            >
+              <Store size={18} />
+              {!collapsed && <span>Service Modules</span>}
+            </Button>
+          </Link>
+        </div>
 
-        {!collapsed && (
-          <div className="text-xs text-muted-foreground">
-            {currentUser?.role && (
-              <div className="flex items-center gap-2">
-                <span className="bg-primary/20 text-primary text-sm px-3 py-1 rounded-full capitalize flex items-center">
-                  {currentUser.role === 'lawyer' && <Briefcase className="mr-1 h-5 w-5" />}
-                  {currentUser.role === 'psychologist' && <Book className="mr-1 h-5 w-5" />}
-                  {currentUser.role === 'claimant' && <User className="mr-1 h-5 w-5" />}
-                  {currentUser.role}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
+        <div className="p-3 border-t border-border">
+          {!collapsed && (
+            <div className="text-xs text-muted-foreground">
+              {currentUser?.role && (
+                <div className="flex items-center gap-2">
+                  <span className="bg-primary/20 text-primary text-sm px-3 py-1 rounded-full capitalize flex items-center">
+                    {currentUser.role === 'lawyer' && <Briefcase className="mr-1 h-5 w-5" />}
+                    {currentUser.role === 'psychologist' && <Book className="mr-1 h-5 w-5" />}
+                    {currentUser.role === 'claimant' && <User className="mr-1 h-5 w-5" />}
+                    {currentUser.role}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </aside>
   );
