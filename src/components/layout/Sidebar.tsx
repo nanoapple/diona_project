@@ -4,6 +4,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '../../contexts/AuthContext';
+import SelfCarePortal from './SelfCarePortal';
+import EmergencyPortal from './EmergencyPortal';
 import { 
   MessageSquare, 
   FileText, 
@@ -29,6 +31,8 @@ const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { currentUser } = useAuth();
   const location = useLocation();
+  const [showSelfCare, setShowSelfCare] = useState(false);
+  const [showEmergency, setShowEmergency] = useState(false);
 
   const toggleSidebar = () => setCollapsed(!collapsed);
 
@@ -144,19 +148,54 @@ const Sidebar = () => {
           {!collapsed && (
             <div className="text-xs text-muted-foreground">
               {currentUser?.role && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <span className="text-foreground text-sm font-bold capitalize flex items-center">
                     {currentUser.role === 'lawyer' && <Briefcase className="mr-1 h-5 w-5" />}
                     {currentUser.role === 'psychologist' && <Book className="mr-1 h-5 w-5" />}
                     {currentUser.role === 'claimant' && <User className="mr-1 h-5 w-5" />}
                     {currentUser.role}
                   </span>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => setShowSelfCare(true)}
+                      className="w-8 h-8 rounded-full p-0 bg-green-500 hover:bg-green-600 border border-white shadow-md"
+                      title="Self-Care Portal"
+                    >
+                      <img 
+                        src="/lovable-uploads/59e03bbf-7415-4289-ac29-413d19f0a2ee.png" 
+                        alt="Self-Care"
+                        className="w-6 h-6 object-contain"
+                      />
+                    </Button>
+                    
+                    <Button
+                      onClick={() => setShowEmergency(true)}
+                      className="w-8 h-8 rounded-full p-0 bg-red-500 hover:bg-red-600 border border-white shadow-md"
+                      title="Emergency & Crisis Support"
+                    >
+                      <img 
+                        src="/lovable-uploads/52a1d7b8-5f43-4ba1-a9f6-5f526d58134d.png" 
+                        alt="Emergency Support"
+                        className="w-6 h-6 object-contain"
+                      />
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
           )}
         </div>
       </div>
+
+      <SelfCarePortal 
+        isOpen={showSelfCare} 
+        onClose={() => setShowSelfCare(false)} 
+      />
+      
+      <EmergencyPortal 
+        isOpen={showEmergency} 
+        onClose={() => setShowEmergency(false)} 
+      />
     </aside>
   );
 };
