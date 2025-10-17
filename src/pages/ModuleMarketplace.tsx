@@ -131,28 +131,28 @@ const ModuleMarketplace = () => {
             <button
               onClick={() => setSelectedCategory("All")}
               className={cn(
-                "w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors",
+                "w-full flex items-start gap-2 px-3 py-2 rounded-md text-sm transition-colors",
                 selectedCategory === "All" 
                   ? "bg-primary/10 text-primary font-medium" 
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
-              <span>All categories</span>
-              <span className="text-xs">{totalModules}</span>
+              <span className="flex-1 text-left">All categories</span>
+              <span className="text-xs shrink-0">{totalModules}</span>
             </button>
             {categories.map((category) => (
               <button
                 key={category.title}
                 onClick={() => setSelectedCategory(category.title)}
                 className={cn(
-                  "w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors",
+                  "w-full flex items-start gap-2 px-3 py-2 rounded-md text-sm transition-colors text-left",
                   selectedCategory === category.title 
                     ? "bg-primary/10 text-primary font-medium" 
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
-                <span>{category.title}</span>
-                <span className="text-xs">{category.modules.length}</span>
+                <span className="flex-1 leading-snug">{category.title}</span>
+                <span className="text-xs shrink-0 mt-0.5">{category.modules.length}</span>
               </button>
             ))}
           </div>
