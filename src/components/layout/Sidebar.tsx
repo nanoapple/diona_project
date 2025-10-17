@@ -21,7 +21,8 @@ import {
   Calendar,
   Brain,
   BookOpen,
-  Database
+  Database,
+  Store
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -126,8 +127,18 @@ const Sidebar = () => {
         ))}
       </div>
 
-      {!collapsed && (
-        <div className="p-4 border-t border-border mt-auto">
+      <div className="p-3 border-t border-border mt-auto space-y-2">
+        <Link to="/module-marketplace">
+          <Button
+            variant="default"
+            className="w-full justify-start mb-1 text-left flex items-center gap-3"
+          >
+            <Store size={18} />
+            {!collapsed && <span>Service Modules</span>}
+          </Button>
+        </Link>
+
+        {!collapsed && (
           <div className="text-xs text-muted-foreground">
             {currentUser?.role && (
               <div className="flex items-center gap-2">
@@ -140,8 +151,8 @@ const Sidebar = () => {
               </div>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </aside>
   );
 };

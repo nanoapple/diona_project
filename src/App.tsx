@@ -27,6 +27,7 @@ import AllAssessments from "./pages/AllAssessments";
 import JITAI from "./pages/JITAI";
 import Knowledge from "./pages/Knowledge";
 import ServiceData from "./pages/ServiceData";
+import ModuleMarketplace from "./pages/ModuleMarketplace";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
               <Route path="/jitai" element={<JITAI />} />
               <Route path="/knowledge" element={<Knowledge />} />
               <Route path="/service-data" element={<ServiceData />} />
+              <Route path="/module-marketplace" element={<ModuleMarketplace />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
             <Route path="*" element={<NotFound />} />
