@@ -188,7 +188,7 @@ const ModuleMarketplace = () => {
             ).map((module) => {
               const Icon = module.icon;
               return (
-                <Card key={module.name} className="hover:shadow-lg transition-all hover:border-primary/50">
+                <Card key={module.name} className="hover:shadow-lg transition-all hover:border-primary/50 flex flex-col">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="p-3 bg-primary/10 rounded-lg">
@@ -200,21 +200,23 @@ const ModuleMarketplace = () => {
                     </div>
                     <CardTitle className="text-lg">{module.name}</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <p className="text-sm text-muted-foreground line-clamp-2">{module.description}</p>
-                    <div className="flex items-center gap-2">
+                  <CardContent className="flex flex-col flex-grow">
+                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{module.description}</p>
+                    <div className="flex items-center gap-2 mb-4">
                       {getTierBadge(module.tier)}
                     </div>
-                    {module.status === 'active' && (
-                      <Button size="sm" variant="outline" className="w-full">
-                        Configure Module
-                      </Button>
-                    )}
-                    {module.status === 'planned' && (
-                      <Button size="sm" variant="ghost" className="w-full" disabled>
-                        Coming Soon
-                      </Button>
-                    )}
+                    <div className="mt-auto">
+                      {module.status === 'active' && (
+                        <Button size="sm" variant="outline" className="w-full">
+                          Configure Module
+                        </Button>
+                      )}
+                      {module.status === 'planned' && (
+                        <Button size="sm" variant="ghost" className="w-full" disabled>
+                          Coming Soon
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               );
