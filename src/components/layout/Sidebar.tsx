@@ -85,46 +85,54 @@ const Sidebar = () => {
     
     const tierColors = {
       core: {
-        bg: "bg-green-500/10 hover:bg-green-500/20",
+        bg: "bg-green-500/10",
         border: "border-green-500/20",
         text: "text-green-700 dark:text-green-400",
         icon: "text-green-600 dark:text-green-400",
-        active: "bg-green-500/20 border-green-500/40"
+        hover: "hover:bg-green-600 hover:text-white hover:border-green-600",
+        hoverIcon: "group-hover:text-white",
+        active: "bg-green-600 border-green-600 text-white"
       },
       professional: {
-        bg: "bg-blue-500/10 hover:bg-blue-500/20",
+        bg: "bg-blue-500/10",
         border: "border-blue-500/20",
         text: "text-blue-700 dark:text-blue-400",
         icon: "text-blue-600 dark:text-blue-400",
-        active: "bg-blue-500/20 border-blue-500/40"
+        hover: "hover:bg-blue-600 hover:text-white hover:border-blue-600",
+        hoverIcon: "group-hover:text-white",
+        active: "bg-blue-600 border-blue-600 text-white"
       },
       institutional: {
-        bg: "bg-purple-500/10 hover:bg-purple-500/20",
+        bg: "bg-purple-500/10",
         border: "border-purple-500/20",
         text: "text-purple-700 dark:text-purple-400",
         icon: "text-purple-600 dark:text-purple-400",
-        active: "bg-purple-500/20 border-purple-500/40"
+        hover: "hover:bg-purple-600 hover:text-white hover:border-purple-600",
+        hoverIcon: "group-hover:text-white",
+        active: "bg-purple-600 border-purple-600 text-white"
       }
     };
 
     const colors = tierColors[tier];
     
     return (
-      <Link to={to} className="block mb-2">
+      <Link to={to} className="block mb-2 group">
         <div
           className={cn(
             "w-full px-3 py-2 rounded-md border transition-all flex items-center gap-3",
-            colors.bg,
-            colors.border,
-            isActive ? colors.active : "",
-            isActive ? colors.text : colors.text
+            isActive ? colors.active : `${colors.bg} ${colors.border} ${colors.text} ${colors.hover}`
           )}
         >
-          <Icon size={18} className={colors.icon} />
+          <Icon size={18} className={cn(
+            isActive ? "text-white" : `${colors.icon} ${colors.hoverIcon}`
+          )} />
           {!collapsed && (
             <>
               <span className="flex-1 font-medium text-sm">{label}</span>
-              <MoreVertical size={16} className="shrink-0 opacity-60" />
+              <MoreVertical size={16} className={cn(
+                "shrink-0 opacity-60",
+                isActive ? "text-white" : colors.hoverIcon
+              )} />
             </>
           )}
         </div>
@@ -194,7 +202,7 @@ const Sidebar = () => {
         {/* Dashboard - Keep as simple nav item */}
         <NavItem to="/dashboard" icon={CheckSquare} label="Dashboard" />
         
-        {/* Core Modules */}
+        {/* Core Modules (Green) */}
         {getCoreModules().map((module) => (
           <ModuleNavItem 
             key={module.to} 
@@ -205,8 +213,19 @@ const Sidebar = () => {
           />
         ))}
         
-        {/* Other Modules */}
-        {getOtherModules().map((module) => (
+        {/* Core role-specific items */}
+        {getRoleSpecificItems().filter(item => item.tier === 'core').map((item) => (
+          <ModuleNavItem 
+            key={item.to} 
+            to={item.to} 
+            icon={item.icon} 
+            label={item.label}
+            tier={item.tier}
+          />
+        ))}
+        
+        {/* Professional Modules (Blue) */}
+        {getOtherModules().filter(module => module.tier === 'professional').map((module) => (
           <ModuleNavItem 
             key={module.to} 
             to={module.to} 
@@ -216,8 +235,30 @@ const Sidebar = () => {
           />
         ))}
         
-        {/* Role-specific Items */}
-        {getRoleSpecificItems().map((item) => (
+        {/* Professional role-specific items */}
+        {getRoleSpecificItems().filter(item => item.tier === 'professional').map((item) => (
+          <ModuleNavItem 
+            key={item.to} 
+            to={item.to} 
+            icon={item.icon} 
+            label={item.label}
+            tier={item.tier}
+          />
+        ))}
+        
+        {/* Institutional Modules (Purple) */}
+        {getOtherModules().filter(module => module.tier === 'institutional').map((module) => (
+          <ModuleNavItem 
+            key={module.to} 
+            to={module.to} 
+            icon={module.icon} 
+            label={module.label}
+            tier={module.tier}
+          />
+        ))}
+        
+        {/* Institutional role-specific items */}
+        {getRoleSpecificItems().filter(item => item.tier === 'institutional').map((item) => (
           <ModuleNavItem 
             key={item.to} 
             to={item.to} 
