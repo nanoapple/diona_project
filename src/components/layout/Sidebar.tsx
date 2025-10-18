@@ -163,13 +163,13 @@ const Sidebar = () => {
         disabled: "bg-gray-300/50 border-gray-400/30 text-gray-500"
       },
       "Collaboration & Client Engagement": {
-        bg: "bg-orange-500/10",
-        border: "border-orange-500/20",
-        text: "text-orange-700 dark:text-orange-400",
-        icon: "text-orange-600 dark:text-orange-400",
-        hover: "hover:bg-orange-600 hover:text-white hover:border-orange-600",
+        bg: "bg-cyan-500/10",
+        border: "border-cyan-500/20",
+        text: "text-cyan-700 dark:text-cyan-400",
+        icon: "text-cyan-600 dark:text-cyan-400",
+        hover: "hover:bg-cyan-600 hover:text-white hover:border-cyan-600",
         hoverIcon: "group-hover:text-white",
-        active: "bg-orange-600 border-orange-600 text-white",
+        active: "bg-cyan-600 border-cyan-600 text-white",
         disabled: "bg-gray-300/50 border-gray-400/30 text-gray-500"
       },
       "Knowledge & Professional Development": {
