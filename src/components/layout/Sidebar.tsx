@@ -128,10 +128,21 @@ const Sidebar = () => {
                     (to.includes('/schedule') && location.pathname.includes('/schedule'));
     
     const enabled = isModuleEnabled(to);
-    const isCore = tier === 'core';
+    const category = moduleToCategory[to];
+    const isCore = category === "Core Platform";
     
-    const tierColors = {
-      core: {
+    // Category-based color scheme
+    const categoryColors: Record<string, {
+      bg: string;
+      border: string;
+      text: string;
+      icon: string;
+      hover: string;
+      hoverIcon: string;
+      active: string;
+      disabled: string;
+    }> = {
+      "Core Platform": {
         bg: "bg-green-500/10",
         border: "border-green-500/20",
         text: "text-green-700 dark:text-green-400",
@@ -141,7 +152,7 @@ const Sidebar = () => {
         active: "bg-green-600 border-green-600 text-white",
         disabled: "bg-gray-300/50 border-gray-400/30 text-gray-500"
       },
-      professional: {
+      "Clinical Workflow": {
         bg: "bg-blue-500/10",
         border: "border-blue-500/20",
         text: "text-blue-700 dark:text-blue-400",
@@ -151,7 +162,17 @@ const Sidebar = () => {
         active: "bg-blue-600 border-blue-600 text-white",
         disabled: "bg-gray-300/50 border-gray-400/30 text-gray-500"
       },
-      institutional: {
+      "Collaboration & Client Engagement": {
+        bg: "bg-orange-500/10",
+        border: "border-orange-500/20",
+        text: "text-orange-700 dark:text-orange-400",
+        icon: "text-orange-600 dark:text-orange-400",
+        hover: "hover:bg-orange-600 hover:text-white hover:border-orange-600",
+        hoverIcon: "group-hover:text-white",
+        active: "bg-orange-600 border-orange-600 text-white",
+        disabled: "bg-gray-300/50 border-gray-400/30 text-gray-500"
+      },
+      "Knowledge & Professional Development": {
         bg: "bg-purple-500/10",
         border: "border-purple-500/20",
         text: "text-purple-700 dark:text-purple-400",
@@ -160,10 +181,20 @@ const Sidebar = () => {
         hoverIcon: "group-hover:text-white",
         active: "bg-purple-600 border-purple-600 text-white",
         disabled: "bg-gray-300/50 border-gray-400/30 text-gray-500"
+      },
+      "Compliance & Operations": {
+        bg: "bg-teal-500/10",
+        border: "border-teal-500/20",
+        text: "text-teal-700 dark:text-teal-400",
+        icon: "text-teal-600 dark:text-teal-400",
+        hover: "hover:bg-teal-600 hover:text-white hover:border-teal-600",
+        hoverIcon: "group-hover:text-white",
+        active: "bg-teal-600 border-teal-600 text-white",
+        disabled: "bg-gray-300/50 border-gray-400/30 text-gray-500"
       }
     };
 
-    const colors = tierColors[tier];
+    const colors = categoryColors[category] || categoryColors["Core Platform"];
     
     return (
       <div className="block mb-2 group relative">
