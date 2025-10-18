@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,27 @@ interface ModuleCategory {
 }
 
 const ModuleMarketplace = () => {
+  const [searchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState("Core Platform");
+  
+  // Handle URL category parameter
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      // Check if it's a tier filter
+      if (['core', 'professional', 'institutional'].includes(categoryParam)) {
+        setSelectedCategory(categoryParam);
+      } else {
+        // Otherwise treat as category title
+        const matchingCategory = categories.find(cat => 
+          cat.title.toLowerCase() === categoryParam.toLowerCase()
+        );
+        if (matchingCategory) {
+          setSelectedCategory(matchingCategory.title);
+        }
+      }
+    }
+  }, [searchParams]);
   
   const categories: ModuleCategory[] = [
     {
@@ -118,6 +139,37 @@ const ModuleMarketplace = () => {
 
   const selectedCategoryData = categories.find(cat => cat.title === selectedCategory);
   const totalModules = categories.reduce((acc, cat) => acc + cat.modules.length, 0);
+  
+  // Check if selectedCategory is a tier filter
+  const isTierFilter = ['core', 'professional', 'institutional'].includes(selectedCategory);
+  
+  // Get modules to display
+  const getDisplayModules = () => {
+    if (selectedCategory === "All") {
+      return categories.flatMap(cat => cat.modules);
+    } else if (isTierFilter) {
+      // Filter by tier across all categories
+      return categories.flatMap(cat => cat.modules).filter(m => m.tier === selectedCategory);
+    } else {
+      return selectedCategoryData?.modules || [];
+    }
+  };
+  
+  const displayModules = getDisplayModules();
+  
+  // Get display title
+  const getDisplayTitle = () => {
+    if (selectedCategory === "All") return "All Modules";
+    if (isTierFilter) {
+      const tierNames = {
+        core: "Core Platform Modules",
+        professional: "Professional Tier Modules",
+        institutional: "Institutional Tier Modules"
+      };
+      return tierNames[selectedCategory as keyof typeof tierNames] || selectedCategory;
+    }
+    return selectedCategory;
+  };
 
   return (
     <div className="flex h-full bg-background">
@@ -169,23 +221,15 @@ const ModuleMarketplace = () => {
               <span>{selectedCategory}</span>
             </div>
             <h1 className="text-4xl font-bold text-foreground mb-2">
-              {selectedCategory === "All" ? "All Modules" : selectedCategory}
+              {getDisplayTitle()}
             </h1>
             <p className="text-muted-foreground">
-              {selectedCategory === "All" 
-                ? `Explore all ${totalModules} modules in DIONA's ecosystem`
-                : selectedCategoryData 
-                  ? `${selectedCategoryData.modules.length} module${selectedCategoryData.modules.length !== 1 ? 's' : ''} available`
-                  : "Explore DIONA's modular ecosystem"
-              }
+              {displayModules.length} module{displayModules.length !== 1 ? 's' : ''} available
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(selectedCategory === "All" 
-              ? categories.flatMap(cat => cat.modules) 
-              : selectedCategoryData?.modules || []
-            ).map((module) => {
+            {displayModules.map((module) => {
               const Icon = module.icon;
               return (
                 <Card key={module.name} className="hover:shadow-lg transition-all hover:border-primary/50 flex flex-col">
