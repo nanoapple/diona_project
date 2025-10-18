@@ -311,6 +311,13 @@ const Sidebar = () => {
         {/* Dashboard - Keep as simple nav item */}
         <NavItem to="/dashboard" icon={CheckSquare} label="Dashboard" />
         
+        {/* Core Modules Section */}
+        {!collapsed && (
+          <div className="text-xs font-semibold text-muted-foreground px-2 pt-3 pb-1">
+            Core Modules
+          </div>
+        )}
+        
         {/* Core Modules (Green) */}
         {getCoreModules().map((module) => (
           <ModuleNavItem 
@@ -332,6 +339,16 @@ const Sidebar = () => {
             tier={item.tier}
           />
         ))}
+        
+        {/* Advanced Modules Section */}
+        {!collapsed && (
+          <>
+            <div className="border-t border-border my-2"></div>
+            <div className="text-xs font-semibold text-muted-foreground px-2 pb-1">
+              Advanced Modules
+            </div>
+          </>
+        )}
         
         {/* Professional Modules (Blue) */}
         {getOtherModules().filter(module => module.tier === 'professional').map((module) => (
