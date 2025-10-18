@@ -183,13 +183,13 @@ const Sidebar = () => {
         disabled: "bg-gray-300/50 border-gray-400/30 text-gray-500"
       },
       "Compliance & Operations": {
-        bg: "bg-teal-500/10",
-        border: "border-teal-500/20",
-        text: "text-teal-700 dark:text-teal-400",
-        icon: "text-teal-600 dark:text-teal-400",
-        hover: "hover:bg-teal-600 hover:text-white hover:border-teal-600",
+        bg: "bg-amber-700/10",
+        border: "border-amber-700/20",
+        text: "text-amber-800 dark:text-amber-500",
+        icon: "text-amber-700 dark:text-amber-500",
+        hover: "hover:bg-amber-700 hover:text-white hover:border-amber-700",
         hoverIcon: "group-hover:text-white",
-        active: "bg-teal-600 border-teal-600 text-white",
+        active: "bg-amber-700 border-amber-700 text-white",
         disabled: "bg-gray-300/50 border-gray-400/30 text-gray-500"
       }
     };
