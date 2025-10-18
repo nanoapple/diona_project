@@ -12,15 +12,71 @@ import { useToast } from '@/hooks/use-toast';
 
 interface ClientDetail {
   id: string;
-  name: string;
+  // Personal Details
+  title: string;
+  firstName: string;
+  lastName: string;
+  preferredFirstName: string;
   dateOfBirth: string;
+  sex: string;
+  genderIdentity: string;
+  pronouns: string;
+  culturalIdentity: string;
+  
+  // Contact Information
   email: string;
-  phone: string;
-  address: string;
+  mobilePhone: string;
+  alternatePhone: string;
+  addressLine1: string;
+  addressLine2: string;
+  suburb: string;
+  state: string;
+  postcode: string;
+  country: string;
+  timeZone: string;
+  
+  // Communication Preferences
+  appointmentReminders: string[];
+  marketingMessages: boolean;
+  
+  // NDIS Details
+  ndisParticipantNumber: string;
+  ndisFundingType: string;
+  ndisStartDate: string;
+  ndisEndDate: string;
+  ndisAmountRemaining: string;
+  
+  // Clinical & Case Info
   dateOfInjury: string;
-  injuryType: string;
+  primaryReason: string;
+  appointmentNotes: string;
+  concessionType: string;
+  insurer: string;
+  lawyerSolicitor: string;
+  
+  // Legal Issues
+  hasLegalIssues: boolean;
+  courtOrder: boolean;
+  detention: boolean;
+  communityService: boolean;
+  legalNotes: string;
+  
+  // Billing
+  invoiceTo: string;
+  emailInvoiceTo: string;
+  invoiceExtraInfo: string;
+  
+  // Emergency Contact
+  emergencyContactName: string;
+  emergencyContactRelationship: string;
+  emergencyContactPhone: string;
+  emergencyContactEmail: string;
+  
+  // Referral
+  referringPractitioner: string;
+  referralType: string;
   referralSource: string;
-  notes: string;
+  
   caseIds: string[];
 }
 
@@ -48,15 +104,71 @@ const ClientDetails = () => {
         
         const mockClient: ClientDetail = {
           id: clientId || '1',
-          name: 'John Doe',
+          // Personal Details
+          title: 'Mr',
+          firstName: 'John',
+          lastName: 'Doe',
+          preferredFirstName: 'Johnny',
           dateOfBirth: '1985-06-12',
+          sex: 'Male',
+          genderIdentity: 'Man',
+          pronouns: 'he/him',
+          culturalIdentity: 'Australian, Anglo-Celtic background',
+          
+          // Contact Information
           email: 'john.doe@example.com',
-          phone: '555-123-4567',
-          address: '123 Main St, Sydney NSW 2000',
+          mobilePhone: '0412 345 678',
+          alternatePhone: '02 9876 5432',
+          addressLine1: '123 Main Street',
+          addressLine2: 'Unit 5',
+          suburb: 'Sydney',
+          state: 'NSW',
+          postcode: '2000',
+          country: 'Australia',
+          timeZone: 'Australia/Sydney',
+          
+          // Communication Preferences
+          appointmentReminders: ['SMS', 'Email'],
+          marketingMessages: false,
+          
+          // NDIS Details
+          ndisParticipantNumber: '4300123456',
+          ndisFundingType: 'Plan Managed',
+          ndisStartDate: '2023-01-01',
+          ndisEndDate: '2024-12-31',
+          ndisAmountRemaining: '$45,000',
+          
+          // Clinical & Case Info
           dateOfInjury: '2023-01-15',
-          injuryType: 'Workplace Injury - Back',
+          primaryReason: 'Workplace Injury - Back and psychological adjustment',
+          appointmentNotes: 'Client has reported significant psychological distress following the workplace incident. Initial assessment indicates development of adjustment disorder with anxiety features. Prefers morning appointments.',
+          concessionType: 'Healthcare Card',
+          insurer: 'WorkCover NSW',
+          lawyerSolicitor: 'Smith & Partners Legal',
+          
+          // Legal Issues
+          hasLegalIssues: true,
+          courtOrder: false,
+          detention: false,
+          communityService: true,
+          legalNotes: 'Ongoing WorkCover claim. Currently under review for permanent impairment assessment. Legal representation secured for claim proceedings.',
+          
+          // Billing
+          invoiceTo: 'WorkCover NSW',
+          emailInvoiceTo: 'claims@workcover.nsw.gov.au',
+          invoiceExtraInfo: 'Claim Reference: WC-2023-045678. Please include claim number in all invoices.',
+          
+          // Emergency Contact
+          emergencyContactName: 'Sarah Doe',
+          emergencyContactRelationship: 'Spouse',
+          emergencyContactPhone: '0423 456 789',
+          emergencyContactEmail: 'sarah.doe@example.com',
+          
+          // Referral
+          referringPractitioner: 'Dr. Michael Chen',
+          referralType: 'GP Referral',
           referralSource: 'WorkCover Insurance',
-          notes: 'Client has reported significant psychological distress following the workplace incident. Initial assessment indicates development of adjustment disorder with anxiety features.',
+          
           caseIds: ['1', '2']
         };
         
@@ -136,139 +248,409 @@ const ClientDetails = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold mb-1">{client.name}</h1>
+          <h1 className="text-3xl font-bold mb-1">{client.firstName} {client.lastName}</h1>
           <p className="text-muted-foreground">
-            Client since {formatDate('2023-01-01')} | {client.injuryType}
+            DOB: {formatDate(client.dateOfBirth)} | Case Type: {client.primaryReason}
           </p>
         </div>
-        <Button asChild variant="outline">
-          <Link to="/clients">Back to Clients List</Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline">
+            <Link to="/clients">Back to Clients</Link>
+          </Button>
+          <Button asChild>
+            <Link to={`/clients/${clientId}/edit`}>Edit Profile</Link>
+          </Button>
+        </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="cases">Cases</TabsTrigger>
-          <TabsTrigger value="notes">Legal Notes</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="assessments">Assessments</TabsTrigger>
+          <TabsTrigger value="interviews">Interviews</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="md:col-span-2">
-              <CardHeader>
-                <CardTitle>Client Information</CardTitle>
-                <CardDescription>Personal and contact details</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Full Name</p>
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                      <p className="font-medium">{client.name}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Date of Birth</p>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <p className="font-medium">{formatDate(client.dateOfBirth)}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Phone</p>
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <p className="font-medium">{client.phone}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Email</p>
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <p className="font-medium">{client.email}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1 md:col-span-2">
-                    <p className="text-sm text-muted-foreground">Address</p>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <p className="font-medium">{client.address}</p>
-                    </div>
+        <TabsContent value="profile" className="space-y-6">
+          {/* Personal Details Section */}
+          <Card className="border-l-4 border-blue-500">
+            <CardHeader className="bg-blue-50">
+              <CardTitle className="text-blue-700">Personal Details</CardTitle>
+              <CardDescription>Basic personal information</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Title</p>
+                  <p className="text-base">{client.title}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">First Name</p>
+                  <p className="text-base font-medium">{client.firstName}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Last Name</p>
+                  <p className="text-base font-medium">{client.lastName}</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Preferred First Name</p>
+                  <p className="text-base">{client.preferredFirstName}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Date of Birth</p>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-base">{formatDate(client.dateOfBirth)}</p>
                   </div>
                 </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Sex</p>
+                  <p className="text-base">{client.sex}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Gender Identity</p>
+                  <p className="text-base">{client.genderIdentity}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Pronouns</p>
+                  <p className="text-base">{client.pronouns}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Cultural Identity / Language</p>
+                  <p className="text-base">{client.culturalIdentity}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                <Separator />
+          {/* Contact Information Section */}
+          <Card className="border-l-4 border-purple-500">
+            <CardHeader className="bg-purple-50">
+              <CardTitle className="text-purple-700">Contact Information</CardTitle>
+              <CardDescription>Contact details and address</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Email</p>
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-base">{client.email}</p>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Mobile Phone</p>
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-base">{client.mobilePhone}</p>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Alternate Phone</p>
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-base">{client.alternatePhone}</p>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Time Zone</p>
+                  <p className="text-base">{client.timeZone}</p>
+                </div>
+              </div>
+              
+              <Separator />
+              
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Address</p>
+                <div className="flex items-start gap-2">
+                  <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+                  <div>
+                    <p className="text-base">{client.addressLine1}</p>
+                    {client.addressLine2 && <p className="text-base">{client.addressLine2}</p>}
+                    <p className="text-base">{client.suburb} {client.state} {client.postcode}</p>
+                    <p className="text-base">{client.country}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <Separator />
+              
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Communication Preferences</p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline">Appointment Reminders: {client.appointmentReminders.join(', ')}</Badge>
+                  <Badge variant={client.marketingMessages ? "default" : "secondary"}>
+                    Marketing Messages: {client.marketingMessages ? 'Yes' : 'No'}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
+          {/* NDIS Details Section */}
+          {client.ndisParticipantNumber && (
+            <Card className="border-l-4 border-green-500">
+              <CardHeader className="bg-green-50">
+                <CardTitle className="text-green-700">NDIS Plan Details</CardTitle>
+                <CardDescription>National Disability Insurance Scheme information</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Date of Injury</p>
-                    <p className="font-medium">{formatDate(client.dateOfInjury)}</p>
+                    <p className="text-sm font-medium text-muted-foreground">Participant Number</p>
+                    <p className="text-base font-mono">{client.ndisParticipantNumber}</p>
                   </div>
-
                   <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Injury Type</p>
-                    <p className="font-medium">{client.injuryType}</p>
+                    <p className="text-sm font-medium text-muted-foreground">Funding Type</p>
+                    <Badge>{client.ndisFundingType}</Badge>
                   </div>
-
-                  <div className="space-y-1 md:col-span-2">
-                    <p className="text-sm text-muted-foreground">Referral Source</p>
-                    <p className="font-medium">{client.referralSource}</p>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Plan Start Date</p>
+                    <p className="text-base">{formatDate(client.ndisStartDate)}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Plan End Date</p>
+                    <p className="text-base">{formatDate(client.ndisEndDate)}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-muted-foreground">Amount Remaining</p>
+                    <p className="text-base font-semibold text-green-600">{client.ndisAmountRemaining}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
+          )}
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Case Summary</CardTitle>
-                <CardDescription>Active and pending cases</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {cases.map((caseItem) => (
-                    <div key={caseItem.id} className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">{caseItem.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {caseItem.type} • Updated {formatDate(caseItem.lastUpdated)}
-                        </p>
-                      </div>
-                      {renderStatusBadge(caseItem.status)}
-                    </div>
-                  ))}
+          {/* Clinical & Case Information Section */}
+          <Card className="border-l-4 border-orange-500">
+            <CardHeader className="bg-orange-50">
+              <CardTitle className="text-orange-700">Clinical & Case Information</CardTitle>
+              <CardDescription>Treatment and case details</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Date of Injury/Incident</p>
+                  <p className="text-base">{formatDate(client.dateOfInjury)}</p>
                 </div>
-              </CardContent>
-              <CardFooter>
-                <Button variant="outline" asChild className="w-full">
-                  <Link to={`/case-silo`}>
-                    <Archive className="h-4 w-4 mr-2" />
-                    View All Cases
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Concession Type</p>
+                  <Badge variant="outline">{client.concessionType}</Badge>
+                </div>
+                <div className="space-y-1 md:col-span-2">
+                  <p className="text-sm font-medium text-muted-foreground">Primary Reason for Service</p>
+                  <p className="text-base">{client.primaryReason}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Insurer</p>
+                  <p className="text-base">{client.insurer}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Lawyer/Solicitor</p>
+                  <p className="text-base">{client.lawyerSolicitor}</p>
+                </div>
+              </div>
+              
+              <Separator />
+              
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Appointment Notes</p>
+                <div className="bg-muted/50 p-3 rounded-md">
+                  <p className="text-sm whitespace-pre-wrap">{client.appointmentNotes}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          <Card className="mt-6">
+          {/* Legal Issues Section */}
+          {client.hasLegalIssues && (
+            <Card className="border-l-4 border-red-500">
+              <CardHeader className="bg-red-50">
+                <CardTitle className="text-red-700">Legal Issues</CardTitle>
+                <CardDescription>Active legal matters and court orders</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 pt-6">
+                <div className="flex flex-wrap gap-2">
+                  {client.courtOrder && <Badge variant="destructive">Court Order</Badge>}
+                  {client.detention && <Badge variant="destructive">Detention</Badge>}
+                  {client.communityService && <Badge variant="outline">Community Service</Badge>}
+                </div>
+                
+                {client.legalNotes && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">Legal Notes</p>
+                    <div className="bg-muted/50 p-3 rounded-md">
+                      <p className="text-sm whitespace-pre-wrap">{client.legalNotes}</p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Billing Information Section */}
+          <Card className="border-l-4 border-indigo-500">
+            <CardHeader className="bg-indigo-50">
+              <CardTitle className="text-indigo-700">Billing & Invoicing</CardTitle>
+              <CardDescription>Payment and invoicing details</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Invoice To</p>
+                  <p className="text-base">{client.invoiceTo}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Email Invoice To</p>
+                  <p className="text-base">{client.emailInvoiceTo}</p>
+                </div>
+              </div>
+              
+              {client.invoiceExtraInfo && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground">Additional Information</p>
+                  <div className="bg-muted/50 p-3 rounded-md">
+                    <p className="text-sm whitespace-pre-wrap">{client.invoiceExtraInfo}</p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Emergency Contact Section */}
+          <Card className="border-l-4 border-pink-500">
+            <CardHeader className="bg-pink-50">
+              <CardTitle className="text-pink-700">Emergency Contact</CardTitle>
+              <CardDescription>Emergency contact information</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Name</p>
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-base font-medium">{client.emergencyContactName}</p>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Relationship</p>
+                  <p className="text-base">{client.emergencyContactRelationship}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Phone</p>
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-base">{client.emergencyContactPhone}</p>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Email</p>
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-base">{client.emergencyContactEmail}</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Referral Information Section */}
+          <Card className="border-l-4 border-teal-500">
+            <CardHeader className="bg-teal-50">
+              <CardTitle className="text-teal-700">Referral Information</CardTitle>
+              <CardDescription>Referral source and details</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Referring Practitioner</p>
+                  <p className="text-base">{client.referringPractitioner}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Referral Type</p>
+                  <Badge>{client.referralType}</Badge>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Referral Source</p>
+                  <p className="text-base">{client.referralSource}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Case Summary Card */}
+
+          <Card>
             <CardHeader>
-              <CardTitle>Client Notes</CardTitle>
-              <CardDescription>Important information about the client</CardDescription>
+              <CardTitle>Case Summary</CardTitle>
+              <CardDescription>Active and pending cases</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="bg-muted/50 p-3 rounded-md whitespace-pre-wrap">
-                {client.notes}
+              <div className="space-y-4">
+                {cases.map((caseItem) => (
+                  <div key={caseItem.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{caseItem.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {caseItem.type} • Updated {formatDate(caseItem.lastUpdated)}
+                      </p>
+                    </div>
+                    {renderStatusBadge(caseItem.status)}
+                  </div>
+                ))}
               </div>
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" asChild className="w-full">
+                <Link to={`/case-silo`}>
+                  <Archive className="h-4 w-4 mr-2" />
+                  View All Cases
+                </Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="assessments">
+          <Card>
+            <CardHeader>
+              <CardTitle>Assessments</CardTitle>
+              <CardDescription>Completed psychological assessments</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Assessment history will be displayed here.</p>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="cases">
+        <TabsContent value="interviews">
+          <Card>
+            <CardHeader>
+              <CardTitle>Interviews</CardTitle>
+              <CardDescription>Client interview records</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Interview records will be displayed here.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="documents">
+          <Card>
+            <CardHeader>
+              <CardTitle>Documents</CardTitle>
+              <CardDescription>Uploaded documents and files</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Document library will be displayed here.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="cases" className="hidden">
           <Card>
             <CardHeader>
               <CardTitle>Client Cases</CardTitle>
@@ -322,7 +704,7 @@ const ClientDetails = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="notes">
+        <TabsContent value="notes" className="hidden">
           <Card>
             <CardHeader>
               <CardTitle>Legal Notes</CardTitle>
