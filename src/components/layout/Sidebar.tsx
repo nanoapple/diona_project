@@ -24,7 +24,8 @@ import {
   Brain,
   BookOpen,
   Database,
-  Store
+  Store,
+  MoreVertical
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -65,41 +66,105 @@ const Sidebar = () => {
     );
   };
 
+  const ModuleNavItem = ({ 
+    to, 
+    icon: Icon, 
+    label, 
+    tier 
+  }: { 
+    to: string; 
+    icon: any; 
+    label: string; 
+    tier: 'core' | 'professional' | 'institutional';
+  }) => {
+    const isActive = location.pathname === to || 
+                    (to.includes('/interview') && location.pathname.includes('/interview')) ||
+                    (to.includes('/clients') && location.pathname.includes('/client-details')) ||
+                    (to.includes('/legal-tasks') && location.pathname.includes('/legal-tasks')) ||
+                    (to.includes('/schedule') && location.pathname.includes('/schedule'));
+    
+    const tierColors = {
+      core: {
+        bg: "bg-green-500/10 hover:bg-green-500/20",
+        border: "border-green-500/20",
+        text: "text-green-700 dark:text-green-400",
+        icon: "text-green-600 dark:text-green-400",
+        active: "bg-green-500/20 border-green-500/40"
+      },
+      professional: {
+        bg: "bg-blue-500/10 hover:bg-blue-500/20",
+        border: "border-blue-500/20",
+        text: "text-blue-700 dark:text-blue-400",
+        icon: "text-blue-600 dark:text-blue-400",
+        active: "bg-blue-500/20 border-blue-500/40"
+      },
+      institutional: {
+        bg: "bg-purple-500/10 hover:bg-purple-500/20",
+        border: "border-purple-500/20",
+        text: "text-purple-700 dark:text-purple-400",
+        icon: "text-purple-600 dark:text-purple-400",
+        active: "bg-purple-500/20 border-purple-500/40"
+      }
+    };
+
+    const colors = tierColors[tier];
+    
+    return (
+      <Link to={to} className="block mb-2">
+        <div
+          className={cn(
+            "w-full px-3 py-2 rounded-md border transition-all flex items-center gap-3",
+            colors.bg,
+            colors.border,
+            isActive ? colors.active : "",
+            isActive ? colors.text : colors.text
+          )}
+        >
+          <Icon size={18} className={colors.icon} />
+          {!collapsed && (
+            <>
+              <span className="flex-1 font-medium text-sm">{label}</span>
+              <MoreVertical size={16} className="shrink-0 opacity-60" />
+            </>
+          )}
+        </div>
+      </Link>
+    );
+  };
+
   // Define navigation items based on user role
-  const getNavItems = () => {
+  const getCoreModules = () => [
+    { to: "/schedule", icon: Calendar, label: "Appointment", tier: 'core' as const },
+    { to: "/clients", icon: Users, label: "Clients", tier: 'core' as const },
+    { to: "/case-silo", icon: Archive, label: "Case Silo", tier: 'core' as const },
+    { to: "/assessments", icon: ClipboardCheck, label: "Assessments", tier: 'core' as const },
+  ];
+
+  const getOtherModules = () => [
+    { to: "/reports", icon: Book, label: "Reports", tier: 'professional' as const },
+    { to: "/jitai", icon: Brain, label: "J.I.T.A.I.", tier: 'institutional' as const },
+    { to: "/knowledge", icon: BookOpen, label: "Knowledge", tier: 'professional' as const },
+    { to: "/service-data", icon: Database, label: "Service Data", tier: 'institutional' as const }
+  ];
+
+  const getRoleSpecificItems = () => {
     const defaultCaseId = getDefaultCaseId();
     
-    const allItems = [
-      { to: "/dashboard", icon: CheckSquare, label: "Dashboard" },
-      { to: "/schedule", icon: Calendar, label: "Appointment" },
-      { to: "/clients", icon: Users, label: "Clients" },
-      { to: "/case-silo", icon: Archive, label: "Case Silo" },
-      { to: "/assessments", icon: ClipboardCheck, label: "Assessments" },
-      { to: "/reports", icon: Book, label: "Reports" },
-      { to: "/jitai", icon: Brain, label: "J.I.T.A.I." },
-      { to: "/knowledge", icon: BookOpen, label: "Knowledge" },
-      { to: "/service-data", icon: Database, label: "Service Data" }
-    ];
-
-    // Add role-specific items based on user role
-    const roleSpecificItems = {
+    const roleSpecificItems: Record<string, Array<{to: string; icon: any; label: string; tier: 'core' | 'professional' | 'institutional'}>> = {
       claimant: [
-        { to: "/ai-assistant", icon: MessageSquare, label: "AI Assistant" },
-        { to: "/documents", icon: FileText, label: "Documents" },
-        { to: `/interview/${defaultCaseId}`, icon: Mic, label: "Interview" },
+        { to: "/ai-assistant", icon: MessageSquare, label: "AI Assistant", tier: 'professional' as const },
+        { to: "/documents", icon: FileText, label: "Documents", tier: 'core' as const },
+        { to: `/interview/${defaultCaseId}`, icon: Mic, label: "Interview", tier: 'core' as const },
       ],
       lawyer: [
-        { to: "/legal-tasks", icon: ClipboardList, label: "Legal Tasks" },
-        { to: "/ai-assistant", icon: MessageSquare, label: "AI Assistant" },
-        { to: "/documents", icon: FileText, label: "Documents" },
+        { to: "/legal-tasks", icon: ClipboardList, label: "Legal Tasks", tier: 'institutional' as const },
+        { to: "/ai-assistant", icon: MessageSquare, label: "AI Assistant", tier: 'professional' as const },
+        { to: "/documents", icon: FileText, label: "Documents", tier: 'core' as const },
       ],
       psychologist: []
     };
 
-    return [
-      ...allItems,
-      ...(currentUser?.role ? roleSpecificItems[currentUser.role] || [] : [])
-    ];
+    return currentUser?.role ? roleSpecificItems[currentUser.role] || [] : [];
   };
 
   return (
@@ -126,8 +191,40 @@ const Sidebar = () => {
       </div>
       
       <div className="flex flex-col flex-grow p-3 space-y-2 overflow-y-auto">
-        {getNavItems().map((item) => (
-          <NavItem key={item.to} to={item.to} icon={item.icon} label={item.label} />
+        {/* Dashboard - Keep as simple nav item */}
+        <NavItem to="/dashboard" icon={CheckSquare} label="Dashboard" />
+        
+        {/* Core Modules */}
+        {getCoreModules().map((module) => (
+          <ModuleNavItem 
+            key={module.to} 
+            to={module.to} 
+            icon={module.icon} 
+            label={module.label}
+            tier={module.tier}
+          />
+        ))}
+        
+        {/* Other Modules */}
+        {getOtherModules().map((module) => (
+          <ModuleNavItem 
+            key={module.to} 
+            to={module.to} 
+            icon={module.icon} 
+            label={module.label}
+            tier={module.tier}
+          />
+        ))}
+        
+        {/* Role-specific Items */}
+        {getRoleSpecificItems().map((item) => (
+          <ModuleNavItem 
+            key={item.to} 
+            to={item.to} 
+            icon={item.icon} 
+            label={item.label}
+            tier={item.tier}
+          />
         ))}
       </div>
 
