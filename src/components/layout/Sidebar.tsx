@@ -58,8 +58,27 @@ const Sidebar = () => {
     return enabledModules[modulePath] !== false;
   };
   
-  const navigateToModuleSettings = (tier: string) => {
-    navigate(`/module-marketplace?category=${tier}`);
+  // Mapping of module paths to their marketplace categories
+  const moduleToCategory: Record<string, string> = {
+    "/schedule": "Core Platform",
+    "/clients": "Core Platform",
+    "/case-silo": "Core Platform",
+    "/assessments": "Core Platform",
+    "/documents": "Core Platform",
+    "/reports": "Clinical Workflow",
+    "/jitai": "Collaboration & Client Engagement",
+    "/knowledge": "Knowledge & Professional Development",
+    "/service-data": "Compliance & Operations",
+    "/legal-tasks": "Collaboration & Client Engagement",
+    "/ai-assistant": "Clinical Workflow",
+    "/interview": "Core Platform",
+  };
+  
+  const navigateToModuleSettings = (modulePath: string) => {
+    const category = moduleToCategory[modulePath];
+    if (category) {
+      navigate(`/module-marketplace?category=${encodeURIComponent(category)}`);
+    }
   };
 
   // Get default case ID for interview link (in real app, this would be fetched from API)
@@ -187,7 +206,7 @@ const Sidebar = () => {
                 {enabled ? 'Disable Module' : 'Enable Module'}
               </DropdownMenuItem>
               {!isCore && (
-                <DropdownMenuItem onClick={() => navigateToModuleSettings(tier)}>
+                <DropdownMenuItem onClick={() => navigateToModuleSettings(to)}>
                   <Settings size={16} className="mr-2" />
                   Module Settings
                 </DropdownMenuItem>
