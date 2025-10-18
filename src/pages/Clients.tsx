@@ -16,14 +16,74 @@ import AddClientDialog from '@/components/clients/AddClientDialog';
 
 interface Client {
   id: string;
+  // Personal Details
+  title?: string;
+  firstName?: string;
+  lastName?: string;
   name: string;
+  preferredFirstName?: string;
   dateOfBirth: string;
+  sex?: string;
+  genderIdentity?: string;
+  pronouns?: string;
+  culturalIdentity?: string;
+  
+  // Contact
   email: string;
   phone: string;
+  mobilePhone?: string;
+  alternatePhone?: string;
   address: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  suburb?: string;
+  state?: string;
+  postcode?: string;
+  country?: string;
+  timeZone?: string;
+  
+  // Communication
+  appointmentReminders?: string[];
+  marketingMessages?: boolean;
+  
+  // NDIS
+  ndisParticipantNumber?: string;
+  ndisFundingType?: string;
+  ndisStartDate?: string;
+  ndisEndDate?: string;
+  ndisAmountRemaining?: string;
+  
+  // Clinical
   dateOfInjury: string;
   injuryType: string;
+  primaryReason?: string;
+  concessionType?: string;
+  insurer?: string;
+  lawyerSolicitor?: string;
+  
+  // Legal
+  hasLegalIssues?: boolean;
+  courtOrder?: boolean;
+  detention?: boolean;
+  communityService?: boolean;
+  legalNotes?: string;
+  
+  // Billing
+  invoiceTo?: string;
+  emailInvoiceTo?: string;
+  invoiceExtraInfo?: string;
+  
+  // Emergency Contact
+  emergencyContactName?: string;
+  emergencyContactRelationship?: string;
+  emergencyContactPhone?: string;
+  emergencyContactEmail?: string;
+  
+  // Referral
   referralSource: string;
+  referringPractitioner?: string;
+  referralType?: string;
+  
   notes: string;
   assessments: Assessment[];
   interviews: Interview[];
@@ -62,15 +122,75 @@ const Clients = () => {
   const [clients, setClients] = useState<Client[]>([
     {
       id: '1',
+      // Personal
+      title: 'Mr',
+      firstName: 'John',
+      lastName: 'Doe',
       name: 'John Doe',
+      preferredFirstName: 'Johnny',
       dateOfBirth: '1985-06-12',
+      sex: 'Male',
+      genderIdentity: 'Man',
+      pronouns: 'he/him',
+      culturalIdentity: 'Australian, Anglo-Celtic background',
+      
+      // Contact
       email: 'john.doe@example.com',
-      phone: '555-123-4567',
-      address: '123 Main St, Sydney NSW 2000',
+      phone: '0412 345 678',
+      mobilePhone: '0412 345 678',
+      alternatePhone: '02 9876 5432',
+      address: '123 Main St, Unit 5, Sydney NSW 2000',
+      addressLine1: '123 Main Street',
+      addressLine2: 'Unit 5',
+      suburb: 'Sydney',
+      state: 'NSW',
+      postcode: '2000',
+      country: 'Australia',
+      timeZone: 'Australia/Sydney',
+      
+      // Communication
+      appointmentReminders: ['SMS', 'Email'],
+      marketingMessages: false,
+      
+      // NDIS
+      ndisParticipantNumber: '4300123456',
+      ndisFundingType: 'Plan Managed',
+      ndisStartDate: '2023-01-01',
+      ndisEndDate: '2024-12-31',
+      ndisAmountRemaining: '$45,000',
+      
+      // Clinical
       dateOfInjury: '2023-01-15',
       injuryType: 'Workplace Injury - Back',
+      primaryReason: 'Workplace Injury - Back and psychological adjustment',
+      concessionType: 'Healthcare Card',
+      insurer: 'WorkCover NSW',
+      lawyerSolicitor: 'Smith & Partners Legal',
+      
+      // Legal
+      hasLegalIssues: true,
+      courtOrder: false,
+      detention: false,
+      communityService: true,
+      legalNotes: 'Ongoing WorkCover claim. Currently under review for permanent impairment assessment. Legal representation secured for claim proceedings.',
+      
+      // Billing
+      invoiceTo: 'WorkCover NSW',
+      emailInvoiceTo: 'claims@workcover.nsw.gov.au',
+      invoiceExtraInfo: 'Claim Reference: WC-2023-045678. Please include claim number in all invoices.',
+      
+      // Emergency Contact
+      emergencyContactName: 'Sarah Doe',
+      emergencyContactRelationship: 'Spouse',
+      emergencyContactPhone: '0423 456 789',
+      emergencyContactEmail: 'sarah.doe@example.com',
+      
+      // Referral
       referralSource: 'WorkCover Insurance',
-      notes: 'Client has reported significant psychological distress following the workplace incident. Initial assessment indicates development of adjustment disorder with anxiety features.',
+      referringPractitioner: 'Dr. Michael Chen',
+      referralType: 'GP Referral',
+      
+      notes: 'Client has reported significant psychological distress following the workplace incident. Initial assessment indicates development of adjustment disorder with anxiety features. Prefers morning appointments.',
       assessments: [
         {
           id: '1',
@@ -121,15 +241,75 @@ const Clients = () => {
     },
     {
       id: '2',
+      // Personal
+      title: 'Ms',
+      firstName: 'Jane',
+      lastName: 'Smith',
       name: 'Jane Smith',
+      preferredFirstName: 'Jane',
       dateOfBirth: '1978-09-23',
+      sex: 'Female',
+      genderIdentity: 'Woman',
+      pronouns: 'she/her',
+      culturalIdentity: 'Australian, South Asian heritage',
+      
+      // Contact
       email: 'jane.smith@example.com',
-      phone: '555-987-6543',
+      phone: '0456 789 012',
+      mobilePhone: '0456 789 012',
+      alternatePhone: '03 8765 4321',
       address: '456 Park Ave, Melbourne VIC 3000',
+      addressLine1: '456 Park Avenue',
+      addressLine2: '',
+      suburb: 'Melbourne',
+      state: 'VIC',
+      postcode: '3000',
+      country: 'Australia',
+      timeZone: 'Australia/Melbourne',
+      
+      // Communication
+      appointmentReminders: ['Email', 'SMS'],
+      marketingMessages: true,
+      
+      // NDIS
+      ndisParticipantNumber: '4300654321',
+      ndisFundingType: 'Self Managed',
+      ndisStartDate: '2023-07-01',
+      ndisEndDate: '2025-06-30',
+      ndisAmountRemaining: '$38,500',
+      
+      // Clinical
       dateOfInjury: '2023-02-05',
       injuryType: 'Motor Vehicle Accident',
+      primaryReason: 'Post-traumatic stress and anxiety following motor vehicle accident',
+      concessionType: 'Pension Card',
+      insurer: 'TAC Victoria',
+      lawyerSolicitor: 'Smith & Associates Law Firm',
+      
+      // Legal
+      hasLegalIssues: true,
+      courtOrder: false,
+      detention: false,
+      communityService: false,
+      legalNotes: 'Third-party claim in progress with TAC. Awaiting independent medical examination report. Legal proceedings expected to continue for 12-18 months.',
+      
+      // Billing
+      invoiceTo: 'TAC Victoria',
+      emailInvoiceTo: 'claims@tac.vic.gov.au',
+      invoiceExtraInfo: 'TAC Claim Number: TAC-2023-789012. Include claim number and client name on all correspondence.',
+      
+      // Emergency Contact
+      emergencyContactName: 'Robert Smith',
+      emergencyContactRelationship: 'Brother',
+      emergencyContactPhone: '0487 654 321',
+      emergencyContactEmail: 'robert.smith@example.com',
+      
+      // Referral
       referralSource: 'Smith & Associates Law Firm',
-      notes: 'Client was involved in a significant motor vehicle accident as a passenger. Displaying symptoms consistent with PTSD including flashbacks, avoidance behaviors, and heightened anxiety when in vehicles.',
+      referringPractitioner: 'Dr. Emily Watson',
+      referralType: 'Legal Referral',
+      
+      notes: 'Client was involved in a significant motor vehicle accident as a passenger. Displaying symptoms consistent with PTSD including flashbacks, avoidance behaviors, and heightened anxiety when in vehicles. Unable to use public transport.',
       assessments: [
         {
           id: '3',
@@ -287,128 +467,336 @@ const Clients = () => {
               <TabsTrigger value="documents">Documents</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="profile">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Client Information</CardTitle>
-                  <CardDescription>
-                    Personal information and case details
-                  </CardDescription>
+            <TabsContent value="profile" className="space-y-6">
+              {/* Personal Details Section */}
+              <Card className="border-l-4 border-blue-500">
+                <CardHeader className="bg-blue-50">
+                  <CardTitle className="text-blue-700">Personal Details</CardTitle>
+                  <CardDescription>Basic personal information</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label>Full Name</Label>
-                      {editMode ? (
-                        <Input 
-                          value={editedClient.name} 
-                          onChange={(e) => setEditedClient({...editedClient, name: e.target.value})}
-                        />
-                      ) : (
-                        <p>{activeClient.name}</p>
-                      )}
+                <CardContent className="space-y-4 pt-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">Title</p>
+                      <p className="text-base">{activeClient.title || 'N/A'}</p>
                     </div>
-
-                    <div className="space-y-2">
-                      <Label>Date of Birth</Label>
-                      {editMode ? (
-                        <Input 
-                          type="date"
-                          value={editedClient.dateOfBirth} 
-                          onChange={(e) => setEditedClient({...editedClient, dateOfBirth: e.target.value})}
-                        />
-                      ) : (
-                        <p>{formatDate(activeClient.dateOfBirth)}</p>
-                      )}
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">First Name</p>
+                      <p className="text-base font-medium">{activeClient.firstName || activeClient.name.split(' ')[0]}</p>
                     </div>
-
-                    <div className="space-y-2">
-                      <Label>Email</Label>
-                      {editMode ? (
-                        <Input 
-                          value={editedClient.email} 
-                          onChange={(e) => setEditedClient({...editedClient, email: e.target.value})}
-                        />
-                      ) : (
-                        <p>{activeClient.email}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Phone</Label>
-                      {editMode ? (
-                        <Input 
-                          value={editedClient.phone} 
-                          onChange={(e) => setEditedClient({...editedClient, phone: e.target.value})}
-                        />
-                      ) : (
-                        <p>{activeClient.phone}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2 md:col-span-2">
-                      <Label>Address</Label>
-                      {editMode ? (
-                        <Input 
-                          value={editedClient.address} 
-                          onChange={(e) => setEditedClient({...editedClient, address: e.target.value})}
-                        />
-                      ) : (
-                        <p>{activeClient.address}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Date of Injury/Incident</Label>
-                      {editMode ? (
-                        <Input 
-                          type="date"
-                          value={editedClient.dateOfInjury} 
-                          onChange={(e) => setEditedClient({...editedClient, dateOfInjury: e.target.value})}
-                        />
-                      ) : (
-                        <p>{formatDate(activeClient.dateOfInjury)}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Injury Type</Label>
-                      {editMode ? (
-                        <Input 
-                          value={editedClient.injuryType} 
-                          onChange={(e) => setEditedClient({...editedClient, injuryType: e.target.value})}
-                        />
-                      ) : (
-                        <p>{activeClient.injuryType}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Referral Source</Label>
-                      {editMode ? (
-                        <Input 
-                          value={editedClient.referralSource} 
-                          onChange={(e) => setEditedClient({...editedClient, referralSource: e.target.value})}
-                        />
-                      ) : (
-                        <p>{activeClient.referralSource}</p>
-                      )}
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">Last Name</p>
+                      <p className="text-base font-medium">{activeClient.lastName || activeClient.name.split(' ')[1]}</p>
                     </div>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label>Clinical Notes</Label>
-                    {editMode ? (
-                      <Textarea 
-                        value={editedClient.notes} 
-                        onChange={(e) => setEditedClient({...editedClient, notes: e.target.value})}
-                        className="min-h-[150px]"
-                      />
-                    ) : (
-                      <div className="bg-muted/50 p-3 rounded-md whitespace-pre-wrap">
-                        {activeClient.notes}
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {activeClient.preferredFirstName && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Preferred First Name</p>
+                        <p className="text-base">{activeClient.preferredFirstName}</p>
                       </div>
                     )}
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">Date of Birth</p>
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        <p className="text-base">{formatDate(activeClient.dateOfBirth)}</p>
+                      </div>
+                    </div>
+                    {activeClient.sex && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Sex</p>
+                        <p className="text-base">{activeClient.sex}</p>
+                      </div>
+                    )}
+                    {activeClient.genderIdentity && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Gender Identity</p>
+                        <p className="text-base">{activeClient.genderIdentity}</p>
+                      </div>
+                    )}
+                    {activeClient.pronouns && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Pronouns</p>
+                        <p className="text-base">{activeClient.pronouns}</p>
+                      </div>
+                    )}
+                    {activeClient.culturalIdentity && (
+                      <div className="space-y-1 md:col-span-2">
+                        <p className="text-sm font-medium text-muted-foreground">Cultural Identity / Language</p>
+                        <p className="text-base">{activeClient.culturalIdentity}</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Contact Information Section */}
+              <Card className="border-l-4 border-purple-500">
+                <CardHeader className="bg-purple-50">
+                  <CardTitle className="text-purple-700">Contact Information</CardTitle>
+                  <CardDescription>Contact details and address</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">Email</p>
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-muted-foreground" />
+                        <p className="text-base">{activeClient.email}</p>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">Mobile Phone</p>
+                      <p className="text-base">{activeClient.mobilePhone || activeClient.phone}</p>
+                    </div>
+                    {activeClient.alternatePhone && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Alternate Phone</p>
+                        <p className="text-base">{activeClient.alternatePhone}</p>
+                      </div>
+                    )}
+                    {activeClient.timeZone && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Time Zone</p>
+                        <p className="text-base">{activeClient.timeZone}</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">Address</p>
+                    <div className="bg-muted/30 p-3 rounded-md">
+                      <p className="text-base">{activeClient.address}</p>
+                    </div>
+                  </div>
+                  
+                  {activeClient.appointmentReminders && activeClient.appointmentReminders.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-muted-foreground">Communication Preferences</p>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="outline">Reminders: {activeClient.appointmentReminders.join(', ')}</Badge>
+                        {activeClient.marketingMessages !== undefined && (
+                          <Badge variant={activeClient.marketingMessages ? "default" : "secondary"}>
+                            Marketing: {activeClient.marketingMessages ? 'Yes' : 'No'}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* NDIS Details Section */}
+              {activeClient.ndisParticipantNumber && (
+                <Card className="border-l-4 border-green-500">
+                  <CardHeader className="bg-green-50">
+                    <CardTitle className="text-green-700">NDIS Plan Details</CardTitle>
+                    <CardDescription>National Disability Insurance Scheme information</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4 pt-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Participant Number</p>
+                        <p className="text-base font-mono">{activeClient.ndisParticipantNumber}</p>
+                      </div>
+                      {activeClient.ndisFundingType && (
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-muted-foreground">Funding Type</p>
+                          <Badge>{activeClient.ndisFundingType}</Badge>
+                        </div>
+                      )}
+                      {activeClient.ndisStartDate && (
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-muted-foreground">Plan Start Date</p>
+                          <p className="text-base">{formatDate(activeClient.ndisStartDate)}</p>
+                        </div>
+                      )}
+                      {activeClient.ndisEndDate && (
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-muted-foreground">Plan End Date</p>
+                          <p className="text-base">{formatDate(activeClient.ndisEndDate)}</p>
+                        </div>
+                      )}
+                      {activeClient.ndisAmountRemaining && (
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-muted-foreground">Amount Remaining</p>
+                          <p className="text-base font-semibold text-green-600">{activeClient.ndisAmountRemaining}</p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Clinical & Case Information Section */}
+              <Card className="border-l-4 border-orange-500">
+                <CardHeader className="bg-orange-50">
+                  <CardTitle className="text-orange-700">Clinical & Case Information</CardTitle>
+                  <CardDescription>Treatment and case details</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">Date of Injury/Incident</p>
+                      <p className="text-base">{formatDate(activeClient.dateOfInjury)}</p>
+                    </div>
+                    {activeClient.concessionType && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Concession Type</p>
+                        <Badge variant="outline">{activeClient.concessionType}</Badge>
+                      </div>
+                    )}
+                    <div className="space-y-1 md:col-span-2">
+                      <p className="text-sm font-medium text-muted-foreground">Primary Reason for Service</p>
+                      <p className="text-base">{activeClient.primaryReason || activeClient.injuryType}</p>
+                    </div>
+                    {activeClient.insurer && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Insurer</p>
+                        <p className="text-base">{activeClient.insurer}</p>
+                      </div>
+                    )}
+                    {activeClient.lawyerSolicitor && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Lawyer/Solicitor</p>
+                        <p className="text-base">{activeClient.lawyerSolicitor}</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">Clinical Notes</p>
+                    <div className="bg-muted/50 p-3 rounded-md">
+                      <p className="text-sm whitespace-pre-wrap">{activeClient.notes}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Legal Issues Section */}
+              {activeClient.hasLegalIssues && (
+                <Card className="border-l-4 border-red-500">
+                  <CardHeader className="bg-red-50">
+                    <CardTitle className="text-red-700">Legal Issues</CardTitle>
+                    <CardDescription>Active legal matters and court orders</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4 pt-6">
+                    <div className="flex flex-wrap gap-2">
+                      {activeClient.courtOrder && <Badge variant="destructive">Court Order</Badge>}
+                      {activeClient.detention && <Badge variant="destructive">Detention</Badge>}
+                      {activeClient.communityService && <Badge variant="outline">Community Service</Badge>}
+                    </div>
+                    
+                    {activeClient.legalNotes && (
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-muted-foreground">Legal Notes</p>
+                        <div className="bg-muted/50 p-3 rounded-md">
+                          <p className="text-sm whitespace-pre-wrap">{activeClient.legalNotes}</p>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Billing Information Section */}
+              {activeClient.invoiceTo && (
+                <Card className="border-l-4 border-indigo-500">
+                  <CardHeader className="bg-indigo-50">
+                    <CardTitle className="text-indigo-700">Billing & Invoicing</CardTitle>
+                    <CardDescription>Payment and invoicing details</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4 pt-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Invoice To</p>
+                        <p className="text-base">{activeClient.invoiceTo}</p>
+                      </div>
+                      {activeClient.emailInvoiceTo && (
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-muted-foreground">Email Invoice To</p>
+                          <p className="text-base">{activeClient.emailInvoiceTo}</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {activeClient.invoiceExtraInfo && (
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-muted-foreground">Additional Information</p>
+                        <div className="bg-muted/50 p-3 rounded-md">
+                          <p className="text-sm whitespace-pre-wrap">{activeClient.invoiceExtraInfo}</p>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Emergency Contact Section */}
+              {activeClient.emergencyContactName && (
+                <Card className="border-l-4 border-pink-500">
+                  <CardHeader className="bg-pink-50">
+                    <CardTitle className="text-pink-700">Emergency Contact</CardTitle>
+                    <CardDescription>Emergency contact information</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4 pt-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Name</p>
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4 text-muted-foreground" />
+                          <p className="text-base font-medium">{activeClient.emergencyContactName}</p>
+                        </div>
+                      </div>
+                      {activeClient.emergencyContactRelationship && (
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-muted-foreground">Relationship</p>
+                          <p className="text-base">{activeClient.emergencyContactRelationship}</p>
+                        </div>
+                      )}
+                      {activeClient.emergencyContactPhone && (
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-muted-foreground">Phone</p>
+                          <p className="text-base">{activeClient.emergencyContactPhone}</p>
+                        </div>
+                      )}
+                      {activeClient.emergencyContactEmail && (
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-muted-foreground">Email</p>
+                          <p className="text-base">{activeClient.emergencyContactEmail}</p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Referral Information Section */}
+              <Card className="border-l-4 border-teal-500">
+                <CardHeader className="bg-teal-50">
+                  <CardTitle className="text-teal-700">Referral Information</CardTitle>
+                  <CardDescription>Referral source and details</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {activeClient.referringPractitioner && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Referring Practitioner</p>
+                        <p className="text-base">{activeClient.referringPractitioner}</p>
+                      </div>
+                    )}
+                    {activeClient.referralType && (
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-muted-foreground">Referral Type</p>
+                        <Badge>{activeClient.referralType}</Badge>
+                      </div>
+                    )}
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-muted-foreground">Referral Source</p>
+                      <p className="text-base">{activeClient.referralSource}</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
