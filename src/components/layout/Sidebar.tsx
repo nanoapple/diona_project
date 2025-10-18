@@ -1,11 +1,17 @@
 
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '../../contexts/AuthContext';
 import SelfCarePortal from './SelfCarePortal';
 import EmergencyPortal from './EmergencyPortal';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
   MessageSquare, 
   FileText, 
@@ -25,17 +31,36 @@ import {
   BookOpen,
   Database,
   Store,
-  MoreVertical
+  MoreVertical,
+  Settings,
+  Power
 } from 'lucide-react';
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { currentUser } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [showSelfCare, setShowSelfCare] = useState(false);
   const [showEmergency, setShowEmergency] = useState(false);
+  const [enabledModules, setEnabledModules] = useState<Record<string, boolean>>({});
 
   const toggleSidebar = () => setCollapsed(!collapsed);
+  
+  const toggleModule = (modulePath: string) => {
+    setEnabledModules(prev => ({
+      ...prev,
+      [modulePath]: prev[modulePath] === false ? true : false
+    }));
+  };
+  
+  const isModuleEnabled = (modulePath: string) => {
+    return enabledModules[modulePath] !== false;
+  };
+  
+  const navigateToModuleSettings = (tier: string) => {
+    navigate(`/module-marketplace?category=${tier}`);
+  };
 
   // Get default case ID for interview link (in real app, this would be fetched from API)
   const getDefaultCaseId = () => {
@@ -83,6 +108,9 @@ const Sidebar = () => {
                     (to.includes('/legal-tasks') && location.pathname.includes('/legal-tasks')) ||
                     (to.includes('/schedule') && location.pathname.includes('/schedule'));
     
+    const enabled = isModuleEnabled(to);
+    const isCore = tier === 'core';
+    
     const tierColors = {
       core: {
         bg: "bg-green-500/10",
@@ -91,7 +119,8 @@ const Sidebar = () => {
         icon: "text-green-600 dark:text-green-400",
         hover: "hover:bg-green-600 hover:text-white hover:border-green-600",
         hoverIcon: "group-hover:text-white",
-        active: "bg-green-600 border-green-600 text-white"
+        active: "bg-green-600 border-green-600 text-white",
+        disabled: "bg-gray-300/50 border-gray-400/30 text-gray-500"
       },
       professional: {
         bg: "bg-blue-500/10",
@@ -100,7 +129,8 @@ const Sidebar = () => {
         icon: "text-blue-600 dark:text-blue-400",
         hover: "hover:bg-blue-600 hover:text-white hover:border-blue-600",
         hoverIcon: "group-hover:text-white",
-        active: "bg-blue-600 border-blue-600 text-white"
+        active: "bg-blue-600 border-blue-600 text-white",
+        disabled: "bg-gray-300/50 border-gray-400/30 text-gray-500"
       },
       institutional: {
         bg: "bg-purple-500/10",
@@ -109,34 +139,63 @@ const Sidebar = () => {
         icon: "text-purple-600 dark:text-purple-400",
         hover: "hover:bg-purple-600 hover:text-white hover:border-purple-600",
         hoverIcon: "group-hover:text-white",
-        active: "bg-purple-600 border-purple-600 text-white"
+        active: "bg-purple-600 border-purple-600 text-white",
+        disabled: "bg-gray-300/50 border-gray-400/30 text-gray-500"
       }
     };
 
     const colors = tierColors[tier];
     
     return (
-      <Link to={to} className="block mb-2 group">
-        <div
-          className={cn(
-            "w-full px-3 py-2 rounded-md border transition-all flex items-center gap-3",
-            isActive ? colors.active : `${colors.bg} ${colors.border} ${colors.text} ${colors.hover}`
-          )}
-        >
-          <Icon size={18} className={cn(
-            isActive ? "text-white" : `${colors.icon} ${colors.hoverIcon}`
-          )} />
-          {!collapsed && (
-            <>
-              <span className="flex-1 font-medium text-sm">{label}</span>
-              <MoreVertical size={16} className={cn(
-                "shrink-0 opacity-60",
-                isActive ? "text-white" : colors.hoverIcon
-              )} />
-            </>
-          )}
-        </div>
-      </Link>
+      <div className="block mb-2 group relative">
+        <Link to={to} className={cn("block", !enabled && "pointer-events-none")}>
+          <div
+            className={cn(
+              "w-full px-3 py-2 rounded-md border transition-all flex items-center gap-3",
+              !enabled && colors.disabled,
+              enabled && (isActive ? colors.active : `${colors.bg} ${colors.border} ${colors.text} ${colors.hover}`)
+            )}
+          >
+            <Icon size={18} className={cn(
+              !enabled && "text-gray-400",
+              enabled && (isActive ? "text-white" : `${colors.icon} ${colors.hoverIcon}`)
+            )} />
+            {!collapsed && (
+              <>
+                <span className="flex-1 font-medium text-sm">{label}</span>
+              </>
+            )}
+          </div>
+        </Link>
+        
+        {!collapsed && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+              <button
+                className={cn(
+                  "absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-black/10",
+                  !enabled && "text-gray-400",
+                  enabled && (isActive ? "text-white" : "text-muted-foreground")
+                )}
+              >
+                <MoreVertical size={16} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => toggleModule(to)}>
+                <Power size={16} className="mr-2" />
+                {enabled ? 'Disable Module' : 'Enable Module'}
+              </DropdownMenuItem>
+              {!isCore && (
+                <DropdownMenuItem onClick={() => navigateToModuleSettings(tier)}>
+                  <Settings size={16} className="mr-2" />
+                  Module Settings
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
     );
   };
 
