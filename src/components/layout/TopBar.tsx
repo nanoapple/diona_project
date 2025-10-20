@@ -7,6 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { User } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { getInitials } from '@/lib/utils';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const TopBar = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ const TopBar = () => {
     <header className="border-b border-border bg-card z-10">
       <div className="flex h-16 items-center px-4 md:px-6">
         <div className="ml-auto flex items-center gap-4">
+          <ThemeToggle />
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
