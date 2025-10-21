@@ -315,12 +315,12 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
     { id: 'section-2', label: 'Contact', hue: 270, lightColor: 'purple' },
     { id: 'section-3', label: 'Communication', hue: 140, lightColor: 'green' },
     { id: 'section-4', label: 'NDIS', hue: 180, lightColor: 'cyan' },
-    { id: 'section-5', label: 'Consent', hue: 340, lightColor: 'pink' },
-    { id: 'section-6', label: 'Clinical', hue: 40, lightColor: 'amber' },
-    { id: 'section-7', label: 'Legal', hue: 0, lightColor: 'red' },
-    { id: 'section-8', label: 'Billing', hue: 120, lightColor: 'emerald' },
-    { id: 'section-9', label: 'Emergency', hue: 10, lightColor: 'orange' },
-    { id: 'section-10', label: 'Referral', hue: 280, lightColor: 'violet' },
+    { id: 'section-5', label: 'Consent', hue: 50, lightColor: 'amber' },
+    { id: 'section-6', label: 'Clinical', hue: 40, lightColor: 'rose' },
+    { id: 'section-7', label: 'Legal', hue: 340, lightColor: 'indigo' },
+    { id: 'section-8', label: 'Billing', hue: 50, lightColor: 'cyan' },
+    { id: 'section-9', label: 'Emergency', hue: 25, lightColor: 'orange' },
+    { id: 'section-10', label: 'Referral', hue: 300, lightColor: 'violet' },
   ];
 
   const getSectionButtonClass = (section: typeof sections[0]) => {
@@ -332,10 +332,9 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
         'purple': 'bg-purple-50 text-purple-700 border-purple-300 hover:bg-purple-100',
         'green': 'bg-green-50 text-green-700 border-green-300 hover:bg-green-100',
         'cyan': 'bg-cyan-50 text-cyan-700 border-cyan-300 hover:bg-cyan-100',
-        'pink': 'bg-pink-50 text-pink-700 border-pink-300 hover:bg-pink-100',
         'amber': 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100',
-        'red': 'bg-red-50 text-red-700 border-red-300 hover:bg-red-100',
-        'emerald': 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100',
+        'rose': 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100',
+        'indigo': 'bg-indigo-50 text-indigo-700 border-indigo-300 hover:bg-indigo-100',
         'orange': 'bg-orange-50 text-orange-700 border-orange-300 hover:bg-orange-100',
         'violet': 'bg-violet-50 text-violet-700 border-violet-300 hover:bg-violet-100',
       };
