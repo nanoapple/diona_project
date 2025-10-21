@@ -4,9 +4,10 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { format, startOfWeek, endOfWeek, addDays, isSameWeek, isSameDay } from 'date-fns';
-import { Plus, CheckCircle, AlertCircle, RotateCcw, XCircle, Check } from 'lucide-react';
+import { Plus, CheckCircle, AlertCircle, RotateCcw, XCircle, Check, Clock } from 'lucide-react';
 import CreateAppointmentDialog from '@/components/schedule/CreateAppointmentDialog';
 import AppointmentDetailsDialog from '@/components/schedule/AppointmentDetailsDialog';
+import WorkingHoursDialog from '@/components/schedule/WorkingHoursDialog';
 import { useTheme } from '@/components/ThemeProvider';
 
 const Schedule = () => {
@@ -20,6 +21,16 @@ const Schedule = () => {
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [isAppointmentDetailsOpen, setIsAppointmentDetailsOpen] = useState(false);
   const [showWeekends, setShowWeekends] = useState(true);
+  const [isWorkingHoursOpen, setIsWorkingHoursOpen] = useState(false);
+  const [workingHours, setWorkingHours] = useState({
+    Mon: { start: 9, end: 18 },
+    Tue: { start: 9, end: 18 },
+    Wed: { start: 9, end: 18 },
+    Thu: { start: 9, end: 18 },
+    Fri: { start: 9, end: 18 },
+    Sat: { start: 9, end: 18 },
+    Sun: { start: 9, end: 18 },
+  });
 
   const handleDateClick = (date: Date | undefined) => {
     if (date) {
@@ -44,12 +55,14 @@ const Schedule = () => {
     }
   };
 
-  // Generate time slots from 9:00 AM to 6:00 PM with 15-minute intervals
-  const generateTimeSlots = () => {
+  // Generate time slots based on working hours for a specific day
+  const generateTimeSlots = (dayName: string) => {
     const slots = [];
-    for (let hour = 9; hour <= 18; hour++) {
+    const hours = workingHours[dayName] || { start: 9, end: 18 };
+    
+    for (let hour = hours.start; hour <= hours.end; hour++) {
       for (let minute = 0; minute < 60; minute += 15) {
-        if (hour === 18 && minute > 0) break; // Stop at 6:00 PM
+        if (hour === hours.end && minute > 0) break; // Stop at end hour
         const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
         slots.push({
           time,
@@ -60,8 +73,6 @@ const Schedule = () => {
     }
     return slots;
   };
-
-  const timeSlots = generateTimeSlots();
 
   // Generate days of the week starting from Monday
   const generateWeekDays = () => {
@@ -385,6 +396,15 @@ const Schedule = () => {
           <Button
             variant="outline"
             size="sm"
+            onClick={() => setIsWorkingHoursOpen(true)}
+            className="text-xs"
+          >
+            <Clock className="h-4 w-4 mr-1" />
+            Working Hours
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setShowWeekends(!showWeekends)}
             className="text-xs"
           >
@@ -454,7 +474,7 @@ const Schedule = () => {
             </CardHeader>
             <CardContent className="p-0 h-full">
               <div className="space-y-0 overflow-y-auto h-[calc(65vh-140px)]">
-                {timeSlots.map((slot, slotIndex) => {
+                {generateTimeSlots(day.dayName).map((slot, slotIndex) => {
                   const slotId = `${day.dayName}-${slot.time}`;
                   const isSelected = selectedSlot === slotId;
                   const appointment = getAppointmentForSlot(day.dayName, slotIndex);
@@ -645,6 +665,14 @@ const Schedule = () => {
         onOpenChange={setIsAppointmentDetailsOpen}
         appointment={selectedAppointment}
         onStatusUpdate={handleStatusUpdate}
+      />
+
+      {/* Working Hours Dialog */}
+      <WorkingHoursDialog
+        open={isWorkingHoursOpen}
+        onOpenChange={setIsWorkingHoursOpen}
+        workingHours={workingHours}
+        onSave={(hours) => setWorkingHours(hours as any)}
       />
     </div>
   );
