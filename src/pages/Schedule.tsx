@@ -536,14 +536,14 @@ const Schedule = () => {
                         {/* Config icon in bottom left of last slot */}
                         {isLastSlot && (
                           <button
-                            className="absolute bottom-0.5 left-1 p-0.5 hover:bg-black/10 rounded transition-colors z-10"
+                            className="absolute top-1/2 left-1 -translate-y-1/2 p-0.5 hover:bg-black/10 rounded transition-colors z-10"
                             onClick={(e) => {
                               e.stopPropagation();
                               setActionsAppointment(appointment);
                               setIsActionsDialogOpen(true);
                             }}
                           >
-                            <Settings className="h-3 w-3 text-gray-600" />
+                            <Settings className="h-4 w-4 text-gray-800 stroke-[2.5]" />
                           </button>
                         )}
                         
