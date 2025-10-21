@@ -275,9 +275,9 @@ const ClientDetails = () => {
 
         <TabsContent value="profile" className="space-y-6">
           {/* Personal Details Section */}
-          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,18%,72%)]' : 'border-l-4 border-green-500'}>
+          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,15%,65%)]' : 'border-l-4 border-green-500'}>
             <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(140,15%,88%)]' : 'bg-green-50'}>
-              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,30%)]' : 'text-green-700'}>Personal Details</CardTitle>
+              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,25%)]' : 'text-green-700'}>Personal Details</CardTitle>
               <CardDescription>Basic personal information</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
@@ -329,9 +329,9 @@ const ClientDetails = () => {
           </Card>
 
           {/* Contact Information Section */}
-          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,18%,72%)]' : 'border-l-4 border-green-500'}>
+          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,15%,65%)]' : 'border-l-4 border-green-500'}>
             <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(140,15%,88%)]' : 'bg-green-50'}>
-              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,30%)]' : 'text-green-700'}>Contact Information</CardTitle>
+              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,25%)]' : 'text-green-700'}>Contact Information</CardTitle>
               <CardDescription>Contact details and address</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
@@ -394,9 +394,9 @@ const ClientDetails = () => {
 
           {/* NDIS Details Section */}
           {client.ndisParticipantNumber && (
-            <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,18%,72%)]' : 'border-l-4 border-green-500'}>
+            <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,15%,65%)]' : 'border-l-4 border-green-500'}>
               <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(140,15%,88%)]' : 'bg-green-50'}>
-                <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,30%)]' : 'text-green-700'}>NDIS Plan Details</CardTitle>
+                <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,25%)]' : 'text-green-700'}>NDIS Plan Details</CardTitle>
                 <CardDescription>National Disability Insurance Scheme information</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-6">
@@ -427,9 +427,9 @@ const ClientDetails = () => {
           )}
 
           {/* Clinical & Case Information Section */}
-          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,18%,72%)]' : 'border-l-4 border-green-500'}>
+          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,15%,65%)]' : 'border-l-4 border-green-500'}>
             <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(140,15%,88%)]' : 'bg-green-50'}>
-              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,30%)]' : 'text-green-700'}>Clinical & Case Information</CardTitle>
+              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,25%)]' : 'text-green-700'}>Clinical & Case Information</CardTitle>
               <CardDescription>Treatment and case details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
@@ -469,9 +469,9 @@ const ClientDetails = () => {
 
           {/* Legal Issues Section */}
           {client.hasLegalIssues && (
-            <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,18%,72%)]' : 'border-l-4 border-green-500'}>
+            <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,15%,65%)]' : 'border-l-4 border-green-500'}>
               <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(140,15%,88%)]' : 'bg-green-50'}>
-                <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,30%)]' : 'text-green-700'}>Legal Issues</CardTitle>
+                <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,25%)]' : 'text-green-700'}>Legal Issues</CardTitle>
                 <CardDescription>Active legal matters and court orders</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-6">
@@ -494,9 +494,9 @@ const ClientDetails = () => {
           )}
 
           {/* Billing Information Section */}
-          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,18%,72%)]' : 'border-l-4 border-green-500'}>
+          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,15%,65%)]' : 'border-l-4 border-green-500'}>
             <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(140,15%,88%)]' : 'bg-green-50'}>
-              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,30%)]' : 'text-green-700'}>Billing & Invoicing</CardTitle>
+              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,25%)]' : 'text-green-700'}>Billing & Invoicing</CardTitle>
               <CardDescription>Payment and invoicing details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
@@ -523,9 +523,9 @@ const ClientDetails = () => {
           </Card>
 
           {/* Emergency Contact Section */}
-          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,18%,72%)]' : 'border-l-4 border-green-500'}>
+          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,15%,65%)]' : 'border-l-4 border-green-500'}>
             <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(140,15%,88%)]' : 'bg-green-50'}>
-              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,30%)]' : 'text-green-700'}>Emergency Contact</CardTitle>
+              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,25%)]' : 'text-green-700'}>Emergency Contact</CardTitle>
               <CardDescription>Emergency contact information</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
@@ -560,9 +560,9 @@ const ClientDetails = () => {
           </Card>
 
           {/* Referral Information Section */}
-          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,18%,72%)]' : 'border-l-4 border-green-500'}>
+          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,15%,65%)]' : 'border-l-4 border-green-500'}>
             <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(140,15%,88%)]' : 'bg-green-50'}>
-              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,30%)]' : 'text-green-700'}>Referral Information</CardTitle>
+              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,25%)]' : 'text-green-700'}>Referral Information</CardTitle>
               <CardDescription>Referral source and details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
