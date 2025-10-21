@@ -7,8 +7,10 @@ import { format, startOfWeek, endOfWeek, addDays, isSameWeek, isSameDay } from '
 import { Plus, CheckCircle, AlertCircle, RotateCcw, XCircle, Check } from 'lucide-react';
 import CreateAppointmentDialog from '@/components/schedule/CreateAppointmentDialog';
 import AppointmentDetailsDialog from '@/components/schedule/AppointmentDetailsDialog';
+import { useTheme } from '@/components/ThemeProvider';
 
 const Schedule = () => {
+  const { theme } = useTheme();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedWeek, setSelectedWeek] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -318,6 +320,18 @@ const Schedule = () => {
 
   // Function to get appointment color based on type
   const getAppointmentColor = (type: string) => {
+    if (theme === 'e-ink') {
+      if (type === 'General Session') return 'bg-[hsl(30,15%,88%)] hover:bg-[hsl(30,15%,82%)]';
+      if (type === 'Intake Session') return 'bg-[hsl(140,12%,88%)] hover:bg-[hsl(140,12%,82%)]';
+      if (type === 'Discharge Session') return 'bg-[hsl(350,12%,88%)] hover:bg-[hsl(350,12%,82%)]';
+      if (type === 'Assessment Session') return 'bg-[hsl(217,10%,88%)] hover:bg-[hsl(217,10%,82%)]';
+      if (type === 'Team Meeting (Internal)') return 'bg-[hsl(180,12%,88%)] hover:bg-[hsl(180,12%,82%)]';
+      if (type === 'Team Meeting (External)') return 'bg-[hsl(190,12%,88%)] hover:bg-[hsl(190,12%,82%)]';
+      if (type === 'Supervision') return 'bg-[hsl(270,10%,88%)] hover:bg-[hsl(270,10%,82%)]';
+      if (type === 'Administrative Task') return 'bg-[hsl(45,15%,88%)] hover:bg-[hsl(45,15%,82%)]';
+      return 'bg-[hsl(0,0%,88%)] hover:bg-[hsl(0,0%,82%)]';
+    }
+    
     if (type === 'General Session') return 'bg-orange-200 hover:bg-orange-300';
     if (type === 'Intake Session') return 'bg-green-200 hover:bg-green-300';
     if (type === 'Discharge Session') return 'bg-rose-200 hover:bg-rose-300';
@@ -385,39 +399,39 @@ const Schedule = () => {
       {/* Color legend */}
       <div className="flex flex-wrap gap-3 mb-4 text-xs">
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-orange-200"></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(30,15%,88%)]' : 'bg-orange-200'}`}></div>
           <span>General</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-green-200"></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(140,12%,88%)]' : 'bg-green-200'}`}></div>
           <span>Intake</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-rose-200"></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(350,12%,88%)]' : 'bg-rose-200'}`}></div>
           <span>Discharge</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-blue-200"></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(217,10%,88%)]' : 'bg-blue-200'}`}></div>
           <span>Assessment</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-teal-200"></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(180,12%,88%)]' : 'bg-teal-200'}`}></div>
           <span>Internal Meeting</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-cyan-200"></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(190,12%,88%)]' : 'bg-cyan-200'}`}></div>
           <span>External Meeting</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-purple-200"></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(270,10%,88%)]' : 'bg-purple-200'}`}></div>
           <span>Supervision</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-yellow-200"></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(45,15%,88%)]' : 'bg-yellow-200'}`}></div>
           <span>Admin</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-gray-200"></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(0,0%,88%)]' : 'bg-gray-200'}`}></div>
           <span>Other</span>
         </div>
       </div>
