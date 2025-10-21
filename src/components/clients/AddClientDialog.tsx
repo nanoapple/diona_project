@@ -17,6 +17,7 @@ import { CalendarIcon, ChevronDown, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from '@/components/ThemeProvider';
 
 interface ClientFormData {
   // Personal Details
@@ -105,6 +106,7 @@ const DRAFT_KEY = 'addClientDraft';
 
 export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddClientDialogProps) {
   const { toast } = useToast();
+  const { theme } = useTheme();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<ClientFormData>({
     title: '',
@@ -391,8 +393,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
         <ScrollArea className="max-h-[calc(90vh-240px)] pr-4" ref={scrollAreaRef}>
           <div className="space-y-6">
             {/* Personal Details */}
-            <section id="section-1" className="bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-blue-500">
-              <h3 className="text-lg font-semibold text-blue-700">1. Personal Details</h3>
+            <section id="section-1" className={theme === 'e-ink' ? 'bg-[hsl(210,15%,88%)] p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-[hsl(210,15%,65%)]' : 'bg-blue-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-blue-500'}>
+              <h3 className={theme === 'e-ink' ? 'text-lg font-semibold text-[hsl(210,20%,25%)]' : 'text-lg font-semibold text-blue-700'}>1. Personal Details</h3>
               
               {/* Top row: Title, First name, Last name */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-3">
@@ -606,8 +608,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Contact Information */}
-            <section id="section-2" className="bg-purple-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-purple-500">
-              <h3 className="text-lg font-semibold text-purple-700">2. Contact Information</h3>
+            <section id="section-2" className={theme === 'e-ink' ? 'bg-[hsl(270,15%,88%)] p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-[hsl(270,15%,65%)]' : 'bg-purple-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-purple-500'}>
+              <h3 className={theme === 'e-ink' ? 'text-lg font-semibold text-[hsl(270,20%,25%)]' : 'text-lg font-semibold text-purple-700'}>2. Contact Information</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 <div className="space-y-2">
@@ -735,8 +737,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Communication Preferences */}
-            <section id="section-3" className="bg-green-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-green-500">
-              <h3 className="text-lg font-semibold text-green-700">3. Communication Preferences</h3>
+            <section id="section-3" className={theme === 'e-ink' ? 'bg-[hsl(140,15%,88%)] p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-[hsl(140,15%,65%)]' : 'bg-green-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-green-500'}>
+              <h3 className={theme === 'e-ink' ? 'text-lg font-semibold text-[hsl(140,20%,25%)]' : 'text-lg font-semibold text-green-700'}>3. Communication Preferences</h3>
               
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -791,8 +793,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* NDIS Plan Details */}
-            <section id="section-4" className="bg-teal-50 p-6 rounded-lg space-y-4 border-l-4 border-teal-500 scroll-mt-4">
-              <h3 className="text-lg font-semibold text-teal-700">4. NDIS Plan Details</h3>
+            <section id="section-4" className={theme === 'e-ink' ? 'bg-[hsl(180,15%,88%)] p-6 rounded-lg space-y-4 border-l-4 border-[hsl(180,15%,65%)] scroll-mt-4' : 'bg-teal-50 p-6 rounded-lg space-y-4 border-l-4 border-teal-500 scroll-mt-4'}>
+              <h3 className={theme === 'e-ink' ? 'text-lg font-semibold text-[hsl(180,20%,25%)]' : 'text-lg font-semibold text-teal-700'}>4. NDIS Plan Details</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 <div className="space-y-2">
@@ -858,8 +860,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Consent & Privacy */}
-            <section id="section-5" className="bg-amber-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-amber-500">
-              <h3 className="text-lg font-semibold text-amber-700">5. Consent & Privacy</h3>
+            <section id="section-5" className={theme === 'e-ink' ? 'bg-[hsl(50,15%,88%)] p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-[hsl(50,15%,65%)]' : 'bg-amber-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-amber-500'}>
+              <h3 className={theme === 'e-ink' ? 'text-lg font-semibold text-[hsl(50,20%,25%)]' : 'text-lg font-semibold text-amber-700'}>5. Consent & Privacy</h3>
               
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
@@ -900,8 +902,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Clinical & Case Info */}
-            <section id="section-6" className="bg-rose-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-rose-500">
-              <h3 className="text-lg font-semibold text-rose-700">6. Injury or Incident</h3>
+            <section id="section-6" className={theme === 'e-ink' ? 'bg-[hsl(40,15%,88%)] p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-[hsl(40,15%,65%)]' : 'bg-rose-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-rose-500'}>
+              <h3 className={theme === 'e-ink' ? 'text-lg font-semibold text-[hsl(40,20%,25%)]' : 'text-lg font-semibold text-rose-700'}>6. Injury or Incident</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 <div className="space-y-2">
@@ -973,8 +975,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Legal Issues */}
-            <section id="section-7" className="bg-indigo-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-indigo-500">
-              <h3 className="text-lg font-semibold text-indigo-700">7. Legal Issues</h3>
+            <section id="section-7" className={theme === 'e-ink' ? 'bg-[hsl(340,15%,88%)] p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-[hsl(340,15%,65%)]' : 'bg-indigo-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-indigo-500'}>
+              <h3 className={theme === 'e-ink' ? 'text-lg font-semibold text-[hsl(340,20%,25%)]' : 'text-lg font-semibold text-indigo-700'}>7. Legal Issues</h3>
               
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
@@ -1033,8 +1035,8 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
             </section>
 
             {/* Billing & Invoicing */}
-            <section id="section-8" className="bg-cyan-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-cyan-500">
-              <h3 className="text-lg font-semibold text-cyan-700">8. Billing & Invoicing</h3>
+            <section id="section-8" className={theme === 'e-ink' ? 'bg-[hsl(50,15%,88%)] p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-[hsl(50,15%,65%)]' : 'bg-cyan-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-cyan-500'}>
+              <h3 className={theme === 'e-ink' ? 'text-lg font-semibold text-[hsl(50,20%,25%)]' : 'text-lg font-semibold text-cyan-700'}>8. Billing & Invoicing</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 <div className="space-y-2">
@@ -1072,9 +1074,9 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
 
             {/* Emergency Contact */}
             <Collapsible open={emergencyContactOpen} onOpenChange={setEmergencyContactOpen}>
-              <section id="section-9" className="bg-orange-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-orange-500">
+              <section id="section-9" className={theme === 'e-ink' ? 'bg-[hsl(25,15%,88%)] p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-[hsl(25,15%,65%)]' : 'bg-orange-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-orange-500'}>
                 <CollapsibleTrigger className="flex items-center justify-between w-full">
-                  <h3 className="text-lg font-semibold text-orange-700">9. Emergency Contact</h3>
+                  <h3 className={theme === 'e-ink' ? 'text-lg font-semibold text-[hsl(25,20%,25%)]' : 'text-lg font-semibold text-orange-700'}>9. Emergency Contact</h3>
                   <ChevronDown className={cn(
                     "h-4 w-4 transition-transform",
                     emergencyContactOpen && "rotate-180"
@@ -1126,9 +1128,9 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
 
             {/* Referral */}
             <Collapsible open={referralOpen} onOpenChange={setReferralOpen}>
-              <section id="section-10" className="bg-violet-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-violet-500">
+              <section id="section-10" className={theme === 'e-ink' ? 'bg-[hsl(140,15%,88%)] p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-[hsl(140,15%,65%)]' : 'bg-violet-50 p-6 rounded-lg space-y-4 scroll-mt-4 border-l-4 border-violet-500'}>
                 <CollapsibleTrigger className="flex items-center justify-between w-full">
-                  <h3 className="text-lg font-semibold text-violet-700">10. Referral</h3>
+                  <h3 className={theme === 'e-ink' ? 'text-lg font-semibold text-[hsl(140,20%,25%)]' : 'text-lg font-semibold text-violet-700'}>10. Referral</h3>
                   <ChevronDown className={cn(
                     "h-4 w-4 transition-transform",
                     referralOpen && "rotate-180"
