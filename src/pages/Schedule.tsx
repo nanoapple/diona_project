@@ -443,7 +443,7 @@ const Schedule = () => {
             key={index} 
             className={`${
               theme === 'e-ink' 
-                ? (day.isWeekend ? 'bg-[hsl(140,12%,92%)]' : 'bg-[hsl(217,10%,92%)]')
+                ? (day.isWeekend ? 'bg-[hsl(140,12%,92%)]' : 'bg-[hsl(190,15%,88%)]')
                 : (day.isWeekend ? 'bg-green-50' : 'bg-blue-50')
             } rounded-lg overflow-hidden`}
           >
