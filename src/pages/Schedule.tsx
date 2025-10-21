@@ -467,7 +467,7 @@ const Schedule = () => {
                     return (
                       <div
                         key={slotIndex}
-                        className={`px-2 py-1 text-xs cursor-pointer transition-colors relative ${getAppointmentColor(appointment.type)} ${!isLastSlot ? 'border-b-0' : 'border-b border-gray-400'}`}
+                        className={`px-2 py-1 text-xs cursor-pointer transition-colors relative ${getAppointmentColor(appointment.type)} border-l border-r border-gray-400 ${isFirstSlot ? 'border-t' : ''} ${isLastSlot ? 'border-b' : ''}`}
                         style={{ height: '20px', minHeight: '20px', maxHeight: '20px' }}
                         onClick={() => handleAppointmentClick(appointment)}
                       >
