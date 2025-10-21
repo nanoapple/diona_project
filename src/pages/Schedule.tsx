@@ -4,10 +4,11 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { format, startOfWeek, endOfWeek, addDays, isSameWeek, isSameDay } from 'date-fns';
-import { Plus, CheckCircle, AlertCircle, RotateCcw, XCircle, Check, Clock } from 'lucide-react';
+import { Plus, CheckCircle, AlertCircle, RotateCcw, XCircle, Check, Clock, Settings } from 'lucide-react';
 import CreateAppointmentDialog from '@/components/schedule/CreateAppointmentDialog';
 import AppointmentDetailsDialog from '@/components/schedule/AppointmentDetailsDialog';
 import WorkingHoursDialog from '@/components/schedule/WorkingHoursDialog';
+import AppointmentActionsDialog from '@/components/schedule/AppointmentActionsDialog';
 import { useTheme } from '@/components/ThemeProvider';
 
 const Schedule = () => {
@@ -22,6 +23,8 @@ const Schedule = () => {
   const [isAppointmentDetailsOpen, setIsAppointmentDetailsOpen] = useState(false);
   const [showWeekends, setShowWeekends] = useState(true);
   const [isWorkingHoursOpen, setIsWorkingHoursOpen] = useState(false);
+  const [isActionsDialogOpen, setIsActionsDialogOpen] = useState(false);
+  const [actionsAppointment, setActionsAppointment] = useState<any>(null);
   const [workingHours, setWorkingHours] = useState({
     Mon: { start: 9, end: 18 },
     Tue: { start: 9, end: 18 },
@@ -505,6 +508,20 @@ const Schedule = () => {
                             </div>
                           </div>
                         )}
+                        {/* Config icon in bottom left of last slot */}
+                        {isLastSlot && (
+                          <button
+                            className="absolute bottom-0.5 left-1 p-0.5 hover:bg-black/10 rounded transition-colors z-10"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActionsAppointment(appointment);
+                              setIsActionsDialogOpen(true);
+                            }}
+                          >
+                            <Settings className="h-3 w-3 text-gray-600" />
+                          </button>
+                        )}
+                        
                         {/* Status indicator in the last slot */}
                         {isLastSlot && appointment.arrivalStatus && appointment.arrivalStatus !== '' && (
                           <div className="absolute top-1/2 right-1 transform -translate-y-1/2 flex items-center gap-1">
@@ -673,6 +690,13 @@ const Schedule = () => {
         onOpenChange={setIsWorkingHoursOpen}
         workingHours={workingHours}
         onSave={(hours) => setWorkingHours(hours as any)}
+      />
+
+      {/* Appointment Actions Dialog */}
+      <AppointmentActionsDialog
+        open={isActionsDialogOpen}
+        onOpenChange={setIsActionsDialogOpen}
+        appointment={actionsAppointment}
       />
     </div>
   );
