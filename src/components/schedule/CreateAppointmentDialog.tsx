@@ -82,6 +82,19 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
     return 'data-[highlighted]:bg-gray-200 hover:bg-gray-100';
   };
 
+  // Function to get dot color for appointment type indicator
+  const getDotColor = (type: string) => {
+    if (type === 'General Session') return 'bg-orange-500';
+    if (type === 'Intake Session') return 'bg-green-500';
+    if (type === 'Discharge Session') return 'bg-rose-500';
+    if (type === 'Assessment Session') return 'bg-blue-500';
+    if (type === 'Team Meeting (Internal)') return 'bg-teal-500';
+    if (type === 'Team Meeting (External)') return 'bg-cyan-500';
+    if (type === 'Supervision') return 'bg-purple-500';
+    if (type === 'Administrative Task') return 'bg-yellow-500';
+    return 'bg-gray-500';
+  };
+
   const timeSlots = Array.from({ length: 40 }, (_, i) => {
     const hour = Math.floor(i / 4) + 9;
     const minute = (i % 4) * 15;
@@ -184,14 +197,17 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
                   <SelectTrigger>
                     <SelectValue placeholder="Select appointment type" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-background z-50">
                     {appointmentTypes.map(type => (
                       <SelectItem 
                         key={type} 
                         value={type}
-                        className={cn("cursor-pointer", getAppointmentColor(type))}
+                        className={cn("cursor-pointer font-bold text-blue-900", getAppointmentColor(type))}
                       >
-                        {type}
+                        <div className="flex items-center gap-2">
+                          <div className={cn("w-2 h-2 rounded-full", getDotColor(type))} />
+                          <span>{type}</span>
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
