@@ -357,6 +357,31 @@ const Schedule = () => {
     return 'bg-gray-200 hover:bg-gray-300';
   };
 
+  // Function to get darker appointment color for the last slot
+  const getAppointmentColorForLastSlot = (type: string) => {
+    if (theme === 'e-ink') {
+      if (type === 'General Session') return 'bg-[hsl(30,15%,75%)]';
+      if (type === 'Intake Session') return 'bg-[hsl(140,12%,75%)]';
+      if (type === 'Discharge Session') return 'bg-[hsl(350,12%,75%)]';
+      if (type === 'Assessment Session') return 'bg-[hsl(217,10%,75%)]';
+      if (type === 'Team Meeting (Internal)') return 'bg-[hsl(180,12%,75%)]';
+      if (type === 'Team Meeting (External)') return 'bg-[hsl(190,12%,75%)]';
+      if (type === 'Supervision') return 'bg-[hsl(270,10%,75%)]';
+      if (type === 'Administrative Task') return 'bg-[hsl(45,15%,75%)]';
+      return 'bg-[hsl(0,0%,75%)]';
+    }
+    
+    if (type === 'General Session') return 'bg-orange-300';
+    if (type === 'Intake Session') return 'bg-green-300';
+    if (type === 'Discharge Session') return 'bg-rose-300';
+    if (type === 'Assessment Session') return 'bg-blue-300';
+    if (type === 'Team Meeting (Internal)') return 'bg-teal-300';
+    if (type === 'Team Meeting (External)') return 'bg-cyan-300';
+    if (type === 'Supervision') return 'bg-purple-300';
+    if (type === 'Administrative Task') return 'bg-yellow-300';
+    return 'bg-gray-300';
+  };
+
   // Function to get status icon
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -490,9 +515,9 @@ const Schedule = () => {
                     return (
                       <div
                         key={slotIndex}
-                        className={`px-2 py-1 text-xs cursor-pointer transition-colors relative ${getAppointmentColor(appointment.type)} border-l-2 border-r-2 border-gray-400 ${isFirstSlot ? 'border-t-2' : ''} ${isLastSlot ? 'border-b-2' : ''}`}
+                        className={`px-2 py-1 text-xs ${!isLastSlot ? 'cursor-pointer' : 'cursor-default'} transition-colors relative ${isLastSlot ? getAppointmentColorForLastSlot(appointment.type) : getAppointmentColor(appointment.type)} border-l-2 border-r-2 border-gray-400 ${isFirstSlot ? 'border-t-2' : ''} ${isLastSlot ? 'border-b-2' : ''}`}
                         style={{ height: '20px', minHeight: '20px', maxHeight: '20px' }}
-                        onClick={() => handleAppointmentClick(appointment)}
+                        onClick={!isLastSlot ? () => handleAppointmentClick(appointment) : undefined}
                       >
                         {isFirstSlot && (
                           <div className="text-black font-medium overflow-hidden">
