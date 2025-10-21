@@ -12,7 +12,7 @@ export function ThemeToggle() {
         variant="ghost"
         size="icon"
         onClick={() => setTheme("light")}
-        className={`h-7 w-7 ${theme === "light" ? "text-orange-500" : "text-muted-foreground hover:text-foreground"}`}
+        className={`h-7 w-7 ${theme === "light" ? "bg-orange-500 text-white hover:bg-orange-500" : "text-muted-foreground hover:text-foreground"}`}
         title="Light mode"
       >
         <Sun className="h-[1.1rem] w-[1.1rem]" />
@@ -22,7 +22,7 @@ export function ThemeToggle() {
         variant="ghost"
         size="icon"
         onClick={() => setTheme("e-ink")}
-        className={`h-7 w-7 ${theme === "e-ink" ? "text-orange-500" : "text-muted-foreground hover:text-foreground"}`}
+        className={`h-7 w-7 ${theme === "e-ink" ? "bg-orange-500 text-white hover:bg-orange-500" : "text-muted-foreground hover:text-foreground"}`}
         title="E-ink mode"
       >
         <img src={inkIcon} alt="E-ink" className="h-[1.1rem] w-[1.1rem]" />
@@ -32,7 +32,7 @@ export function ThemeToggle() {
         variant="ghost"
         size="icon"
         onClick={() => setTheme("dark")}
-        className={`h-7 w-7 ${theme === "dark" ? "text-orange-500" : "text-muted-foreground hover:text-foreground"}`}
+        className={`h-7 w-7 ${theme === "dark" ? "bg-orange-500 text-white hover:bg-orange-500" : "text-muted-foreground hover:text-foreground"}`}
         title="Dark mode"
       >
         <Moon className="h-[1.1rem] w-[1.1rem]" />
