@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
+import { useTheme } from "@/components/ThemeProvider";
 
 export interface Milestone {
   id: string;
@@ -22,7 +23,23 @@ interface MilestoneTrackerProps {
 }
 
 // Map milestone types to colors
-const getMilestoneColor = (type: Milestone['type']) => {
+const getMilestoneColor = (type: Milestone['type'], theme: string) => {
+  if (theme === 'e-ink') {
+    const einkColors: Record<Milestone['type'], string> = {
+      intake: "bg-[hsl(217,2%,88%)] border-[hsl(217,2%,78%)]",
+      key_session: "bg-[hsl(140,2%,88%)] border-[hsl(140,2%,78%)]",
+      document: "bg-[hsl(45,2%,88%)] border-[hsl(45,2%,78%)]",
+      assessment: "bg-[hsl(270,2%,88%)] border-[hsl(270,2%,78%)]",
+      report: "bg-[hsl(230,2%,88%)] border-[hsl(230,2%,78%)]",
+      letter: "bg-[hsl(350,2%,88%)] border-[hsl(350,2%,78%)]",
+      external: "bg-[hsl(180,2%,88%)] border-[hsl(180,2%,78%)]",
+      meeting: "bg-[hsl(190,2%,88%)] border-[hsl(190,2%,78%)]",
+      referral: "bg-[hsl(30,2%,88%)] border-[hsl(30,2%,78%)]",
+      closing: "bg-[hsl(0,0%,88%)] border-[hsl(0,0%,78%)]"
+    };
+    return einkColors[type];
+  }
+  
   const colors: Record<Milestone['type'], string> = {
     intake: "bg-blue-100 border-blue-200",
     key_session: "bg-green-100 border-green-200",
@@ -73,6 +90,7 @@ const getSampleMessage = (type: Milestone['type']) => {
 };
 
 const MilestoneTracker: React.FC<MilestoneTrackerProps> = ({ milestones, onMilestoneClick }) => {
+  const { theme } = useTheme();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -150,7 +168,7 @@ const MilestoneTracker: React.FC<MilestoneTrackerProps> = ({ milestones, onMiles
               >
                 <Card 
                   className={`w-[120px] h-[90px] flex flex-col justify-between p-3 border rounded-md transition-all ${
-                    getMilestoneColor(milestone.type)
+                    getMilestoneColor(milestone.type, theme)
                   } hover:shadow-md`}
                 >
                   <div className="text-xs font-medium">

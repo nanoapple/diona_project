@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '@/components/ThemeProvider';
 import SelfCarePortal from './SelfCarePortal';
 import EmergencyPortal from './EmergencyPortal';
 import {
@@ -39,6 +40,7 @@ import {
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { currentUser } = useAuth();
+  const { theme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const [showSelfCare, setShowSelfCare] = useState(false);
@@ -141,7 +143,58 @@ const Sidebar = () => {
       hoverIcon: string;
       active: string;
       disabled: string;
-    }> = {
+    }> = theme === 'e-ink' ? {
+      "Core Platform": {
+        bg: "bg-[hsl(140,2%,90%)]",
+        border: "border-[hsl(140,2%,75%)]",
+        text: "text-[hsl(140,3%,35%)]",
+        icon: "text-[hsl(140,3%,40%)]",
+        hover: "hover:bg-[hsl(140,2%,75%)] hover:text-[hsl(140,3%,25%)] hover:border-[hsl(140,2%,65%)]",
+        hoverIcon: "group-hover:text-[hsl(140,3%,25%)]",
+        active: "bg-[hsl(140,2%,70%)] border-[hsl(140,2%,60%)] text-[hsl(140,3%,20%)]",
+        disabled: "bg-[hsl(0,0%,90%)] border-[hsl(0,0%,80%)] text-[hsl(0,0%,55%)]"
+      },
+      "Clinical Workflow": {
+        bg: "bg-[hsl(217,2%,90%)]",
+        border: "border-[hsl(217,2%,75%)]",
+        text: "text-[hsl(217,3%,35%)]",
+        icon: "text-[hsl(217,3%,40%)]",
+        hover: "hover:bg-[hsl(217,2%,75%)] hover:text-[hsl(217,3%,25%)] hover:border-[hsl(217,2%,65%)]",
+        hoverIcon: "group-hover:text-[hsl(217,3%,25%)]",
+        active: "bg-[hsl(217,2%,70%)] border-[hsl(217,2%,60%)] text-[hsl(217,3%,20%)]",
+        disabled: "bg-[hsl(0,0%,90%)] border-[hsl(0,0%,80%)] text-[hsl(0,0%,55%)]"
+      },
+      "Collaboration & Client Engagement": {
+        bg: "bg-[hsl(190,2%,90%)]",
+        border: "border-[hsl(190,2%,75%)]",
+        text: "text-[hsl(190,3%,35%)]",
+        icon: "text-[hsl(190,3%,40%)]",
+        hover: "hover:bg-[hsl(190,2%,75%)] hover:text-[hsl(190,3%,25%)] hover:border-[hsl(190,2%,65%)]",
+        hoverIcon: "group-hover:text-[hsl(190,3%,25%)]",
+        active: "bg-[hsl(190,2%,70%)] border-[hsl(190,2%,60%)] text-[hsl(190,3%,20%)]",
+        disabled: "bg-[hsl(0,0%,90%)] border-[hsl(0,0%,80%)] text-[hsl(0,0%,55%)]"
+      },
+      "Knowledge & Professional Development": {
+        bg: "bg-[hsl(270,2%,90%)]",
+        border: "border-[hsl(270,2%,75%)]",
+        text: "text-[hsl(270,3%,35%)]",
+        icon: "text-[hsl(270,3%,40%)]",
+        hover: "hover:bg-[hsl(270,2%,75%)] hover:text-[hsl(270,3%,25%)] hover:border-[hsl(270,2%,65%)]",
+        hoverIcon: "group-hover:text-[hsl(270,3%,25%)]",
+        active: "bg-[hsl(270,2%,70%)] border-[hsl(270,2%,60%)] text-[hsl(270,3%,20%)]",
+        disabled: "bg-[hsl(0,0%,90%)] border-[hsl(0,0%,80%)] text-[hsl(0,0%,55%)]"
+      },
+      "Compliance & Operations": {
+        bg: "bg-[hsl(35,2%,90%)]",
+        border: "border-[hsl(35,2%,75%)]",
+        text: "text-[hsl(35,3%,35%)]",
+        icon: "text-[hsl(35,3%,40%)]",
+        hover: "hover:bg-[hsl(35,2%,75%)] hover:text-[hsl(35,3%,25%)] hover:border-[hsl(35,2%,65%)]",
+        hoverIcon: "group-hover:text-[hsl(35,3%,25%)]",
+        active: "bg-[hsl(35,2%,70%)] border-[hsl(35,2%,60%)] text-[hsl(35,3%,20%)]",
+        disabled: "bg-[hsl(0,0%,90%)] border-[hsl(0,0%,80%)] text-[hsl(0,0%,55%)]"
+      }
+    } : {
       "Core Platform": {
         bg: "bg-green-500/10",
         border: "border-green-500/20",

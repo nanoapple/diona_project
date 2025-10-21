@@ -1,6 +1,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/components/ThemeProvider";
 
 export interface ReportSection {
   id: number;
@@ -18,7 +19,22 @@ const SegmentedReportProgress = React.forwardRef<
   HTMLDivElement,
   SegmentedReportProgressProps
 >(({ sections, title, className, ...props }, ref) => {
+  const { theme } = useTheme();
+  
   const getStatusColor = (status: string) => {
+    if (theme === 'e-ink') {
+      switch (status) {
+        case 'completed':
+          return 'bg-[hsl(217,2%,65%)]';
+        case 'in-progress':
+          return 'bg-[hsl(45,2%,75%)]';
+        case 'not-started':
+          return 'bg-[hsl(0,0%,85%)]';
+        default:
+          return 'bg-[hsl(0,0%,85%)]';
+      }
+    }
+    
     switch (status) {
       case 'completed':
         return 'bg-blue-500';
