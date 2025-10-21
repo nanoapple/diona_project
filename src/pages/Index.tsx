@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { CheckCircle } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const Index = () => {
   return (
@@ -17,6 +18,7 @@ const Index = () => {
             </div>
             <div className="hidden md:block">
               <div className="flex items-center space-x-4">
+                <ThemeToggle />
                 <Link to="/login">
                   <Button variant="ghost" className="text-foreground/70 hover:text-foreground">Login</Button>
                 </Link>

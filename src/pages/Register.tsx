@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function Register() {
   const [loading, setLoading] = useState(false);
@@ -107,6 +108,9 @@ export default function Register() {
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4 bg-muted/40">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Create an account</CardTitle>
