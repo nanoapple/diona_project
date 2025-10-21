@@ -441,7 +441,11 @@ const Schedule = () => {
         {weekDays.filter(day => showWeekends || !day.isWeekend).map((day, index) => (
           <Card 
             key={index} 
-            className={`${day.isWeekend ? 'bg-green-50' : 'bg-blue-50'} rounded-lg overflow-hidden`}
+            className={`${
+              theme === 'e-ink' 
+                ? (day.isWeekend ? 'bg-[hsl(140,12%,92%)]' : 'bg-[hsl(217,10%,92%)]')
+                : (day.isWeekend ? 'bg-green-50' : 'bg-blue-50')
+            } rounded-lg overflow-hidden`}
           >
             <CardHeader className="py-2 px-3">
               <CardTitle className="text-sm font-medium text-center">
