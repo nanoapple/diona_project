@@ -391,7 +391,7 @@ const LegalTasks = () => {
                               <>
                                 <span className="hidden md:inline">•</span>
                                 <Link to={`/case-silo`} className="hover:underline">
-                                  <span>Case Silo: #{task.caseId}</span>
+                                  <span>Case Management: #{task.caseId}</span>
                                 </Link>
                               </>
                             )}

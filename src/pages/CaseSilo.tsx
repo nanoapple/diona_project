@@ -401,8 +401,8 @@ const CaseSiloPage = () => {
   const handleCreateSilo = (newSilo: CaseSiloType) => {
     setCaseSilos([newSilo, ...caseSilos]);
     toast({
-      title: "Case silo created",
-      description: `New case silo for ${newSilo.claimantName} has been created successfully.`,
+      title: "Case created",
+      description: `New case for ${newSilo.claimantName} has been created successfully.`,
     });
     // Select the newly created case
     setSelectedCaseId(newSilo.id);
@@ -773,7 +773,7 @@ const CaseSiloPage = () => {
         renderCaseDetail()
       ) : (
         <>
-          <h1 className="text-3xl font-bold mb-1">Case Silo</h1>
+          <h1 className="text-3xl font-bold mb-1">Case Management</h1>
           <p className="text-muted-foreground mb-6">
             Access all information related to your {currentUser?.role === 'claimant' ? '' : 'clients\''} cases in one secure location
           </p>
@@ -791,7 +791,7 @@ const CaseSiloPage = () => {
             
             {canCreateSilo() && (
               <Button onClick={() => setShowCreateSilo(true)}>
-                <Plus className="w-4 h-4 mr-1" /> New Case Silo
+                <Plus className="w-4 h-4 mr-1" /> New Case
               </Button>
             )}
           </div>

@@ -49,7 +49,7 @@ const ShareDialog = ({ open, onOpenChange, siloName, siloType }: ShareDialogProp
       setPasscode('');
       
       toast({
-        title: "Case silo shared successfully",
+        title: "Case Management shared successfully",
         description: `${siloName} has been shared with ${email}${requirePasscode ? ' with passcode protection' : ''}.`,
       });
     }, 1000);
@@ -72,10 +72,10 @@ const ShareDialog = ({ open, onOpenChange, siloName, siloType }: ShareDialogProp
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Share2 className="h-5 w-5" />
-            Share Case Silo
+            Share Case Management
           </DialogTitle>
           <DialogDescription>
-            Share this case silo with external professionals to allow them to review and contribute.
+            Share this case with external professionals to allow them to review and contribute.
           </DialogDescription>
         </DialogHeader>
         
@@ -96,7 +96,7 @@ const ShareDialog = ({ open, onOpenChange, siloName, siloType }: ShareDialogProp
               required
             />
             <p className="text-sm text-muted-foreground">
-              This professional will receive an email with a link to access the case silo.
+              This professional will receive an email with a link to access the case.
             </p>
           </div>
           

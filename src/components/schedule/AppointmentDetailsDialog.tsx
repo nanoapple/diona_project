@@ -593,7 +593,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
               className="flex items-center gap-2"
               size="lg"
             >
-              Go to case silo
+              Go to case management
             </Button>
           </div>
         ) : (

@@ -55,7 +55,7 @@ const ModuleMarketplace = () => {
       modules: [
         { name: "Dashboard", icon: LayoutDashboard, status: "active", description: "Overview of practice activity and key metrics", tier: "core" },
         { name: "Clients", icon: Users, status: "active", description: "Client information repository", tier: "core" },
-        { name: "Case Silo", icon: Archive, status: "active", description: "Fundamental case management system", tier: "core" },
+        { name: "Case Management", icon: Archive, status: "active", description: "Fundamental case management system", tier: "core" },
         { name: "Appointment", icon: Calendar, status: "active", description: "Basic scheduling and appointment management", tier: "core" },
         { name: "Assessments", icon: ClipboardCheck, status: "active", description: "Standardized clinical assessment tools", tier: "core" },
         { name: "Session Notes", icon: FileText, status: "active", description: "Essential clinical documentation", tier: "core" },

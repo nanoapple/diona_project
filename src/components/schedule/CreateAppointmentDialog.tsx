@@ -234,13 +234,13 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
 
                 {formData.client && (
                   <div>
-                    <Label htmlFor="caseSilo">Auto-Link to Case Silo</Label>
+                    <Label htmlFor="caseSilo">Auto-Link to Case Management</Label>
                     <Select
                       value={formData.caseSilo}
                       onValueChange={(value) => setFormData(prev => ({ ...prev, caseSilo: value }))}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select case silo" />
+                        <SelectValue placeholder="Select case" />
                       </SelectTrigger>
                       <SelectContent>
                         {mockCaseSilos.map(caseSilo => (
@@ -558,7 +558,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="shared">Shared with Case Silo team</SelectItem>
+                        <SelectItem value="shared">Shared with Case Management team</SelectItem>
                         <SelectItem value="private">Private to session organiser</SelectItem>
                         <SelectItem value="internal">Internal use only</SelectItem>
                       </SelectContent>

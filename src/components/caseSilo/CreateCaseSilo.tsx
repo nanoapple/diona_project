@@ -204,7 +204,7 @@ export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseS
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Case Silo</DialogTitle>
+          <DialogTitle>Create New Case Management</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-6 py-4">
@@ -421,7 +421,7 @@ export function CreateCaseSilo({ open, onOpenChange, onCreateSilo }: CreateCaseS
         
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={handleCreateSilo} disabled={!selectedClient}>Create Case Silo</Button>
+          <Button onClick={handleCreateSilo} disabled={!selectedClient}>Create Case Management</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -306,7 +306,7 @@ const Sidebar = () => {
   const getCoreModules = () => [
     { to: "/schedule", icon: Calendar, label: "Appointment", tier: 'core' as const },
     { to: "/clients", icon: Users, label: "Clients", tier: 'core' as const },
-    { to: "/case-silo", icon: Archive, label: "Case Silo", tier: 'core' as const },
+    { to: "/case-silo", icon: Archive, label: "Case Management", tier: 'core' as const },
     { to: "/assessments", icon: ClipboardCheck, label: "Assessments", tier: 'core' as const },
   ];
 

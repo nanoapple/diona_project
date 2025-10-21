@@ -119,7 +119,7 @@ const getTasksForStage = (stageIndex: number, userRole: string) => {
           ];
         case 1: // Legal & Clinical Review
           return [
-            { description: 'Create case silo', complete: true },
+            { description: 'Create case', complete: true },
             { description: 'Request medical records', complete: true },
             { description: 'Document initial legal advice', complete: true }
           ];
@@ -295,7 +295,7 @@ const getCaseMilestones = (caseId: string): Milestone[] => {
         type: "intake",
         title: "Initial Consultation",
         date: "2023-02-12",
-        description: "Case silo created and client onboarded",
+        description: "Case created and client onboarded",
         status: "completed"
       },
       {
@@ -364,7 +364,7 @@ const Dashboard = () => {
   const [selectedCaseId, setSelectedCaseId] = useState<string>('');
 
   const handleMilestoneClick = (milestone: Milestone) => {
-    // Navigate to case silo with appropriate tab
+    // Navigate to case management with appropriate tab
     let tab = 'overview';
     switch (milestone.type) {
       case 'document':
@@ -383,7 +383,7 @@ const Dashboard = () => {
         tab = 'overview';
     }
     
-    // Navigate to case silo - we need to find which case this milestone belongs to
+    // Navigate to case management - we need to find which case this milestone belongs to
     const caseForMilestone = mockCaseSilos.find(c => getCaseMilestones(c.id).some(m => m.id === milestone.id));
     if (caseForMilestone) {
       navigate(`/case-silo?case=${caseForMilestone.id}&tab=${tab}`);

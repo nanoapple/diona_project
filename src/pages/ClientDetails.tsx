@@ -686,7 +686,7 @@ const ClientDetails = () => {
                             <Button asChild variant="outline" size="sm">
                               <Link to={`/case-silo`}>
                                 <Archive className="h-4 w-4 mr-1" />
-                                Open Case Silo
+                                Open Case Management
                               </Link>
                             </Button>
                             <Button asChild size="sm">
