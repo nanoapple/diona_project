@@ -25,13 +25,13 @@ const SegmentedReportProgress = React.forwardRef<
     if (theme === 'e-ink') {
       switch (status) {
         case 'completed':
-          return 'bg-[hsl(217,2%,65%)]';
+          return 'bg-[hsl(217,12%,62%)]';
         case 'in-progress':
-          return 'bg-[hsl(45,2%,75%)]';
+          return 'bg-[hsl(45,18%,70%)]';
         case 'not-started':
-          return 'bg-[hsl(0,0%,85%)]';
+          return 'bg-[hsl(0,0%,83%)]';
         default:
-          return 'bg-[hsl(0,0%,85%)]';
+          return 'bg-[hsl(0,0%,83%)]';
       }
     }
     

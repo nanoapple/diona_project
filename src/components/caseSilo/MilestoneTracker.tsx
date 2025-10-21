@@ -26,16 +26,16 @@ interface MilestoneTrackerProps {
 const getMilestoneColor = (type: Milestone['type'], theme: string) => {
   if (theme === 'e-ink') {
     const einkColors: Record<Milestone['type'], string> = {
-      intake: "bg-[hsl(217,2%,88%)] border-[hsl(217,2%,78%)]",
-      key_session: "bg-[hsl(140,2%,88%)] border-[hsl(140,2%,78%)]",
-      document: "bg-[hsl(45,2%,88%)] border-[hsl(45,2%,78%)]",
-      assessment: "bg-[hsl(270,2%,88%)] border-[hsl(270,2%,78%)]",
-      report: "bg-[hsl(230,2%,88%)] border-[hsl(230,2%,78%)]",
-      letter: "bg-[hsl(350,2%,88%)] border-[hsl(350,2%,78%)]",
-      external: "bg-[hsl(180,2%,88%)] border-[hsl(180,2%,78%)]",
-      meeting: "bg-[hsl(190,2%,88%)] border-[hsl(190,2%,78%)]",
-      referral: "bg-[hsl(30,2%,88%)] border-[hsl(30,2%,78%)]",
-      closing: "bg-[hsl(0,0%,88%)] border-[hsl(0,0%,78%)]"
+      intake: "bg-[hsl(217,10%,88%)] border-[hsl(217,12%,75%)]",
+      key_session: "bg-[hsl(140,12%,88%)] border-[hsl(140,15%,75%)]",
+      document: "bg-[hsl(45,15%,88%)] border-[hsl(45,18%,75%)]",
+      assessment: "bg-[hsl(270,10%,88%)] border-[hsl(270,12%,75%)]",
+      report: "bg-[hsl(230,10%,88%)] border-[hsl(230,12%,75%)]",
+      letter: "bg-[hsl(350,12%,88%)] border-[hsl(350,15%,75%)]",
+      external: "bg-[hsl(180,12%,88%)] border-[hsl(180,15%,75%)]",
+      meeting: "bg-[hsl(190,12%,88%)] border-[hsl(190,15%,75%)]",
+      referral: "bg-[hsl(30,15%,88%)] border-[hsl(30,18%,75%)]",
+      closing: "bg-[hsl(0,0%,88%)] border-[hsl(0,0%,75%)]"
     };
     return einkColors[type];
   }
