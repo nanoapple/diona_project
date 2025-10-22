@@ -467,7 +467,7 @@ const Schedule = () => {
           <span>Internal Meeting</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(30,20%,75%)]' : 'bg-stone-400'}`}></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(25,20%,75%)]' : 'bg-[hsl(25,75%,45%)]'}`}></div>
           <span>External Meeting</span>
         </div>
         <div className="flex items-center gap-1">

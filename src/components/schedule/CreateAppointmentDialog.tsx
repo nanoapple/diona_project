@@ -76,7 +76,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
     if (type === 'Discharge Session') return 'data-[highlighted]:bg-rose-200 hover:bg-rose-100';
     if (type === 'Assessment Session') return 'data-[highlighted]:bg-blue-200 hover:bg-blue-100';
     if (type === 'Team Meeting (Internal)') return 'data-[highlighted]:bg-teal-200 hover:bg-teal-100';
-    if (type === 'Team Meeting (External)') return 'data-[highlighted]:bg-stone-200 hover:bg-stone-100';
+    if (type === 'Team Meeting (External)') return 'data-[highlighted]:bg-[hsl(25,75%,85%)] hover:bg-[hsl(25,75%,90%)]';
     if (type === 'Supervision') return 'data-[highlighted]:bg-purple-200 hover:bg-purple-100';
     if (type === 'Administrative Task') return 'data-[highlighted]:bg-yellow-200 hover:bg-yellow-100';
     return 'data-[highlighted]:bg-gray-200 hover:bg-gray-100';
@@ -89,7 +89,7 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
     if (type === 'Discharge Session') return 'bg-rose-400';
     if (type === 'Assessment Session') return 'bg-blue-400';
     if (type === 'Team Meeting (Internal)') return 'bg-teal-400';
-    if (type === 'Team Meeting (External)') return 'bg-stone-400';
+    if (type === 'Team Meeting (External)') return 'bg-[hsl(25,75%,55%)]';
     if (type === 'Supervision') return 'bg-purple-400';
     if (type === 'Administrative Task') return 'bg-yellow-400';
     return 'bg-gray-400';
