@@ -447,39 +447,39 @@ const Schedule = () => {
       {/* Color legend */}
       <div className="flex flex-wrap gap-3 mb-4 text-xs">
         <div className="flex items-center gap-1">
-          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(30,15%,88%)]' : 'bg-orange-250'}`}></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(30,15%,88%)]' : 'bg-orange-300'}`}></div>
           <span>General</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(140,12%,88%)]' : 'bg-green-250'}`}></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(140,12%,88%)]' : 'bg-green-300'}`}></div>
           <span>Intake</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(350,12%,88%)]' : 'bg-rose-250'}`}></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(350,12%,88%)]' : 'bg-rose-300'}`}></div>
           <span>Discharge</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(217,10%,88%)]' : 'bg-blue-250'}`}></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(217,10%,88%)]' : 'bg-blue-300'}`}></div>
           <span>Assessment</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(180,12%,88%)]' : 'bg-teal-250'}`}></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(180,12%,88%)]' : 'bg-teal-300'}`}></div>
           <span>Internal Meeting</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(190,12%,88%)]' : 'bg-cyan-250'}`}></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(190,12%,88%)]' : 'bg-cyan-300'}`}></div>
           <span>External Meeting</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(270,10%,88%)]' : 'bg-purple-250'}`}></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(270,10%,88%)]' : 'bg-purple-300'}`}></div>
           <span>Supervision</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(45,15%,88%)]' : 'bg-yellow-250'}`}></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(45,15%,88%)]' : 'bg-yellow-300'}`}></div>
           <span>Admin</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(0,0%,88%)]' : 'bg-gray-250'}`}></div>
+          <div className={`w-2 h-2 rounded-full ${theme === 'e-ink' ? 'bg-[hsl(0,0%,88%)]' : 'bg-gray-300'}`}></div>
           <span>Other</span>
         </div>
       </div>
