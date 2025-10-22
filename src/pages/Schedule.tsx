@@ -536,7 +536,7 @@ const Schedule = () => {
                         {/* Config icon in bottom left of last slot */}
                         {isLastSlot && (
                           <button
-                            className="absolute top-1/2 left-1 -translate-y-1/2 p-0.5 hover:bg-black/10 rounded transition-colors z-10"
+                            className="absolute top-[calc(50%+1px)] left-1 -translate-y-1/2 p-0.5 hover:bg-black/10 rounded transition-colors z-10"
                             onClick={(e) => {
                               e.stopPropagation();
                               setActionsAppointment(appointment);
@@ -549,7 +549,7 @@ const Schedule = () => {
                         
                         {/* Status indicator in the last slot */}
                         {isLastSlot && appointment.arrivalStatus && appointment.arrivalStatus !== '' && (
-                          <div className="absolute top-1/2 right-1 transform -translate-y-1/2 flex items-center gap-1">
+                          <div className="absolute top-[calc(50%+1px)] right-1 transform -translate-y-1/2 flex items-center gap-1">
                             <div className={`px-1 text-[9px] font-medium text-white rounded-md border ${
                               appointment.arrivalStatus === 'Arrived' ? 'bg-green-600 border-green-600' :
                               appointment.arrivalStatus === 'Late' ? 'bg-yellow-600 border-yellow-600' :
