@@ -536,7 +536,7 @@ const Schedule = () => {
                         {/* Config icon in bottom left of last slot */}
                         {isLastSlot && (
                           <button
-                            className="absolute top-[calc(50%+1px)] left-1 -translate-y-1/2 p-0.5 hover:bg-black/10 rounded transition-colors z-10"
+                            className="absolute top-[calc(50%+0.5px)] left-1 -translate-y-1/2 p-0.5 hover:bg-black/10 rounded transition-colors z-10"
                             onClick={(e) => {
                               e.stopPropagation();
                               setActionsAppointment(appointment);
