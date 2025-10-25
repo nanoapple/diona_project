@@ -39,6 +39,11 @@ const Login = () => {
     }
   };
 
+  const handleDemoAccount = (demoEmail: string) => {
+    setEmail(demoEmail);
+    setPassword('password');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="absolute top-4 right-4">
@@ -129,16 +134,66 @@ const Login = () => {
                 )}
               </Button>
 
-              <div className="text-center text-sm">
-                <p className="text-muted-foreground">
-                  Demo accounts: <br />
-                  <code>client@example.com</code> <br />
-                  <code>therapist@example.com</code> <br />
-                  <code>orgadmin@example.com</code> <br />
-                  <code>intake@example.com</code> <br />
-                  <br />
-                  Password: <code>password</code>
+              <div className="space-y-3">
+                <p className="text-center text-sm text-muted-foreground">
+                  Demo accounts:
                 </p>
+                <div className="grid grid-cols-3 gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDemoAccount('client@example.com')}
+                    className="text-xs"
+                  >
+                    Client
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDemoAccount('therapist@example.com')}
+                    className="text-xs"
+                  >
+                    Therapist
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDemoAccount('intake@example.com')}
+                    className="text-xs"
+                  >
+                    Intake
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDemoAccount('admin_org@example.com')}
+                    className="text-xs"
+                  >
+                    Admin
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDemoAccount('manager_org@example.com')}
+                    className="text-xs"
+                  >
+                    Manager
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDemoAccount('system@example.com')}
+                    className="text-xs"
+                  >
+                    System
+                  </Button>
+                </div>
               </div>
             </form>
           </CardContent>
