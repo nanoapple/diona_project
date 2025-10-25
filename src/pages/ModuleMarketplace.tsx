@@ -210,7 +210,7 @@ const ModuleMarketplace = () => {
                 className={cn(
                   "w-full flex items-start gap-2 px-3 py-2 rounded-md text-sm transition-colors text-left relative overflow-hidden",
                   selectedCategory === category.title 
-                    ? "text-gray-700 dark:text-gray-700 font-medium" 
+                    ? "text-gray-700 font-medium" 
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
                 style={{
