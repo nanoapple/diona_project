@@ -41,6 +41,17 @@ const ModuleMarketplace = () => {
     "Ecosystem & Innovation": "hsl(45, 93%, 47%)",
   };
   
+  // Light background versions for category buttons
+  const categoryBackgrounds: Record<string, string> = {
+    "Core Platform": "hsl(142, 71%, 92%)",
+    "Clinical Workflow": "hsl(217, 91%, 92%)",
+    "Collaboration & Client Engagement": "hsl(271, 91%, 92%)",
+    "Compliance & Operations": "hsl(25, 95%, 90%)",
+    "Knowledge & Professional Development": "hsl(173, 80%, 90%)",
+    "Analytics & Intelligence": "hsl(346, 87%, 90%)",
+    "Ecosystem & Innovation": "hsl(45, 93%, 85%)",
+  };
+  
   // Handle URL category parameter
   useEffect(() => {
     const categoryParam = searchParams.get('category');
@@ -215,7 +226,7 @@ const ModuleMarketplace = () => {
                 )}
                 style={{
                   backgroundColor: selectedCategory === category.title 
-                    ? categoryColors[category.title]
+                    ? categoryBackgrounds[category.title]
                     : 'transparent',
                   borderLeft: selectedCategory === category.title 
                     ? `3px solid ${categoryColors[category.title]}` 
