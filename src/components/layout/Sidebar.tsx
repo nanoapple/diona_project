@@ -456,7 +456,7 @@ const Sidebar = () => {
               className="w-full justify-start text-left flex items-center gap-3"
             >
               <Store size={18} />
-              {!collapsed && <span>Service Modules</span>}
+              {!collapsed && <span>Module Marketplace</span>}
             </Button>
           </Link>
         </div>

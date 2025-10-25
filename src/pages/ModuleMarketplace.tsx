@@ -30,6 +30,17 @@ const ModuleMarketplace = () => {
   const [searchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState("Core Platform");
   
+  // Category color mapping
+  const categoryColors: Record<string, string> = {
+    "Core Platform": "hsl(142, 71%, 45%)",
+    "Clinical Workflow": "hsl(217, 91%, 60%)",
+    "Collaboration & Client Engagement": "hsl(271, 91%, 65%)",
+    "Compliance & Operations": "hsl(25, 95%, 53%)",
+    "Knowledge & Professional Development": "hsl(173, 80%, 40%)",
+    "Analytics & Intelligence": "hsl(346, 87%, 43%)",
+    "Ecosystem & Innovation": "hsl(45, 93%, 47%)",
+  };
+  
   // Handle URL category parameter
   useEffect(() => {
     const categoryParam = searchParams.get('category');
@@ -197,11 +208,16 @@ const ModuleMarketplace = () => {
                 key={category.title}
                 onClick={() => setSelectedCategory(category.title)}
                 className={cn(
-                  "w-full flex items-start gap-2 px-3 py-2 rounded-md text-sm transition-colors text-left",
+                  "w-full flex items-start gap-2 px-3 py-2 rounded-md text-sm transition-colors text-left relative overflow-hidden",
                   selectedCategory === category.title 
                     ? "bg-primary/10 text-primary font-medium" 
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
+                style={{
+                  borderLeft: selectedCategory === category.title 
+                    ? `3px solid ${categoryColors[category.title]}` 
+                    : '3px solid transparent'
+                }}
               >
                 <span className="flex-1 leading-snug">{category.title}</span>
                 <span className="text-xs shrink-0 mt-0.5">{category.modules.length}</span>
@@ -231,8 +247,20 @@ const ModuleMarketplace = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayModules.map((module) => {
               const Icon = module.icon;
+              // Find which category this module belongs to
+              const moduleCategory = categories.find(cat => 
+                cat.modules.some(m => m.name === module.name)
+              )?.title || "";
+              const moduleCategoryColor = categoryColors[moduleCategory] || "hsl(var(--primary))";
+              
               return (
-                <Card key={module.name} className="hover:shadow-lg transition-all hover:border-primary/50 flex flex-col">
+                <Card 
+                  key={module.name} 
+                  className="hover:shadow-lg transition-all hover:border-primary/50 flex flex-col relative overflow-hidden"
+                  style={{
+                    borderLeft: `4px solid ${moduleCategoryColor}`
+                  }}
+                >
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="p-3 bg-primary/10 rounded-lg">
