@@ -1168,33 +1168,13 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                     <ClipboardList className="h-5 w-5 text-primary" />
                     <h3 className="text-lg font-semibold">Add Assessment</h3>
                   </div>
-                  <div className="bg-white rounded-lg p-3 flex-1 border overflow-y-auto">
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <Label className="text-xs text-primary font-medium">In-session</Label>
-                        <Switch />
-                        <Label className="text-xs text-muted-foreground">Self-Guided</Label>
-                      </div>
-
-                      <div className="space-y-1">
-                        <h4 className="text-xs font-medium">Client Information</h4>
-                        <div className="bg-gray-50 p-2 rounded">
-                          <div className="text-xs space-y-0.5">
-                            <div><strong>Name:</strong> {appointment.clientName}</div>
-                            <div><strong>Gender:</strong> {appointment.clientGender}</div>
-                            <div><strong>Age:</strong> {Math.floor((new Date().getTime() - new Date(appointment.clientDOB).getTime()) / (365.25 * 24 * 60 * 60 * 1000))} years</div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <Button
-                        onClick={() => setIsAssessmentDialogOpen(true)}
-                        className="w-full text-xs h-8"
-                        variant="outline"
-                      >
-                        Select Assessment Scale
-                      </Button>
-                    </div>
+                  <div className="bg-white rounded-lg p-3 flex-1 border flex items-center justify-center">
+                    <Button
+                      onClick={() => setIsAssessmentDialogOpen(true)}
+                      className="w-full bg-[hsl(217,91%,40%)] hover:bg-[hsl(217,91%,35%)] text-white"
+                    >
+                      Select Assessment Scale
+                    </Button>
                   </div>
                 </div>
               </div>
