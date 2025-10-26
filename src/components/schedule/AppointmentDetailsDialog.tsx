@@ -895,7 +895,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                         </div>
                       )}
                       
-                      <div className="flex gap-2 pt-4">
+                      <div className="flex gap-2 pt-4 pb-6">
                         <Button variant="outline" onClick={handleBackToSelection}>
                           Cancel
                         </Button>
@@ -984,7 +984,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                               />
                             </div>
                           ))}
-                          <div className="flex gap-2 pt-4">
+                          <div className="flex gap-2 pt-4 pb-6">
                             <Button variant="outline" onClick={handleBackToSelection}>
                               Cancel
                             </Button>
@@ -1091,7 +1091,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                             ))}
                           </div>
                           
-                          <div className="flex gap-2 pt-4">
+                          <div className="flex gap-2 pt-4 pb-6">
                             <Button variant="outline" onClick={handleBackToSelection}>
                               Cancel
                             </Button>
@@ -1176,7 +1176,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                             </div>
                           )}
                           
-                          <div className="flex gap-2 pt-4">
+                          <div className="flex gap-2 pt-4 pb-6">
                             <Button variant="outline" onClick={handleBackToSelection}>
                               Cancel
                             </Button>
