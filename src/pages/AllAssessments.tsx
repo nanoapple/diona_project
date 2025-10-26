@@ -38,7 +38,7 @@ export default function AllAssessments() {
       <div className="border-b p-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button 
-            variant="ghost" 
+            className="bg-accent text-accent-foreground hover:bg-accent/90"
             size="sm"
             onClick={() => navigate("/assessments")}
           >

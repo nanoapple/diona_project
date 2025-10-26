@@ -583,9 +583,8 @@ const CaseSiloPage = () => {
         />
         
         <Button 
-          variant="ghost" 
+          className="bg-accent text-accent-foreground hover:bg-accent/90 mb-4"
           onClick={() => setSelectedCaseId(null)} 
-          className="mb-4"
         >
           <ArrowLeftCircle className="w-4 h-4 mr-2" />
           Back to Cases

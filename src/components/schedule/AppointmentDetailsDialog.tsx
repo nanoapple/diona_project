@@ -854,7 +854,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                     <div className="space-y-4">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
+                          <Button className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm" onClick={handleBackToSelection}>
                             ← Back
                           </Button>
                           <span className="font-medium">Write Clinical Notes</span>
@@ -919,7 +919,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                   {noteMode === 'dictate' && (
                     <div className="space-y-4">
                       <div className="flex items-center gap-2 mb-4">
-                        <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm" onClick={handleBackToSelection}>
                           ← Back
                         </Button>
                         <span className="font-medium">Dictate Session Notes</span>
@@ -1007,7 +1007,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                   {noteMode === 'ocr' && (
                     <div className="space-y-4">
                       <div className="flex items-center gap-2 mb-4">
-                        <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm" onClick={handleBackToSelection}>
                           ← Back
                         </Button>
                         <span className="font-medium">OCR Handwritten Notes</span>
@@ -1114,7 +1114,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                   {noteMode === 'whiteboard' && (
                     <div className="space-y-4">
                       <div className="flex items-center gap-2 mb-4">
-                        <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm" onClick={handleBackToSelection}>
                           ← Back
                         </Button>
                         <span className="font-medium">Writing Board (Apple Pencil)</span>

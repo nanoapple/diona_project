@@ -501,7 +501,7 @@ const Reports = () => {
     return (
       <div>
         <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" onClick={() => setCurrentView('list')} className="flex items-center gap-2">
+          <Button onClick={() => setCurrentView('list')} className="bg-accent text-accent-foreground hover:bg-accent/90 flex items-center gap-2">
             <ArrowLeft className="w-4 h-4" /> Back to Reports
           </Button>
           
