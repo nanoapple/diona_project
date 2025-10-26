@@ -727,7 +727,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
     <>
       <Dialog open={open} onOpenChange={handleDialogOpenChange}>
         <DialogContent 
-          className={showSplitView ? "max-w-[95vw] w-[95vw] h-[90vh] p-0 overflow-hidden flex flex-col" : "max-w-lg max-h-[90vh] overflow-y-auto"}
+          className={showSplitView ? "max-w-[92vw] w-[1600px] h-[90vh] p-0 overflow-hidden flex flex-col" : "max-w-lg max-h-[90vh] overflow-y-auto"}
           hideCloseButton={showSplitView}
           onInteractOutside={(e) => showSplitView ? e.preventDefault() : undefined}
         >
