@@ -774,13 +774,13 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                         Choose how you'd like to create your case note:
                       </p>
                       
-                      <div className="space-y-3">
+                      <div className="space-y-2">
                         <Button
                           variant="outline"
-                          className="w-full py-8 flex flex-col items-center gap-3 h-auto"
+                          className="w-full py-3 flex flex-col items-center gap-2 h-auto"
                           onClick={() => handleModeSelect('write')}
                         >
-                          <Edit className="w-8 h-8 text-primary" />
+                          <Edit className="w-10 h-10 text-primary" />
                           <div className="text-center">
                             <div className="font-medium text-sm">Write your own notes</div>
                             <div className="text-xs text-muted-foreground whitespace-normal">
@@ -791,10 +791,10 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                         
                         <Button
                           variant="outline"
-                          className="w-full py-8 flex flex-col items-center gap-3 h-auto"
+                          className="w-full py-3 flex flex-col items-center gap-2 h-auto"
                           onClick={() => handleModeSelect('dictate')}
                         >
-                          <Mic className="w-8 h-8 text-primary" />
+                          <Mic className="w-10 h-10 text-primary" />
                           <div className="text-center">
                             <div className="font-medium text-sm">Dictate-transcribe-summarise</div>
                             <div className="text-xs text-muted-foreground whitespace-normal">
@@ -805,10 +805,10 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                         
                         <Button
                           variant="outline"
-                          className="w-full py-8 flex flex-col items-center gap-3 h-auto"
+                          className="w-full py-3 flex flex-col items-center gap-2 h-auto"
                           onClick={() => handleModeSelect('ocr')}
                         >
-                          <FileText className="w-8 h-8 text-primary" />
+                          <FileText className="w-10 h-10 text-primary" />
                           <div className="text-center">
                             <div className="font-medium text-sm">Handwritten note OCR</div>
                             <div className="text-xs text-muted-foreground whitespace-normal">
@@ -819,10 +819,10 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                         
                         <Button
                           variant="outline"
-                          className="w-full py-8 flex flex-col items-center gap-3 h-auto"
+                          className="w-full py-3 flex flex-col items-center gap-2 h-auto"
                           onClick={() => handleModeSelect('whiteboard')}
                         >
-                          <Pen className="w-8 h-8 text-primary" />
+                          <Pen className="w-10 h-10 text-primary" />
                           <div className="text-center">
                             <div className="font-medium text-sm">Writing board (Apple Pencil)</div>
                             <div className="text-xs text-muted-foreground whitespace-normal">
