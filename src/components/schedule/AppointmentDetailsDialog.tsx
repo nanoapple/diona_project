@@ -770,8 +770,8 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
               
               {/* Right Panel - Add Case Note and Add Assessment Combined */}
               <div className="flex-1 p-4 bg-blue-50/30 h-full overflow-hidden flex flex-col gap-4">
-                {/* Add Case Note - 80% */}
-                <div className="flex-[0.8] flex flex-col overflow-hidden">
+                {/* Add Case Note - 82% */}
+                <div className="flex-[0.82] flex flex-col overflow-hidden">
                   <div className="flex items-center gap-2 mb-3">
                     <MessageSquare className="h-5 w-5 text-primary" />
                     <h3 className="text-lg font-semibold">Add Case Note</h3>
@@ -1191,8 +1191,8 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                   </div>
                 </div>
                 
-                {/* Add Assessment - 20% */}
-                <div className="flex-[0.2] flex flex-col overflow-hidden">
+                {/* Add Assessment - 18% */}
+                <div className="flex-[0.18] flex flex-col overflow-hidden">
                   <div className="flex items-center gap-2 mb-3">
                     <ClipboardList className="h-5 w-5 text-primary" />
                     <h3 className="text-lg font-semibold">Add Assessment</h3>
