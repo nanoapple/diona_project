@@ -1065,7 +1065,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                             className="w-48 h-48 rounded-full"
                             disabled={isProcessing}
                           >
-                            {isRecording ? <MicOff className="w-16 h-16" /> : <Mic className="w-16 h-16" />}
+                            {isRecording ? <MicOff className="w-24 h-24" /> : <Mic className="w-24 h-24" />}
                           </Button>
                           
                           <p className="text-sm">
@@ -1086,6 +1086,16 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                               </div>
                             </div>
                           )}
+                          
+                          {audioFile && !isProcessing && Object.keys(noteData).length === 0 && (
+                            <Button 
+                              onClick={handleSummarize} 
+                              className="w-full"
+                              disabled={!audioFile}
+                            >
+                              Summarise
+                            </Button>
+                          )}
                         </div>
                         
                         {/* Right side - Additional notes */}
@@ -1102,16 +1112,6 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                           />
                         </div>
                       </div>
-                      
-                      {audioFile && !isProcessing && Object.keys(noteData).length === 0 && (
-                        <Button 
-                          onClick={handleSummarize} 
-                          className="w-full"
-                          disabled={!audioFile}
-                        >
-                          Summarise
-                        </Button>
-                      )}
                       
                       {isProcessing && (
                         <div className="flex items-center justify-center py-4">
