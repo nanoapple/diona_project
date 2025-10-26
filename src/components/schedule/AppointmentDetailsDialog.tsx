@@ -132,6 +132,26 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
     setArrivalStatus(appointment.arrivalStatus);
   }
 
+  // Reset state when appointment changes
+  useEffect(() => {
+    if (open) {
+      setShowSplitView(false);
+      setShowSummary(false);
+      setNoteMode('selection');
+      setNoteData({});
+      setAudioFile(null);
+      setUploadedFile(null);
+      setAdditionalNotes('');
+      setSelectedAssessments([]);
+      setFreestyleText('');
+      setIsTemplateMode(true);
+      if (fabricCanvas) {
+        fabricCanvas.dispose();
+        setFabricCanvas(null);
+      }
+    }
+  }, [appointment?.id, open]);
+
   // Reset split view when dialog is closed
   const handleDialogOpenChange = (open: boolean) => {
     if (!open) {
