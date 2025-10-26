@@ -793,7 +793,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                         <div className="grid grid-cols-2 gap-3">
                           <Button
                             variant="outline"
-                            className="flex flex-col items-center justify-center gap-2 h-[120px]"
+                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white"
                             onClick={() => handleModeSelect('write')}
                           >
                             <Edit className="w-12 h-12 text-primary" />
@@ -807,7 +807,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                           
                           <Button
                             variant="outline"
-                            className="flex flex-col items-center justify-center gap-2 h-[120px]"
+                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white"
                             onClick={() => handleModeSelect('dictate')}
                           >
                             <Mic className="w-12 h-12 text-primary" />
@@ -821,7 +821,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                           
                           <Button
                             variant="outline"
-                            className="flex flex-col items-center justify-center gap-2 h-[120px]"
+                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white"
                             onClick={() => handleModeSelect('ocr')}
                           >
                             <FileText className="w-12 h-12 text-primary" />
@@ -835,7 +835,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                           
                           <Button
                             variant="outline"
-                            className="flex flex-col items-center justify-center gap-2 h-[120px]"
+                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white"
                             onClick={() => handleModeSelect('whiteboard')}
                           >
                             <Pen className="w-12 h-12 text-primary" />
@@ -854,7 +854,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                     <div className="space-y-4">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                          <Button className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm" onClick={handleBackToSelection}>
+                          <Button className="bg-accent text-accent-foreground hover:bg-accent/90 hover:text-white" size="sm" onClick={handleBackToSelection}>
                             ← Back
                           </Button>
                           <span className="font-medium">Write Clinical Notes</span>
@@ -919,7 +919,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                   {noteMode === 'dictate' && (
                     <div className="space-y-4">
                       <div className="flex items-center gap-2 mb-4">
-                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm" onClick={handleBackToSelection}>
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90 hover:text-white" size="sm" onClick={handleBackToSelection}>
                           ← Back
                         </Button>
                         <span className="font-medium">Dictate Session Notes</span>
@@ -1007,7 +1007,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                   {noteMode === 'ocr' && (
                     <div className="space-y-4">
                       <div className="flex items-center gap-2 mb-4">
-                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm" onClick={handleBackToSelection}>
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90 hover:text-white" size="sm" onClick={handleBackToSelection}>
                           ← Back
                         </Button>
                         <span className="font-medium">OCR Handwritten Notes</span>
@@ -1114,7 +1114,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                   {noteMode === 'whiteboard' && (
                     <div className="space-y-4">
                       <div className="flex items-center gap-2 mb-4">
-                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90" size="sm" onClick={handleBackToSelection}>
+                        <Button className="bg-accent text-accent-foreground hover:bg-accent/90 hover:text-white" size="sm" onClick={handleBackToSelection}>
                           ← Back
                         </Button>
                         <span className="font-medium">Writing Board (Apple Pencil)</span>
