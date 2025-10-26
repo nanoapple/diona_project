@@ -8,9 +8,10 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Toggle } from '@/components/ui/toggle';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Calendar, Clock, MapPin, Phone, Video, User, PlayCircle, MessageSquare, ClipboardList, Mic, FileText, MicOff, Upload, Loader2, Edit, AlertTriangle } from 'lucide-react';
+import { Calendar, Clock, MapPin, Phone, Video, User, PlayCircle, MessageSquare, ClipboardList, Mic, FileText, MicOff, Upload, Loader2, Edit, AlertTriangle, Pen } from 'lucide-react';
 import { format } from 'date-fns';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { Canvas as FabricCanvas } from 'fabric';
 import { AddAssessmentDialog } from '@/components/assessments/AddAssessmentDialog';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -39,7 +40,7 @@ interface AppointmentDetailsDialogProps {
   onStatusUpdate?: (appointmentId: string, status: string) => void;
 }
 
-type NoteMode = 'selection' | 'write' | 'dictate' | 'ocr';
+type NoteMode = 'selection' | 'write' | 'dictate' | 'ocr' | 'whiteboard';
 
 const noteStructure = [
   {
@@ -118,6 +119,11 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   const [freestyleText, setFreestyleText] = useState('');
   const [showWarningDialog, setShowWarningDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState<'toggle' | 'back' | null>(null);
+  
+  // Whiteboard state
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
+  const [whiteboardProcessing, setWhiteboardProcessing] = useState(false);
 
   if (!appointment) return null;
 
@@ -150,6 +156,25 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
     setNoteData({});
     setAudioFile(null);
     setUploadedFile(null);
+    
+    // Initialize canvas for whiteboard mode
+    if (selectedMode === 'whiteboard') {
+      setTimeout(() => {
+        if (canvasRef.current && !fabricCanvas) {
+          const canvas = new FabricCanvas(canvasRef.current, {
+            width: 600,
+            height: 400,
+            backgroundColor: '#ffffff',
+            isDrawingMode: true,
+          });
+          
+          canvas.freeDrawingBrush.color = '#000000';
+          canvas.freeDrawingBrush.width = 2;
+          
+          setFabricCanvas(canvas);
+        }
+      }, 100);
+    }
   };
 
   const handleNoteChange = (sectionId: string, value: string) => {
@@ -299,6 +324,12 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
     setIsTemplateMode(true);
     setShowWarningDialog(false);
     setPendingAction(null);
+    
+    // Cleanup canvas
+    if (fabricCanvas) {
+      fabricCanvas.dispose();
+      setFabricCanvas(null);
+    }
   };
 
   const handleToggleMode = () => {
@@ -333,6 +364,52 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   const handleWarningCancel = () => {
     setShowWarningDialog(false);
     setPendingAction(null);
+  };
+
+  const handleWhiteboardOCRText = async () => {
+    if (!fabricCanvas) return;
+    
+    setWhiteboardProcessing(true);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    const extractedText = "Sample extracted text from whiteboard:\n\nClient presented with anxiety symptoms.\nDiscussed coping strategies.\nPlanned follow-up for next week.";
+    
+    setFreestyleText(extractedText);
+    setWhiteboardProcessing(false);
+    
+    toast({
+      title: "OCR Complete",
+      description: "Text extracted from whiteboard. You can now edit the freestyle note.",
+    });
+  };
+
+  const handleWhiteboardOCRCaseNotes = async () => {
+    if (!fabricCanvas) return;
+    
+    setWhiteboardProcessing(true);
+    await new Promise(resolve => setTimeout(resolve, 2500));
+    
+    const mockStructuredNotes = {
+      presenting_concerns: "Anxiety symptoms, sleep disturbances",
+      presentation_mental_state: "Alert, slightly anxious affect",
+      cognitive_themes: "Worry about work performance",
+      functional_impact: "Reduced work productivity",
+      psychological_history: "First episode, no prior treatment",
+      treatment_focus: "Cognitive behavioral techniques",
+      progress_indicators: "Engaged, motivated for change",
+      barriers_to_change: "Time constraints, work schedule",
+      risk_protective_factors: "No risk indicators, good support system",
+      plan_next_steps: "Weekly sessions, relaxation homework"
+    };
+    
+    setNoteData(mockStructuredNotes);
+    setIsTemplateMode(true);
+    setWhiteboardProcessing(false);
+    
+    toast({
+      title: "OCR Complete",
+      description: "Structured case notes created from whiteboard content.",
+    });
   };
 
   const arrivalStatusOptions = [
@@ -739,6 +816,20 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                             </div>
                           </div>
                         </Button>
+                        
+                        <Button
+                          variant="outline"
+                          className="w-full py-8 flex flex-col items-center gap-3 h-auto"
+                          onClick={() => handleModeSelect('whiteboard')}
+                        >
+                          <Pen className="w-8 h-8 text-primary" />
+                          <div className="text-center">
+                            <div className="font-medium text-sm">Writing board (Apple Pencil)</div>
+                            <div className="text-xs text-muted-foreground whitespace-normal">
+                              Use Apple Pencil to write notes on a whiteboard
+                            </div>
+                          </div>
+                        </Button>
                       </div>
                     </>
                   )}
@@ -980,6 +1071,91 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                             </Button>
                           </div>
                         </>
+                      )}
+                    </div>
+                  )}
+
+                  {noteMode === 'whiteboard' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
+                          ← Back
+                        </Button>
+                        <span className="font-medium">Writing Board (Apple Pencil)</span>
+                      </div>
+                      
+                      <div className="border-2 border-gray-300 rounded-lg overflow-hidden bg-white">
+                        <canvas ref={canvasRef} className="w-full" />
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={handleWhiteboardOCRText}
+                          className="flex-1"
+                          disabled={whiteboardProcessing || !fabricCanvas}
+                        >
+                          {whiteboardProcessing ? (
+                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processing...</>
+                          ) : (
+                            <><FileText className="w-4 h-4 mr-2" />OCR → Text</>
+                          )}
+                        </Button>
+                        <Button 
+                          onClick={handleWhiteboardOCRCaseNotes}
+                          className="flex-1"
+                          disabled={whiteboardProcessing || !fabricCanvas}
+                        >
+                          {whiteboardProcessing ? (
+                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processing...</>
+                          ) : (
+                            <><MessageSquare className="w-4 h-4 mr-2" />OCR → Case Notes</>
+                          )}
+                        </Button>
+                      </div>
+                      
+                      {(freestyleText || Object.keys(noteData).length > 0) && (
+                        <div className="space-y-4 mt-4">
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                            <p className="text-sm text-green-800">
+                              <strong>Success:</strong> Content extracted from whiteboard. Review and edit below.
+                            </p>
+                          </div>
+                          
+                          {freestyleText ? (
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">Extracted Text (Freestyle)</label>
+                              <Textarea
+                                value={freestyleText}
+                                onChange={(e) => setFreestyleText(e.target.value)}
+                                className="min-h-[200px]"
+                                placeholder="Extracted text will appear here..."
+                              />
+                            </div>
+                          ) : (
+                            <div className="space-y-4 max-h-64 overflow-y-auto">
+                              {noteStructure.map((section) => (
+                                <div key={section.id} className="space-y-2">
+                                  <label className="text-sm font-medium">{section.title}</label>
+                                  <Textarea
+                                    value={noteData[section.id] || ''}
+                                    onChange={(e) => handleNoteChange(section.id, e.target.value)}
+                                    className="min-h-16"
+                                    placeholder="Structured notes..."
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          
+                          <div className="flex gap-2 pt-4">
+                            <Button variant="outline" onClick={handleBackToSelection}>
+                              Cancel
+                            </Button>
+                            <Button onClick={handleSaveNote}>
+                              Save Note
+                            </Button>
+                          </div>
+                        </div>
                       )}
                     </div>
                   )}
