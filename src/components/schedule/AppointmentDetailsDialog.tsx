@@ -793,7 +793,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                         <div className="grid grid-cols-2 gap-3">
                           <Button
                             variant="outline"
-                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white"
+                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white hover:[&_*]:!text-white"
                             onClick={() => handleModeSelect('write')}
                           >
                             <Edit className="w-12 h-12 text-primary" />
@@ -807,7 +807,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                           
                           <Button
                             variant="outline"
-                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white"
+                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white hover:[&_*]:!text-white"
                             onClick={() => handleModeSelect('dictate')}
                           >
                             <Mic className="w-12 h-12 text-primary" />
@@ -821,7 +821,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                           
                           <Button
                             variant="outline"
-                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white"
+                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white hover:[&_*]:!text-white"
                             onClick={() => handleModeSelect('ocr')}
                           >
                             <FileText className="w-12 h-12 text-primary" />
@@ -835,7 +835,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                           
                           <Button
                             variant="outline"
-                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white"
+                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white hover:[&_*]:!text-white"
                             onClick={() => handleModeSelect('whiteboard')}
                           >
                             <Pen className="w-12 h-12 text-primary" />
