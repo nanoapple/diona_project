@@ -12,7 +12,6 @@ import { Calendar, Clock, MapPin, Phone, Video, User, PlayCircle, MessageSquare,
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { AddAssessmentDialog } from '@/components/assessments/AddAssessmentDialog';
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { useToast } from '@/components/ui/use-toast';
 
 interface Appointment {
@@ -633,409 +632,405 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
           {!showSplitView ? (
             renderAppointmentDetails()
           ) : (
-            <div className="h-[70vh]">
-              <ResizablePanelGroup direction="horizontal">
-                {/* Left Panel - Case Summary */}
-                <ResizablePanel defaultSize={25} minSize={20}>
-                  <div className="p-4 bg-purple-50/30 border-r border-purple-200 h-full overflow-y-auto">
-                    <div className="flex items-center gap-2 mb-4">
-                      <User className="h-5 w-5 text-purple-600" />
-                      <h3 className="text-lg font-semibold">Client Summary</h3>
-                    </div>
-                    
-                    {/* Bio-Psycho-Social Model */}
-                    <div className="space-y-4 mb-6">
-                      <h4 className="text-sm font-semibold text-purple-700">Bio-Psycho-Social Profile</h4>
+            <div className="h-[70vh] flex">
+              {/* Left Panel - Case Summary - Fixed Width */}
+              <div className="w-[320px] p-4 bg-purple-50/30 border-r border-purple-200 h-full overflow-y-auto flex flex-col">
+                <div className="flex items-center gap-2 mb-4">
+                  <User className="h-5 w-5 text-purple-600" />
+                  <h3 className="text-lg font-semibold">Client Summary</h3>
+                </div>
+                
+                {/* Summary Paragraphs */}
+                <div className="space-y-3 mb-4 flex-1 overflow-y-auto">
+                  <p className="text-sm leading-relaxed">
+                    Michael Brown is a 42-year-old married father of two presenting with generalized anxiety disorder. 
+                    His symptoms are compounded by chronic sleep difficulties and workplace-related trauma. Currently 
+                    on Sertraline 50mg for anxiety management, he reports ongoing challenges with catastrophic thinking 
+                    patterns and cognitive distortions that impact his daily functioning.
+                  </p>
+                  
+                  <p className="text-sm leading-relaxed">
+                    Socially, Michael's anxiety has led to strained work relationships and reduced engagement with his 
+                    support network. Despite these challenges, he demonstrates strong motivation for treatment and has 
+                    shown consistent engagement with therapeutic homework assignments.
+                  </p>
+                  
+                  <p className="text-sm leading-relaxed">
+                    In the previous session (Session {appointment.appointmentNumber - 1}), Michael demonstrated improved 
+                    engagement and successfully completed his thought diary homework. The focus was on cognitive 
+                    restructuring techniques, specifically challenging catastrophic thinking patterns. Moving forward, 
+                    the treatment plan includes continuing CBT exercises and introducing behavioral activation strategies.
+                  </p>
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="space-y-2 pt-4 border-t">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start text-sm"
+                    onClick={() => {/* TODO: Show bio-psycho-social profile */}}
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Bio-Psycho-Social Profile
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start text-sm"
+                    onClick={() => {/* TODO: Show last session notes */}}
+                  >
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Last Session Notes
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Middle Panel - Add Case Note - Fixed Width */}
+              <div className="flex-1 p-4 bg-blue-50/30 border-r border-blue-200 h-full overflow-y-auto">
+                <div className="flex items-center gap-2 mb-4">
+                  <MessageSquare className="h-5 w-5 text-primary" />
+                  <h3 className="text-lg font-semibold">Add Case Note</h3>
+                </div>
+                <div className="bg-white rounded-lg p-4 h-[calc(100%-4rem)] border overflow-y-auto">
+                  {noteMode === 'selection' && (
+                    <>
+                      <p className="text-sm text-muted-foreground mb-6">
+                        Choose how you'd like to create your case note:
+                      </p>
                       
-                      <div className="bg-white rounded-lg p-3 border space-y-3">
-                        <div>
-                          <div className="text-xs font-medium text-muted-foreground mb-1">Biological</div>
-                          <p className="text-sm">Chronic sleep issues, medication for anxiety (Sertraline 50mg)</p>
-                        </div>
-                        
-                        <div>
-                          <div className="text-xs font-medium text-muted-foreground mb-1">Psychological</div>
-                          <p className="text-sm">Generalized anxiety disorder, history of workplace trauma, cognitive distortions</p>
-                        </div>
-                        
-                        <div>
-                          <div className="text-xs font-medium text-muted-foreground mb-1">Social</div>
-                          <p className="text-sm">Married, 2 children, strained work relationships, reduced social engagement</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Last Session Notes */}
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-semibold text-purple-700">Last Session Notes</h4>
-                      <div className="bg-white rounded-lg p-3 border">
-                        <div className="text-xs text-muted-foreground mb-2">Session {appointment.appointmentNumber - 1} - {format(new Date(appointment.date.getTime() - 7 * 24 * 60 * 60 * 1000), 'MMM d, yyyy')}</div>
-                        <div className="text-sm space-y-2">
-                          <p><strong>Progress:</strong> Client showed improved engagement. Completed thought diary homework.</p>
-                          <p><strong>Focus:</strong> Cognitive restructuring techniques, challenging catastrophic thinking patterns.</p>
-                          <p><strong>Next Steps:</strong> Continue CBT exercises, introduce behavioral activation strategies.</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </ResizablePanel>
-                
-                <ResizableHandle withHandle />
-                
-                {/* Middle Panel - Add Case Note */}
-                <ResizablePanel defaultSize={40} minSize={30}>
-                  <div className="p-4 bg-blue-50/30 border-r border-blue-200 h-full">
-                    <div className="flex items-center gap-2 mb-4">
-                      <MessageSquare className="h-5 w-5 text-primary" />
-                      <h3 className="text-lg font-semibold">Add Case Note</h3>
-                    </div>
-                    <div className="bg-white rounded-lg p-4 h-[calc(100%-4rem)] border overflow-y-auto">
-                      {noteMode === 'selection' && (
-                        <>
-                          <p className="text-sm text-muted-foreground mb-4">
-                            Choose how you'd like to create your case note:
-                          </p>
-                          
-                          <div className="space-y-3">
-                            <Button
-                              variant="outline"
-                              className="w-full h-12 justify-start text-left"
-                              onClick={() => handleModeSelect('write')}
-                            >
-                              <div className="flex items-center gap-3">
-                                <Edit className="w-4 h-4 text-primary" />
-                                <div>
-                                  <div className="font-medium text-sm">Write your own notes</div>
-                                  <div className="text-xs text-muted-foreground">Manually enter structured clinical notes</div>
-                                </div>
-                              </div>
-                            </Button>
-                            
-                            <Button
-                              variant="outline"
-                              className="w-full h-12 justify-start text-left"
-                              onClick={() => handleModeSelect('dictate')}
-                            >
-                              <div className="flex items-center gap-3">
-                                <Mic className="w-4 h-4 text-primary" />
-                                <div>
-                                  <div className="font-medium text-sm">Dictate-transcribe-summarise</div>
-                                  <div className="text-xs text-muted-foreground">Record your session and let AI structure it</div>
-                                </div>
-                              </div>
-                            </Button>
-                            
-                            <Button
-                              variant="outline"
-                              className="w-full h-12 justify-start text-left"
-                              onClick={() => handleModeSelect('ocr')}
-                            >
-                              <div className="flex items-center gap-3">
-                                <FileText className="w-4 h-4 text-primary" />
-                                <div>
-                                  <div className="font-medium text-sm">Handwritten note OCR</div>
-                                  <div className="text-xs text-muted-foreground">Upload handwritten notes for OCR processing</div>
-                                </div>
-                              </div>
-                            </Button>
+                      <div className="space-y-3">
+                        <Button
+                          variant="outline"
+                          className="w-full py-8 flex flex-col items-center gap-3 h-auto"
+                          onClick={() => handleModeSelect('write')}
+                        >
+                          <Edit className="w-8 h-8 text-primary" />
+                          <div className="text-center">
+                            <div className="font-medium text-sm">Write your own notes</div>
+                            <div className="text-xs text-muted-foreground whitespace-normal">
+                              Manually enter structured clinical notes
+                            </div>
                           </div>
-                        </>
-                      )}
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          className="w-full py-8 flex flex-col items-center gap-3 h-auto"
+                          onClick={() => handleModeSelect('dictate')}
+                        >
+                          <Mic className="w-8 h-8 text-primary" />
+                          <div className="text-center">
+                            <div className="font-medium text-sm">Dictate-transcribe-summarise</div>
+                            <div className="text-xs text-muted-foreground whitespace-normal">
+                              Record your session and let AI structure it
+                            </div>
+                          </div>
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          className="w-full py-8 flex flex-col items-center gap-3 h-auto"
+                          onClick={() => handleModeSelect('ocr')}
+                        >
+                          <FileText className="w-8 h-8 text-primary" />
+                          <div className="text-center">
+                            <div className="font-medium text-sm">Handwritten note OCR</div>
+                            <div className="text-xs text-muted-foreground whitespace-normal">
+                              Upload handwritten notes for OCR processing
+                            </div>
+                          </div>
+                        </Button>
+                      </div>
+                    </>
+                  )}
 
-                      {noteMode === 'write' && (
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-2">
-                              <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
-                                ← Back
-                              </Button>
-                              <span className="font-medium">Write Clinical Notes</span>
-                            </div>
-                            
-                            {/* Toggle Switch */}
-                            <div className="flex items-center gap-3">
-                              <span className={`text-sm ${isTemplateMode ? 'font-medium' : 'text-muted-foreground'}`}>
-                                Template
-                              </span>
-                              <Switch
-                                checked={!isTemplateMode}
-                                onCheckedChange={handleToggleMode}
-                                aria-label="Toggle between template and freestyle mode"
+                  {noteMode === 'write' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                          <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
+                            ← Back
+                          </Button>
+                          <span className="font-medium">Write Clinical Notes</span>
+                        </div>
+                        
+                        {/* Toggle Switch */}
+                        <div className="flex items-center gap-3">
+                          <span className={`text-sm ${isTemplateMode ? 'font-medium' : 'text-muted-foreground'}`}>
+                            Template
+                          </span>
+                          <Switch
+                            checked={!isTemplateMode}
+                            onCheckedChange={handleToggleMode}
+                            aria-label="Toggle between template and freestyle mode"
+                          />
+                          <span className={`text-sm ${!isTemplateMode ? 'font-medium' : 'text-muted-foreground'}`}>
+                            Freestyle
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {isTemplateMode ? (
+                        <div className="space-y-4 max-h-96 overflow-y-auto">
+                          {noteStructure.map((section) => (
+                            <div key={section.id} className="space-y-2">
+                              <label className="text-sm font-medium">{section.title}</label>
+                              <p className="text-xs text-muted-foreground">{section.description}</p>
+                              <Textarea
+                                placeholder={`Enter notes for ${section.title.split('.')[1]?.trim()}...`}
+                                value={noteData[section.id] || ''}
+                                onChange={(e) => handleNoteChange(section.id, e.target.value)}
+                                className="min-h-20"
                               />
-                              <span className={`text-sm ${!isTemplateMode ? 'font-medium' : 'text-muted-foreground'}`}>
-                                Freestyle
-                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <Textarea
+                            placeholder="Write your notes in freestyle format..."
+                            value={freestyleText}
+                            onChange={(e) => setFreestyleText(e.target.value)}
+                            className="min-h-[400px] resize-none"
+                          />
+                        </div>
+                      )}
+                      
+                      <div className="flex gap-2 pt-4">
+                        <Button variant="outline" onClick={handleBackToSelection}>
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={handleSaveNote} 
+                          disabled={isTemplateMode ? !Object.values(noteData).some(value => value.trim().length > 0) : !freestyleText.trim()}
+                        >
+                          Save Note
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {noteMode === 'dictate' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
+                          ← Back
+                        </Button>
+                        <span className="font-medium">Dictate Session Notes</span>
+                      </div>
+                      
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Please try to dictate this session in detail by referring to the following structure. 
+                          AI will help you to summarise the notes as per the format.
+                        </p>
+                        
+                        <Button
+                          onClick={handleRecordingToggle}
+                          variant={isRecording ? "destructive" : "default"}
+                          size="lg"
+                          className="w-32 h-32 rounded-full"
+                          disabled={isProcessing}
+                        >
+                          {isRecording ? <MicOff className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
+                        </Button>
+                        
+                        <p className="text-sm mt-2">
+                          {isRecording ? "Recording..." : "Click to start recording"}
+                        </p>
+                        
+                        {audioFile && (
+                          <div className="mt-4 p-3 bg-muted rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm">{audioFile.name}</span>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => setAudioFile(null)}
+                              >
+                                Delete
+                              </Button>
                             </div>
                           </div>
-                          
-                          {isTemplateMode ? (
-                            <div className="space-y-4 max-h-96 overflow-y-auto">
-                              {noteStructure.map((section) => (
-                                <div key={section.id} className="space-y-2">
-                                  <label className="text-sm font-medium">{section.title}</label>
-                                  <p className="text-xs text-muted-foreground">{section.description}</p>
-                                  <Textarea
-                                    placeholder={`Enter notes for ${section.title.split('.')[1]?.trim()}...`}
-                                    value={noteData[section.id] || ''}
-                                    onChange={(e) => handleNoteChange(section.id, e.target.value)}
-                                    className="min-h-20"
-                                  />
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="space-y-4">
+                        )}
+                      </div>
+                      
+                      {audioFile && !isProcessing && Object.keys(noteData).length === 0 && (
+                        <Button 
+                          onClick={handleSummarize} 
+                          className="w-full"
+                          disabled={!audioFile}
+                        >
+                          Summarise
+                        </Button>
+                      )}
+                      
+                      {isProcessing && (
+                        <div className="flex items-center justify-center py-4">
+                          <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                          <span>AI is summarising your recording...</span>
+                        </div>
+                      )}
+                      
+                      {Object.keys(noteData).length > 0 && (
+                        <div className="space-y-4 max-h-64 overflow-y-auto">
+                          {noteStructure.map((section) => (
+                            <div key={section.id} className="space-y-2">
+                              <label className="text-sm font-medium">{section.title}</label>
                               <Textarea
-                                placeholder="Write your notes in freestyle format..."
-                                value={freestyleText}
-                                onChange={(e) => setFreestyleText(e.target.value)}
-                                className="min-h-[400px] resize-none"
+                                value={noteData[section.id] || ''}
+                                onChange={(e) => handleNoteChange(section.id, e.target.value)}
+                                className="min-h-16"
+                                placeholder="AI generated content will appear here..."
                               />
                             </div>
-                          )}
-                          
+                          ))}
                           <div className="flex gap-2 pt-4">
                             <Button variant="outline" onClick={handleBackToSelection}>
                               Cancel
                             </Button>
-                            <Button 
-                              onClick={handleSaveNote} 
-                              disabled={isTemplateMode ? !Object.values(noteData).some(value => value.trim().length > 0) : !freestyleText.trim()}
-                            >
+                            <Button onClick={handleSaveNote}>
                               Save Note
                             </Button>
                           </div>
                         </div>
                       )}
+                    </div>
+                  )}
 
-                      {noteMode === 'dictate' && (
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-2 mb-4">
-                            <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
-                              ← Back
-                            </Button>
-                            <span className="font-medium">Dictate Session Notes</span>
-                          </div>
-                          
-                          <div className="text-center">
-                            <p className="text-sm text-muted-foreground mb-4">
-                              Please try to dictate this session in detail by referring to the following structure. 
-                              AI will help you to summarise the notes as per the format.
-                            </p>
-                            
-                            <Button
-                              onClick={handleRecordingToggle}
-                              variant={isRecording ? "destructive" : "default"}
-                              size="lg"
-                              className="w-32 h-32 rounded-full"
-                              disabled={isProcessing}
-                            >
-                              {isRecording ? <MicOff className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
-                            </Button>
-                            
-                            <p className="text-sm mt-2">
-                              {isRecording ? "Recording..." : "Click to start recording"}
-                            </p>
-                            
-                            {audioFile && (
-                              <div className="mt-4 p-3 bg-muted rounded-lg">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-sm">{audioFile.name}</span>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    onClick={() => setAudioFile(null)}
-                                  >
-                                    Delete
-                                  </Button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                          
-                          {audioFile && !isProcessing && Object.keys(noteData).length === 0 && (
-                            <Button 
-                              onClick={handleSummarize} 
-                              className="w-full"
-                              disabled={!audioFile}
-                            >
-                              Summarise
-                            </Button>
-                          )}
-                          
-                          {isProcessing && (
-                            <div className="flex items-center justify-center py-4">
-                              <Loader2 className="w-6 h-6 animate-spin mr-2" />
-                              <span>AI is summarising your recording...</span>
+                  {noteMode === 'ocr' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
+                          ← Back
+                        </Button>
+                        <span className="font-medium">OCR Handwritten Notes</span>
+                      </div>
+                      
+                      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+                        <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">Upload handwritten notes</p>
+                          <p className="text-xs text-muted-foreground">Supported formats: JPG, PNG, PDF</p>
+                          <Input
+                            type="file"
+                            accept="image/*,.pdf"
+                            onChange={handleFileUpload}
+                            className="max-w-xs mx-auto"
+                          />
+                        </div>
+                        
+                        {uploadedFile && (
+                          <div className="mt-4 p-3 bg-muted rounded-lg">
+                            <div className="flex items-center justify-center gap-2">
+                              <FileText className="w-4 h-4" />
+                              <span className="text-sm">{uploadedFile.name}</span>
                             </div>
-                          )}
-                          
-                          {Object.keys(noteData).length > 0 && (
-                            <div className="space-y-4 max-h-64 overflow-y-auto">
-                              {noteStructure.map((section) => (
-                                <div key={section.id} className="space-y-2">
-                                  <label className="text-sm font-medium">{section.title}</label>
-                                  <Textarea
-                                    value={noteData[section.id] || ''}
-                                    onChange={(e) => handleNoteChange(section.id, e.target.value)}
-                                    className="min-h-16"
-                                    placeholder="AI generated content will appear here..."
-                                  />
-                                </div>
-                              ))}
-                              <div className="flex gap-2 pt-4">
-                                <Button variant="outline" onClick={handleBackToSelection}>
-                                  Cancel
-                                </Button>
-                                <Button onClick={handleSaveNote}>
-                                  Save Note
-                                </Button>
-                              </div>
-                            </div>
-                          )}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {uploadedFile && !isProcessing && Object.keys(noteData).length === 0 && (
+                        <Button 
+                          onClick={handleOCR} 
+                          className="w-full"
+                          disabled={!uploadedFile}
+                        >
+                          <FileText className="w-4 h-4 mr-2" />
+                          OCR
+                        </Button>
+                      )}
+                      
+                      {isProcessing && (
+                        <div className="flex items-center justify-center py-4">
+                          <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                          <span>AI is processing your handwritten notes...</span>
                         </div>
                       )}
-
-                      {noteMode === 'ocr' && (
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-2 mb-4">
-                            <Button variant="ghost" size="sm" onClick={handleBackToSelection}>
-                              ← Back
-                            </Button>
-                            <span className="font-medium">OCR Handwritten Notes</span>
+                      
+                      {Object.keys(noteData).length > 0 && (
+                        <>
+                          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                            <p className="text-sm text-yellow-800">
+                              <strong>Note:</strong> Based on the recognition of handwritten notes alone, 
+                              the AI is limited in what it can summarise, so it needs more complete input from you.
+                            </p>
                           </div>
                           
-                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
-                            <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                            <div className="space-y-2">
-                              <p className="text-sm font-medium">Upload handwritten notes</p>
-                              <p className="text-xs text-muted-foreground">Supported formats: JPG, PNG, PDF</p>
-                              <Input
-                                type="file"
-                                accept="image/*,.pdf"
-                                onChange={handleFileUpload}
-                                className="max-w-xs mx-auto"
-                              />
-                            </div>
-                            
-                            {uploadedFile && (
-                              <div className="mt-4 p-3 bg-muted rounded-lg">
-                                <div className="flex items-center justify-center gap-2">
-                                  <FileText className="w-4 h-4" />
-                                  <span className="text-sm">{uploadedFile.name}</span>
-                                </div>
+                          <div className="space-y-4 max-h-64 overflow-y-auto">
+                            {noteStructure.map((section) => (
+                              <div key={section.id} className="space-y-2">
+                                <label className="text-sm font-medium">{section.title}</label>
+                                <p className="text-xs text-muted-foreground">{section.description}</p>
+                                <Textarea
+                                  value={noteData[section.id] || ''}
+                                  onChange={(e) => handleNoteChange(section.id, e.target.value)}
+                                  className="min-h-16"
+                                  placeholder="Expand on the OCR results..."
+                                />
                               </div>
-                            )}
+                            ))}
                           </div>
                           
-                          {uploadedFile && !isProcessing && Object.keys(noteData).length === 0 && (
-                            <Button 
-                              onClick={handleOCR} 
-                              className="w-full"
-                              disabled={!uploadedFile}
-                            >
-                              <FileText className="w-4 h-4 mr-2" />
-                              OCR
+                          <div className="flex gap-2 pt-4">
+                            <Button variant="outline" onClick={handleBackToSelection}>
+                              Cancel
                             </Button>
-                          )}
-                          
-                          {isProcessing && (
-                            <div className="flex items-center justify-center py-4">
-                              <Loader2 className="w-6 h-6 animate-spin mr-2" />
-                              <span>AI is processing your handwritten notes...</span>
-                            </div>
-                          )}
-                          
-                          {Object.keys(noteData).length > 0 && (
-                            <>
-                              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                                <p className="text-sm text-yellow-800">
-                                  <strong>Note:</strong> Based on the recognition of handwritten notes alone, 
-                                  the AI is limited in what it can summarise, so it needs more complete input from you.
-                                </p>
-                              </div>
-                              
-                              <div className="space-y-4 max-h-64 overflow-y-auto">
-                                {noteStructure.map((section) => (
-                                  <div key={section.id} className="space-y-2">
-                                    <label className="text-sm font-medium">{section.title}</label>
-                                    <p className="text-xs text-muted-foreground">{section.description}</p>
-                                    <Textarea
-                                      value={noteData[section.id] || ''}
-                                      onChange={(e) => handleNoteChange(section.id, e.target.value)}
-                                      className="min-h-16"
-                                      placeholder="Expand on the OCR results..."
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                              
-                              <div className="flex gap-2 pt-4">
-                                <Button variant="outline" onClick={handleBackToSelection}>
-                                  Cancel
-                                </Button>
-                                <Button onClick={handleSaveNote}>
-                                  Save Note
-                                </Button>
-                              </div>
-                            </>
-                          )}
-                        </div>
+                            <Button onClick={handleSaveNote}>
+                              Save Note
+                            </Button>
+                          </div>
+                        </>
                       )}
                     </div>
-                  </div>
-                </ResizablePanel>
-                
-                <ResizableHandle withHandle />
-                
-                {/* Right Panel - Add Assessment */}
-                <ResizablePanel defaultSize={35} minSize={25}>
-                  <div className="p-4 bg-green-50/30 h-full">
-                    <div className="flex items-center gap-2 mb-4">
-                      <ClipboardList className="h-5 w-5 text-primary" />
-                      <h3 className="text-lg font-semibold">Add Assessment</h3>
+                  )}
+                </div>
+              </div>
+              
+              {/* Right Panel - Add Assessment - Fixed Width */}
+              <div className="w-[420px] p-4 bg-green-50/30 h-full overflow-y-auto">
+                <div className="flex items-center gap-2 mb-4">
+                  <ClipboardList className="h-5 w-5 text-primary" />
+                  <h3 className="text-lg font-semibold">Add Assessment</h3>
+                </div>
+                <div className="bg-white rounded-lg p-4 h-[calc(100%-4rem)] border overflow-y-auto">
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-4">
+                      <Label className="flex-shrink-0">Mode:</Label>
+                      <div className="flex items-center space-x-2">
+                        <Label className="text-primary font-medium text-sm">
+                          In-session assessment
+                        </Label>
+                        <Switch />
+                        <Label className="text-muted-foreground text-sm">
+                          Self-Guided assessment
+                        </Label>
+                      </div>
                     </div>
-                    <div className="bg-white rounded-lg p-4 h-[calc(100%-4rem)] border overflow-y-auto">
-                      <div className="space-y-4">
-                        <div className="flex items-center space-x-4">
-                          <Label className="flex-shrink-0">Mode:</Label>
-                          <div className="flex items-center space-x-2">
-                            <Label className="text-primary font-medium text-sm">
-                              In-session assessment
-                            </Label>
-                            <Switch />
-                            <Label className="text-muted-foreground text-sm">
-                              Self-Guided assessment
-                            </Label>
-                          </div>
-                        </div>
 
-                        <div className="space-y-2">
-                          <h4 className="text-sm font-medium">Client Information</h4>
-                          <div className="bg-gray-50 p-3 rounded-lg">
-                            <div className="text-sm">
-                              <div><strong>Name:</strong> {appointment.clientName}</div>
-                              <div><strong>Gender:</strong> {appointment.clientGender}</div>
-                              <div><strong>Age:</strong> {Math.floor((new Date().getTime() - new Date(appointment.clientDOB).getTime()) / (365.25 * 24 * 60 * 60 * 1000))} years</div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>Assessment Scale</Label>
-                          <Button
-                            onClick={() => setIsAssessmentDialogOpen(true)}
-                            className="w-full"
-                            variant="outline"
-                          >
-                            Select Assessment Scale
-                          </Button>
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium">Client Information</h4>
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <div className="text-sm">
+                          <div><strong>Name:</strong> {appointment.clientName}</div>
+                          <div><strong>Gender:</strong> {appointment.clientGender}</div>
+                          <div><strong>Age:</strong> {Math.floor((new Date().getTime() - new Date(appointment.clientDOB).getTime()) / (365.25 * 24 * 60 * 60 * 1000))} years</div>
                         </div>
                       </div>
                     </div>
+
+                    <div className="space-y-2">
+                      <Label>Assessment Scale</Label>
+                      <Button
+                        onClick={() => setIsAssessmentDialogOpen(true)}
+                        className="w-full"
+                        variant="outline"
+                      >
+                        Select Assessment Scale
+                      </Button>
+                    </div>
                   </div>
-                </ResizablePanel>
-              </ResizablePanelGroup>
+                </div>
+              </div>
             </div>
           )}
         </DialogContent>
