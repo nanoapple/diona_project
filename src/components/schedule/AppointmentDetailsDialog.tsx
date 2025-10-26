@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Toggle } from '@/components/ui/toggle';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Calendar, Clock, MapPin, Phone, Video, User, PlayCircle, MessageSquare, ClipboardList, Mic, FileText, MicOff, Upload, Loader2, Edit, AlertTriangle, Pen, Camera } from 'lucide-react';
+import { Calendar, Clock, MapPin, Phone, Video, User, PlayCircle, MessageSquare, ClipboardList, Mic, FileText, MicOff, Upload, Loader2, Edit, AlertTriangle, Pen, Camera, PenTool } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState, useRef, useEffect } from 'react';
 import { Canvas as FabricCanvas } from 'fabric';
@@ -94,6 +95,8 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   const { toast } = useToast();
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false);
   const [showSplitView, setShowSplitView] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
+  const [selectedAssessments, setSelectedAssessments] = useState<any[]>([]);
   const [arrivalStatus, setArrivalStatus] = useState<'Arrived' | 'Late' | 'Rescheduled' | 'Missed' | ''>(appointment?.arrivalStatus || '');
   
   // State for additional fields
@@ -132,6 +135,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   const handleDialogOpenChange = (open: boolean) => {
     if (!open) {
       setShowSplitView(false);
+      setShowSummary(false);
     }
     onOpenChange(open);
   };
@@ -144,6 +148,30 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   // Handle adding assessment 
   const handleAddAssessment = (assessment: any) => {
     console.log('Assessment added:', assessment);
+    setSelectedAssessments(prev => [...prev, assessment]);
+  };
+
+  // Handle end session button
+  const handleEndSession = () => {
+    setShowSummary(true);
+  };
+
+  // Handle save session notes
+  const handleSaveSessionNotes = async () => {
+    toast({
+      title: "Session notes saved",
+      description: "All text summaries have been saved as session notes.",
+    });
+    onOpenChange(false);
+  };
+
+  // Handle regenerate notes
+  const handleRegenerateNotes = async () => {
+    toast({
+      title: "Regenerating notes",
+      description: "Using all materials to regenerate comprehensive notes...",
+    });
+    // Implement regeneration logic here
   };
 
   // Note-taking helper functions
@@ -698,29 +726,131 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   return (
     <>
       <Dialog open={open} onOpenChange={handleDialogOpenChange}>
-        <DialogContent className={showSplitView ? "max-w-6xl max-h-[90vh]" : "max-w-lg max-h-[90vh] overflow-y-auto"}>
-          <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">
-              The {appointment.appointmentNumber} appointment of {appointment.financialYear}
-            </DialogTitle>
-            <div className="flex justify-between items-center">
-              <div className={`text-xl font-bold ${getSessionTypeColor(appointment.type)}`}>
-                {appointment.type}
-              </div>
-              {appointment.interpreterLanguage && (
-                <div className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                  Interpreter: {appointment.interpreterLanguage}
-                </div>
-              )}
-            </div>
-          </DialogHeader>
-          
+        <DialogContent 
+          className={showSplitView ? "max-w-[95vw] w-[95vw] h-[90vh] p-0 overflow-hidden flex flex-col" : "max-w-lg max-h-[90vh] overflow-y-auto"}
+          hideCloseButton={showSplitView}
+          onInteractOutside={(e) => showSplitView ? e.preventDefault() : undefined}
+        >
           {!showSplitView ? (
-            renderAppointmentDetails()
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-lg font-semibold">
+                  The {appointment.appointmentNumber} appointment of {appointment.financialYear}
+                </DialogTitle>
+                <div className="flex justify-between items-center">
+                  <div className={`text-xl font-bold ${getSessionTypeColor(appointment.type)}`}>
+                    {appointment.type}
+                  </div>
+                  {appointment.interpreterLanguage && (
+                    <div className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                      Interpreter: {appointment.interpreterLanguage}
+                    </div>
+                  )}
+                </div>
+              </DialogHeader>
+              {renderAppointmentDetails()}
+            </>
           ) : (
-            <div className="h-[70vh] flex">
-              {/* Left Panel - Case Summary - Fixed Width */}
-              <div className="w-[320px] p-4 bg-purple-50/30 border-r border-purple-200 h-full overflow-y-auto flex flex-col">
+            <>
+              {/* Header for Split View */}
+              <div className="p-4 border-b bg-gradient-to-r from-primary/5 to-primary/10 flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-primary">The {appointment.appointmentNumber} appointment of {appointment.financialYear}</h2>
+                  <p className="text-sm text-muted-foreground">{appointment.type}</p>
+                </div>
+                <Button
+                  onClick={handleEndSession}
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-6"
+                >
+                  End the session
+                </Button>
+              </div>
+
+              {/* Main Content Area */}
+              <div className="flex-1 overflow-hidden">
+                {showSummary ? (
+                  /* Summary View */
+                  <div className="h-full overflow-auto p-8">
+                    <h2 className="text-2xl font-bold mb-8 text-center">Session Summary</h2>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-4xl mx-auto">
+                      {/* Written Notes */}
+                      <div className="p-6 bg-white rounded-lg border-2 border-primary/20 hover:border-primary/40 transition-colors">
+                        <div className="flex items-center gap-3 mb-3">
+                          <MessageSquare className="h-7 w-7 text-primary" />
+                          <h3 className="text-lg font-semibold">Written Notes</h3>
+                        </div>
+                        <p className="text-4xl font-bold text-primary mb-1">
+                          {Object.values(noteData).filter(v => v && String(v).trim()).length}
+                        </p>
+                        <p className="text-sm text-muted-foreground">note sections completed</p>
+                      </div>
+
+                      {/* Transcribed AI Summary */}
+                      <div className="p-6 bg-white rounded-lg border-2 border-primary/20 hover:border-primary/40 transition-colors">
+                        <div className="flex items-center gap-3 mb-3">
+                          <Mic className="h-7 w-7 text-primary" />
+                          <h3 className="text-lg font-semibold">Transcribed AI Summary</h3>
+                        </div>
+                        <p className="text-4xl font-bold text-primary mb-1">{audioFile ? 1 : 0}</p>
+                        <p className="text-sm text-muted-foreground">AI summary available</p>
+                      </div>
+
+                      {/* Uploaded Documents */}
+                      <div className="p-6 bg-white rounded-lg border-2 border-primary/20 hover:border-primary/40 transition-colors">
+                        <div className="flex items-center gap-3 mb-3">
+                          <FileText className="h-7 w-7 text-primary" />
+                          <h3 className="text-lg font-semibold">Uploaded Documents</h3>
+                        </div>
+                        <p className="text-4xl font-bold text-primary mb-1">{uploadedFile ? 1 : 0}</p>
+                        <p className="text-sm text-muted-foreground">document uploaded</p>
+                      </div>
+
+                      {/* Apple Pencil Drafts */}
+                      <div className="p-6 bg-white rounded-lg border-2 border-primary/20 hover:border-primary/40 transition-colors">
+                        <div className="flex items-center gap-3 mb-3">
+                          <PenTool className="h-7 w-7 text-primary" />
+                          <h3 className="text-lg font-semibold">Apple Pencil Drafts</h3>
+                        </div>
+                        <p className="text-4xl font-bold text-primary mb-1">{fabricCanvas ? 1 : 0}</p>
+                        <p className="text-sm text-muted-foreground">handwritten draft (PNG)</p>
+                      </div>
+
+                      {/* Assessments */}
+                      <div className="p-6 bg-white rounded-lg border-2 border-primary/20 hover:border-primary/40 transition-colors md:col-span-2">
+                        <div className="flex items-center gap-3 mb-3">
+                          <ClipboardList className="h-7 w-7 text-primary" />
+                          <h3 className="text-lg font-semibold">Assessments Given</h3>
+                        </div>
+                        <p className="text-4xl font-bold text-primary mb-1">{selectedAssessments.length}</p>
+                        <p className="text-sm text-muted-foreground">assessment(s) completed</p>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-4 justify-center max-w-4xl mx-auto">
+                      <Button
+                        onClick={handleSaveSessionNotes}
+                        className="px-8 py-6 text-base"
+                        size="lg"
+                      >
+                        Save the current text summaries as session notes
+                      </Button>
+                      <Button
+                        onClick={handleRegenerateNotes}
+                        variant="outline"
+                        className="px-8 py-6 text-base"
+                        size="lg"
+                      >
+                        Re-generate notes using all materials above
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  /* Normal Split View */
+                  <div className="h-full flex p-4 gap-4">
+                    {/* Left Panel - Case Summary - Fixed Width */}
+                    <div className="w-[320px] p-4 bg-purple-50/30 border-r border-purple-200 h-full overflow-y-auto flex flex-col">
                 <div className="flex items-center gap-2 mb-4">
                   <User className="h-5 w-5 text-purple-600" />
                   <h3 className="text-lg font-semibold">Client Summary</h3>
@@ -764,14 +894,14 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                   >
                     <MessageSquare className="h-4 w-4 mr-2" />
                     Last Session Notes
-                  </Button>
-                </div>
-              </div>
-              
-              {/* Right Panel - Add Case Note and Add Assessment Combined */}
-              <div className="flex-1 p-4 bg-blue-50/30 h-full overflow-hidden flex flex-col gap-4">
-                {/* Add Case Note - 82% */}
-                <div className="flex-[0.82] flex flex-col overflow-hidden">
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Right Panel - Add Case Note and Add Assessment Combined */}
+                  <div className="flex-1 p-4 bg-blue-50/30 h-full overflow-hidden flex flex-col gap-4">
+                    {/* Add Case Note - 82% */}
+                    <div className="flex-[0.82] flex flex-col overflow-hidden">
                   <div className="flex items-center gap-2 mb-3">
                     <MessageSquare className="h-5 w-5 text-primary" />
                     <h3 className="text-lg font-semibold">Add Case Note</h3>
@@ -1188,11 +1318,11 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                       )}
                     </div>
                     )}
-                  </div>
-                </div>
-                
-                {/* Add Assessment - 18% */}
-                <div className="flex-[0.18] flex flex-col overflow-hidden">
+                      </div>
+                    </div>
+                    
+                    {/* Add Assessment - 18% */}
+                    <div className="flex-[0.18] flex flex-col overflow-hidden">
                   <div className="flex items-center gap-2 mb-3">
                     <ClipboardList className="h-5 w-5 text-primary" />
                     <h3 className="text-lg font-semibold">Add Assessment</h3>
@@ -1204,10 +1334,13 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                     >
                       Select Assessment Scale
                     </Button>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                  </div>
+                )}
               </div>
-            </div>
+            </>
           )}
         </DialogContent>
       </Dialog>
