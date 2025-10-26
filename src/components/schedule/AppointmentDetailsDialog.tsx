@@ -1055,17 +1055,17 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                       </p>
                       
                       {/* Split layout: Recording on left, Additional notes on right */}
-                      <div className="grid grid-cols-2 gap-6">
+                      <div className="grid grid-cols-2 gap-6 h-[400px]">
                         {/* Left side - Recording button */}
                         <div className="flex flex-col items-center justify-start space-y-4">
                           <Button
                             onClick={handleRecordingToggle}
                             variant={isRecording ? "destructive" : "default"}
                             size="lg"
-                            className="w-32 h-32 rounded-full"
+                            className="w-48 h-48 rounded-full"
                             disabled={isProcessing}
                           >
-                            {isRecording ? <MicOff className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
+                            {isRecording ? <MicOff className="w-16 h-16" /> : <Mic className="w-16 h-16" />}
                           </Button>
                           
                           <p className="text-sm">
@@ -1089,7 +1089,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                         </div>
                         
                         {/* Right side - Additional notes */}
-                        <div className="flex flex-col">
+                        <div className="flex flex-col h-full">
                           <Label htmlFor="additional-notes" className="text-sm font-medium mb-2">
                             Additional notes
                           </Label>
@@ -1098,7 +1098,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                             value={additionalNotes}
                             onChange={(e) => setAdditionalNotes(e.target.value)}
                             placeholder="Write additional notes while recording..."
-                            className="h-[200px] resize-none"
+                            className="flex-1 resize-none"
                           />
                         </div>
                       </div>
