@@ -117,6 +117,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   const [freestyleText, setFreestyleText] = useState('');
   const [showWarningDialog, setShowWarningDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState<'toggle' | 'back' | null>(null);
+  const [additionalNotes, setAdditionalNotes] = useState('');
   
   // Whiteboard state
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -1048,40 +1049,58 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                         <span className="font-medium">Dictate Session Notes</span>
                       </div>
                       
-                      <div className="text-center">
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Please try to dictate this session in detail by referring to the following structure. 
-                          AI will help you to summarise the notes as per the format.
-                        </p>
-                        
-                        <Button
-                          onClick={handleRecordingToggle}
-                          variant={isRecording ? "destructive" : "default"}
-                          size="lg"
-                          className="w-32 h-32 rounded-full"
-                          disabled={isProcessing}
-                        >
-                          {isRecording ? <MicOff className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
-                        </Button>
-                        
-                        <p className="text-sm mt-2">
-                          {isRecording ? "Recording..." : "Click to start recording"}
-                        </p>
-                        
-                        {audioFile && (
-                          <div className="mt-4 p-3 bg-muted rounded-lg">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm">{audioFile.name}</span>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => setAudioFile(null)}
-                              >
-                                Delete
-                              </Button>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Please try to dictate this session in detail by referring to the following structure. 
+                        AI will help you to summarise the notes as per the format.
+                      </p>
+                      
+                      {/* Split layout: Recording on left, Additional notes on right */}
+                      <div className="grid grid-cols-2 gap-6">
+                        {/* Left side - Recording button */}
+                        <div className="flex flex-col items-center justify-start space-y-4">
+                          <Button
+                            onClick={handleRecordingToggle}
+                            variant={isRecording ? "destructive" : "default"}
+                            size="lg"
+                            className="w-32 h-32 rounded-full"
+                            disabled={isProcessing}
+                          >
+                            {isRecording ? <MicOff className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
+                          </Button>
+                          
+                          <p className="text-sm">
+                            {isRecording ? "Recording..." : "Click to start recording"}
+                          </p>
+                          
+                          {audioFile && (
+                            <div className="w-full p-3 bg-muted rounded-lg">
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm">{audioFile.name}</span>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => setAudioFile(null)}
+                                >
+                                  Delete
+                                </Button>
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
+                        
+                        {/* Right side - Additional notes */}
+                        <div className="flex flex-col">
+                          <Label htmlFor="additional-notes" className="text-sm font-medium mb-2">
+                            Additional notes
+                          </Label>
+                          <Textarea
+                            id="additional-notes"
+                            value={additionalNotes}
+                            onChange={(e) => setAdditionalNotes(e.target.value)}
+                            placeholder="Write additional notes while recording..."
+                            className="h-[200px] resize-none"
+                          />
+                        </div>
                       </div>
                       
                       {audioFile && !isProcessing && Object.keys(noteData).length === 0 && (
