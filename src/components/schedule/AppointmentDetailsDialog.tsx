@@ -780,10 +780,10 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                             className="flex flex-col items-center justify-center gap-2 h-[120px]"
                             onClick={() => handleModeSelect('write')}
                           >
-                            <Edit className="w-10 h-10 text-primary" />
+                            <Edit className="w-12 h-12 text-primary" />
                             <div className="text-center">
-                              <div className="font-medium text-sm">Write your own notes</div>
-                              <div className="text-xs text-muted-foreground whitespace-normal">
+                              <div className="font-medium text-base">Write your own notes</div>
+                              <div className="text-sm text-muted-foreground whitespace-normal">
                                 Manually enter structured clinical notes
                               </div>
                             </div>
@@ -794,10 +794,10 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                             className="flex flex-col items-center justify-center gap-2 h-[120px]"
                             onClick={() => handleModeSelect('dictate')}
                           >
-                            <Mic className="w-10 h-10 text-primary" />
+                            <Mic className="w-12 h-12 text-primary" />
                             <div className="text-center">
-                              <div className="font-medium text-sm">Dictate-transcribe-summarise</div>
-                              <div className="text-xs text-muted-foreground whitespace-normal">
+                              <div className="font-medium text-base">Dictate-transcribe-summarise</div>
+                              <div className="text-sm text-muted-foreground whitespace-normal">
                                 Record your session and let AI structure it
                               </div>
                             </div>
@@ -808,10 +808,10 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                             className="flex flex-col items-center justify-center gap-2 h-[120px]"
                             onClick={() => handleModeSelect('ocr')}
                           >
-                            <FileText className="w-10 h-10 text-primary" />
+                            <FileText className="w-12 h-12 text-primary" />
                             <div className="text-center">
-                              <div className="font-medium text-sm">Handwritten note OCR</div>
-                              <div className="text-xs text-muted-foreground whitespace-normal">
+                              <div className="font-medium text-base">Handwritten note OCR</div>
+                              <div className="text-sm text-muted-foreground whitespace-normal">
                                 Upload handwritten notes for OCR processing
                               </div>
                             </div>
@@ -822,10 +822,10 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                             className="flex flex-col items-center justify-center gap-2 h-[120px]"
                             onClick={() => handleModeSelect('whiteboard')}
                           >
-                            <Pen className="w-10 h-10 text-primary" />
+                            <Pen className="w-12 h-12 text-primary" />
                             <div className="text-center">
-                              <div className="font-medium text-sm">Writing board (Apple Pencil)</div>
-                              <div className="text-xs text-muted-foreground whitespace-normal">
+                              <div className="font-medium text-base">Writing board (Apple Pencil)</div>
+                              <div className="text-sm text-muted-foreground whitespace-normal">
                                 Use Apple Pencil to write notes on a whiteboard
                               </div>
                             </div>
