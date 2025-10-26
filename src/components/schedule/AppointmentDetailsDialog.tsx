@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Toggle } from '@/components/ui/toggle';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Calendar, Clock, MapPin, Phone, Video, User, PlayCircle, MessageSquare, ClipboardList, Mic, FileText, MicOff, Upload, Loader2, Edit, AlertTriangle, Pen } from 'lucide-react';
+import { Calendar, Clock, MapPin, Phone, Video, User, PlayCircle, MessageSquare, ClipboardList, Mic, FileText, MicOff, Upload, Loader2, Edit, AlertTriangle, Pen, Camera } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState, useRef, useEffect } from 'react';
 import { Canvas as FabricCanvas } from 'fabric';
@@ -124,6 +124,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [whiteboardProcessing, setWhiteboardProcessing] = useState(false);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   if (!appointment) return null;
 
@@ -270,6 +271,21 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
       toast({
         title: "File uploaded",
         description: `${file.name} has been uploaded. Click 'OCR' to process.`,
+      });
+    }
+  };
+
+  const handleCameraCapture = () => {
+    cameraInputRef.current?.click();
+  };
+
+  const handleCameraFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setUploadedFile(file);
+      toast({
+        title: "Photo captured",
+        description: `Photo has been captured. Click 'OCR' to process.`,
       });
     }
   };
@@ -1018,6 +1034,26 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                             </div>
                           </div>
                         )}
+                      </div>
+                      
+                      {/* Camera Button */}
+                      <div className="flex justify-center">
+                        <Button
+                          onClick={handleCameraCapture}
+                          variant="outline"
+                          className="w-full max-w-xs"
+                        >
+                          <Camera className="w-4 h-4 mr-2" />
+                          Take Photo with Camera
+                        </Button>
+                        <input
+                          ref={cameraInputRef}
+                          type="file"
+                          accept="image/*"
+                          capture="environment"
+                          onChange={handleCameraFileUpload}
+                          className="hidden"
+                        />
                       </div>
                       
                       {uploadedFile && !isProcessing && Object.keys(noteData).length === 0 && (
