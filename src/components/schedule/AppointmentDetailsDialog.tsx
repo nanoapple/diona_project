@@ -635,8 +635,55 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
           ) : (
             <div className="h-[70vh]">
               <ResizablePanelGroup direction="horizontal">
-                {/* Left Panel - Add Case Note */}
-                <ResizablePanel defaultSize={50} minSize={30}>
+                {/* Left Panel - Case Summary */}
+                <ResizablePanel defaultSize={25} minSize={20}>
+                  <div className="p-4 bg-purple-50/30 border-r border-purple-200 h-full overflow-y-auto">
+                    <div className="flex items-center gap-2 mb-4">
+                      <User className="h-5 w-5 text-purple-600" />
+                      <h3 className="text-lg font-semibold">Client Summary</h3>
+                    </div>
+                    
+                    {/* Bio-Psycho-Social Model */}
+                    <div className="space-y-4 mb-6">
+                      <h4 className="text-sm font-semibold text-purple-700">Bio-Psycho-Social Profile</h4>
+                      
+                      <div className="bg-white rounded-lg p-3 border space-y-3">
+                        <div>
+                          <div className="text-xs font-medium text-muted-foreground mb-1">Biological</div>
+                          <p className="text-sm">Chronic sleep issues, medication for anxiety (Sertraline 50mg)</p>
+                        </div>
+                        
+                        <div>
+                          <div className="text-xs font-medium text-muted-foreground mb-1">Psychological</div>
+                          <p className="text-sm">Generalized anxiety disorder, history of workplace trauma, cognitive distortions</p>
+                        </div>
+                        
+                        <div>
+                          <div className="text-xs font-medium text-muted-foreground mb-1">Social</div>
+                          <p className="text-sm">Married, 2 children, strained work relationships, reduced social engagement</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Last Session Notes */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold text-purple-700">Last Session Notes</h4>
+                      <div className="bg-white rounded-lg p-3 border">
+                        <div className="text-xs text-muted-foreground mb-2">Session {appointment.appointmentNumber - 1} - {format(new Date(appointment.date.getTime() - 7 * 24 * 60 * 60 * 1000), 'MMM d, yyyy')}</div>
+                        <div className="text-sm space-y-2">
+                          <p><strong>Progress:</strong> Client showed improved engagement. Completed thought diary homework.</p>
+                          <p><strong>Focus:</strong> Cognitive restructuring techniques, challenging catastrophic thinking patterns.</p>
+                          <p><strong>Next Steps:</strong> Continue CBT exercises, introduce behavioral activation strategies.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ResizablePanel>
+                
+                <ResizableHandle withHandle />
+                
+                {/* Middle Panel - Add Case Note */}
+                <ResizablePanel defaultSize={40} minSize={30}>
                   <div className="p-4 bg-blue-50/30 border-r border-blue-200 h-full">
                     <div className="flex items-center gap-2 mb-4">
                       <MessageSquare className="h-5 w-5 text-primary" />
@@ -942,7 +989,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                 <ResizableHandle withHandle />
                 
                 {/* Right Panel - Add Assessment */}
-                <ResizablePanel defaultSize={50} minSize={30}>
+                <ResizablePanel defaultSize={35} minSize={25}>
                   <div className="p-4 bg-green-50/30 h-full">
                     <div className="flex items-center gap-2 mb-4">
                       <ClipboardList className="h-5 w-5 text-primary" />
