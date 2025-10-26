@@ -743,17 +743,15 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                 {/* Action Buttons */}
                 <div className="space-y-2 pt-4 border-t">
                   <Button 
-                    variant="outline" 
-                    className="w-full justify-start text-sm"
-                    onClick={() => {/* TODO: Show bio-psycho-social profile */}}
+                    className="w-full justify-start text-sm bg-[hsl(217,91%,40%)] hover:bg-[hsl(217,91%,35%)] text-white"
+                    onClick={() => toast({ title: "Opening Bio-Psycho-Social Profile..." })}
                   >
                     <FileText className="h-4 w-4 mr-2" />
                     Bio-Psycho-Social Profile
                   </Button>
                   <Button 
-                    variant="outline" 
-                    className="w-full justify-start text-sm"
-                    onClick={() => {/* TODO: Show last session notes */}}
+                    className="w-full justify-start text-sm bg-[hsl(217,91%,40%)] hover:bg-[hsl(217,91%,35%)] text-white"
+                    onClick={() => toast({ title: "Opening Last Session Notes..." })}
                   >
                     <MessageSquare className="h-4 w-4 mr-2" />
                     Last Session Notes
@@ -761,78 +759,80 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                 </div>
               </div>
               
-              {/* Middle Panel - Add Case Note - Fixed Width */}
-              <div className="flex-1 p-4 bg-blue-50/30 border-r border-blue-200 h-full overflow-y-auto">
-                <div className="flex items-center gap-2 mb-4">
-                  <MessageSquare className="h-5 w-5 text-primary" />
-                  <h3 className="text-lg font-semibold">Add Case Note</h3>
-                </div>
-                <div className="bg-white rounded-lg p-4 h-[calc(100%-4rem)] border overflow-y-auto">
-                  {noteMode === 'selection' && (
-                    <>
-                      <p className="text-sm text-muted-foreground mb-6">
-                        Choose how you'd like to create your case note:
-                      </p>
-                      
-                      <div className="space-y-2">
-                        <Button
-                          variant="outline"
-                          className="w-full py-3 flex flex-col items-center gap-2 h-auto"
-                          onClick={() => handleModeSelect('write')}
-                        >
-                          <Edit className="w-10 h-10 text-primary" />
-                          <div className="text-center">
-                            <div className="font-medium text-sm">Write your own notes</div>
-                            <div className="text-xs text-muted-foreground whitespace-normal">
-                              Manually enter structured clinical notes
-                            </div>
-                          </div>
-                        </Button>
+              {/* Right Panel - Add Case Note and Add Assessment Combined */}
+              <div className="flex-1 p-4 bg-blue-50/30 h-full overflow-hidden flex flex-col gap-4">
+                {/* Add Case Note - 80% */}
+                <div className="flex-[0.8] flex flex-col overflow-hidden">
+                  <div className="flex items-center gap-2 mb-3">
+                    <MessageSquare className="h-5 w-5 text-primary" />
+                    <h3 className="text-lg font-semibold">Add Case Note</h3>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 flex-1 border overflow-y-auto">
+                    {noteMode === 'selection' && (
+                      <>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Choose how you'd like to create your case note:
+                        </p>
                         
-                        <Button
-                          variant="outline"
-                          className="w-full py-3 flex flex-col items-center gap-2 h-auto"
-                          onClick={() => handleModeSelect('dictate')}
-                        >
-                          <Mic className="w-10 h-10 text-primary" />
-                          <div className="text-center">
-                            <div className="font-medium text-sm">Dictate-transcribe-summarise</div>
-                            <div className="text-xs text-muted-foreground whitespace-normal">
-                              Record your session and let AI structure it
+                        <div className="grid grid-cols-2 gap-3">
+                          <Button
+                            variant="outline"
+                            className="flex flex-col items-center justify-center gap-2 h-[120px]"
+                            onClick={() => handleModeSelect('write')}
+                          >
+                            <Edit className="w-10 h-10 text-primary" />
+                            <div className="text-center">
+                              <div className="font-medium text-sm">Write your own notes</div>
+                              <div className="text-xs text-muted-foreground whitespace-normal">
+                                Manually enter structured clinical notes
+                              </div>
                             </div>
-                          </div>
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          className="w-full py-3 flex flex-col items-center gap-2 h-auto"
-                          onClick={() => handleModeSelect('ocr')}
-                        >
-                          <FileText className="w-10 h-10 text-primary" />
-                          <div className="text-center">
-                            <div className="font-medium text-sm">Handwritten note OCR</div>
-                            <div className="text-xs text-muted-foreground whitespace-normal">
-                              Upload handwritten notes for OCR processing
+                          </Button>
+                          
+                          <Button
+                            variant="outline"
+                            className="flex flex-col items-center justify-center gap-2 h-[120px]"
+                            onClick={() => handleModeSelect('dictate')}
+                          >
+                            <Mic className="w-10 h-10 text-primary" />
+                            <div className="text-center">
+                              <div className="font-medium text-sm">Dictate-transcribe-summarise</div>
+                              <div className="text-xs text-muted-foreground whitespace-normal">
+                                Record your session and let AI structure it
+                              </div>
                             </div>
-                          </div>
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          className="w-full py-3 flex flex-col items-center gap-2 h-auto"
-                          onClick={() => handleModeSelect('whiteboard')}
-                        >
-                          <Pen className="w-10 h-10 text-primary" />
-                          <div className="text-center">
-                            <div className="font-medium text-sm">Writing board (Apple Pencil)</div>
-                            <div className="text-xs text-muted-foreground whitespace-normal">
-                              Use Apple Pencil to write notes on a whiteboard
+                          </Button>
+                          
+                          <Button
+                            variant="outline"
+                            className="flex flex-col items-center justify-center gap-2 h-[120px]"
+                            onClick={() => handleModeSelect('ocr')}
+                          >
+                            <FileText className="w-10 h-10 text-primary" />
+                            <div className="text-center">
+                              <div className="font-medium text-sm">Handwritten note OCR</div>
+                              <div className="text-xs text-muted-foreground whitespace-normal">
+                                Upload handwritten notes for OCR processing
+                              </div>
                             </div>
-                          </div>
-                        </Button>
-                      </div>
-                    </>
-                  )}
+                          </Button>
+                          
+                          <Button
+                            variant="outline"
+                            className="flex flex-col items-center justify-center gap-2 h-[120px]"
+                            onClick={() => handleModeSelect('whiteboard')}
+                          >
+                            <Pen className="w-10 h-10 text-primary" />
+                            <div className="text-center">
+                              <div className="font-medium text-sm">Writing board (Apple Pencil)</div>
+                              <div className="text-xs text-muted-foreground whitespace-normal">
+                                Use Apple Pencil to write notes on a whiteboard
+                              </div>
+                            </div>
+                          </Button>
+                        </div>
+                      </>
+                    )}
 
                   {noteMode === 'write' && (
                     <div className="space-y-4">
@@ -1158,47 +1158,38 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                         </div>
                       )}
                     </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-              
-              {/* Right Panel - Add Assessment - Fixed Width */}
-              <div className="w-[420px] p-4 bg-green-50/30 h-full overflow-y-auto">
-                <div className="flex items-center gap-2 mb-4">
-                  <ClipboardList className="h-5 w-5 text-primary" />
-                  <h3 className="text-lg font-semibold">Add Assessment</h3>
-                </div>
-                <div className="bg-white rounded-lg p-4 h-[calc(100%-4rem)] border overflow-y-auto">
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-4">
-                      <Label className="flex-shrink-0">Mode:</Label>
+                
+                {/* Add Assessment - 20% */}
+                <div className="flex-[0.2] flex flex-col overflow-hidden">
+                  <div className="flex items-center gap-2 mb-3">
+                    <ClipboardList className="h-5 w-5 text-primary" />
+                    <h3 className="text-lg font-semibold">Add Assessment</h3>
+                  </div>
+                  <div className="bg-white rounded-lg p-3 flex-1 border overflow-y-auto">
+                    <div className="space-y-3">
                       <div className="flex items-center space-x-2">
-                        <Label className="text-primary font-medium text-sm">
-                          In-session assessment
-                        </Label>
+                        <Label className="text-xs text-primary font-medium">In-session</Label>
                         <Switch />
-                        <Label className="text-muted-foreground text-sm">
-                          Self-Guided assessment
-                        </Label>
+                        <Label className="text-xs text-muted-foreground">Self-Guided</Label>
                       </div>
-                    </div>
 
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium">Client Information</h4>
-                      <div className="bg-gray-50 p-3 rounded-lg">
-                        <div className="text-sm">
-                          <div><strong>Name:</strong> {appointment.clientName}</div>
-                          <div><strong>Gender:</strong> {appointment.clientGender}</div>
-                          <div><strong>Age:</strong> {Math.floor((new Date().getTime() - new Date(appointment.clientDOB).getTime()) / (365.25 * 24 * 60 * 60 * 1000))} years</div>
+                      <div className="space-y-1">
+                        <h4 className="text-xs font-medium">Client Information</h4>
+                        <div className="bg-gray-50 p-2 rounded">
+                          <div className="text-xs space-y-0.5">
+                            <div><strong>Name:</strong> {appointment.clientName}</div>
+                            <div><strong>Gender:</strong> {appointment.clientGender}</div>
+                            <div><strong>Age:</strong> {Math.floor((new Date().getTime() - new Date(appointment.clientDOB).getTime()) / (365.25 * 24 * 60 * 60 * 1000))} years</div>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="space-y-2">
-                      <Label>Assessment Scale</Label>
                       <Button
                         onClick={() => setIsAssessmentDialogOpen(true)}
-                        className="w-full"
+                        className="w-full text-xs h-8"
                         variant="outline"
                       >
                         Select Assessment Scale
