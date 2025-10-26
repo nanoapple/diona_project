@@ -793,13 +793,13 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                         <div className="grid grid-cols-2 gap-3">
                           <Button
                             variant="outline"
-                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white hover:[&_*]:!text-white"
+                            className="group flex flex-col items-center justify-center gap-2 h-[120px]"
                             onClick={() => handleModeSelect('write')}
                           >
-                            <Edit className="w-12 h-12 text-primary" />
+                            <Edit className="w-12 h-12 text-primary group-hover:text-white" />
                             <div className="text-center">
-                              <div className="font-medium text-base">Write your own notes</div>
-                              <div className="text-sm text-muted-foreground whitespace-normal">
+                              <div className="font-medium text-base group-hover:text-white">Write your own notes</div>
+                              <div className="text-sm text-muted-foreground group-hover:text-white whitespace-normal">
                                 Manually enter structured clinical notes
                               </div>
                             </div>
@@ -807,13 +807,13 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                           
                           <Button
                             variant="outline"
-                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white hover:[&_*]:!text-white"
+                            className="group flex flex-col items-center justify-center gap-2 h-[120px]"
                             onClick={() => handleModeSelect('dictate')}
                           >
-                            <Mic className="w-12 h-12 text-primary" />
+                            <Mic className="w-12 h-12 text-primary group-hover:text-white" />
                             <div className="text-center">
-                              <div className="font-medium text-base">Dictate-transcribe-summarise</div>
-                              <div className="text-sm text-muted-foreground whitespace-normal">
+                              <div className="font-medium text-base group-hover:text-white">Dictate-transcribe-summarise</div>
+                              <div className="text-sm text-muted-foreground group-hover:text-white whitespace-normal">
                                 Record your session and let AI structure it
                               </div>
                             </div>
@@ -821,13 +821,13 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                           
                           <Button
                             variant="outline"
-                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white hover:[&_*]:!text-white"
+                            className="group flex flex-col items-center justify-center gap-2 h-[120px]"
                             onClick={() => handleModeSelect('ocr')}
                           >
-                            <FileText className="w-12 h-12 text-primary" />
+                            <FileText className="w-12 h-12 text-primary group-hover:text-white" />
                             <div className="text-center">
-                              <div className="font-medium text-base">Handwritten note OCR</div>
-                              <div className="text-sm text-muted-foreground whitespace-normal">
+                              <div className="font-medium text-base group-hover:text-white">Handwritten note OCR</div>
+                              <div className="text-sm text-muted-foreground group-hover:text-white whitespace-normal">
                                 Upload handwritten notes for OCR processing
                               </div>
                             </div>
@@ -835,13 +835,13 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                           
                           <Button
                             variant="outline"
-                            className="flex flex-col items-center justify-center gap-2 h-[120px] hover:text-white hover:[&_*]:!text-white"
+                            className="group flex flex-col items-center justify-center gap-2 h-[120px]"
                             onClick={() => handleModeSelect('whiteboard')}
                           >
-                            <Pen className="w-12 h-12 text-primary" />
+                            <Pen className="w-12 h-12 text-primary group-hover:text-white" />
                             <div className="text-center">
-                              <div className="font-medium text-base">Writing board (Apple Pencil)</div>
-                              <div className="text-sm text-muted-foreground whitespace-normal">
+                              <div className="font-medium text-base group-hover:text-white">Writing board (Apple Pencil)</div>
+                              <div className="text-sm text-muted-foreground group-hover:text-white whitespace-normal">
                                 Use Apple Pencil to write notes on a whiteboard
                               </div>
                             </div>
