@@ -48,22 +48,17 @@ const noteStructure = [
   },
   {
     id: 'progress_indicators',
-    title: '7. Progress Indicators (optional)',
+    title: '7. Progress Indicators or Protective Factors',
     description: 'Client feedback, symptom trajectory, compliance with tasks, new insight.'
   },
   {
-    id: 'barriers_to_change',
-    title: '8. Barriers to Change',
-    description: 'Any ambivalence, structural or internalised blocks to therapy or recovery.'
-  },
-  {
-    id: 'risk_protective_factors',
-    title: '9. Risk & Protective Factors',
-    description: 'Suicidal ideation, psychosocial strengths, medication stability'
+    id: 'barriers_risk_factors',
+    title: '8. Barriers and/or Risk Factors',
+    description: 'Any ambivalence, structural or internalised blocks to therapy or recovery. Suicidal ideation, psychosocial strengths, medication stability.'
   },
   {
     id: 'plan_next_steps',
-    title: '10. Plan / Next Steps',
+    title: '9. Plan / Next Steps',
     description: 'Short-term goals, upcoming focus, coordination needs, home practice.'
   }
 ];
@@ -127,8 +122,7 @@ const AddNotesDialog = ({ open, onOpenChange, onSave }: AddNotesDialogProps) => 
       psychological_history: "No prior mental health treatment. Recent trauma appears to be precipitating factor.",
       treatment_focus: "CBT approach focusing on trauma processing and anxiety management techniques.",
       progress_indicators: "Client engaged well, completed homework assignments, slight improvement noted.",
-      barriers_to_change: "Fear of retraumatization, financial stress affecting session attendance.",
-      risk_protective_factors: "No suicidal ideation. Strong family support system, stable housing.",
+      barriers_risk_factors: "Fear of retraumatization, financial stress affecting session attendance. No suicidal ideation. Strong family support system, stable housing.",
       plan_next_steps: "Continue weekly sessions, introduce exposure exercises, coordinate with GP."
     };
     
@@ -165,8 +159,7 @@ const AddNotesDialog = ({ open, onOpenChange, onSave }: AddNotesDialogProps) => 
       psychological_history: "First time seeking help",
       treatment_focus: "CBT, anxiety management",
       progress_indicators: "Good engagement",
-      barriers_to_change: "Fear, financial stress",
-      risk_protective_factors: "No SI, family support",
+      barriers_risk_factors: "Fear, financial stress. No SI, family support",
       plan_next_steps: "Weekly sessions, exposure work"
     };
     
