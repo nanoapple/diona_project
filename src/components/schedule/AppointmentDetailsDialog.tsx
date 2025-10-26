@@ -759,7 +759,7 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
                   <p className="text-sm text-muted-foreground">{appointment.type}</p>
                 </div>
                 <Button
-                  onClick={handleEndSession}
+                  onClick={() => onOpenChange(false)}
                   className="bg-orange-500 hover:bg-orange-600 text-white px-6"
                 >
                   End the session
