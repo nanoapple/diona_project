@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -49,11 +49,27 @@ const Sidebar = () => {
 
   const toggleSidebar = () => setCollapsed(!collapsed);
   
+  // Load enabled modules from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem('enabledModules');
+    if (stored) {
+      try {
+        setEnabledModules(JSON.parse(stored));
+      } catch (e) {
+        console.error('Failed to parse enabledModules from localStorage', e);
+      }
+    }
+  }, []);
+  
   const toggleModule = (modulePath: string) => {
-    setEnabledModules(prev => ({
-      ...prev,
-      [modulePath]: prev[modulePath] === false ? true : false
-    }));
+    setEnabledModules(prev => {
+      const newState = {
+        ...prev,
+        [modulePath]: prev[modulePath] === false ? true : false
+      };
+      localStorage.setItem('enabledModules', JSON.stringify(newState));
+      return newState;
+    });
   };
   
   const isModuleEnabled = (modulePath: string) => {

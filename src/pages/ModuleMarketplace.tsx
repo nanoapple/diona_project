@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { 
@@ -29,6 +30,50 @@ interface ModuleCategory {
 const ModuleMarketplace = () => {
   const [searchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState("Core Platform");
+  const [enabledModules, setEnabledModules] = useState<Record<string, boolean>>({});
+  
+  // Module name to path mapping for consistency with sidebar
+  const moduleNameToPath: Record<string, string> = {
+    "Dashboard": "/dashboard",
+    "Clients": "/clients",
+    "Case Management": "/case-silo",
+    "Appointment": "/schedule",
+    "Assessments": "/assessments",
+    "Session Notes": "/documents",
+  };
+  
+  // Load enabled modules from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('enabledModules');
+    if (stored) {
+      try {
+        setEnabledModules(JSON.parse(stored));
+      } catch (e) {
+        console.error('Failed to parse enabledModules from localStorage', e);
+      }
+    }
+  }, []);
+  
+  // Toggle module enable/disable
+  const toggleModule = (moduleName: string) => {
+    const modulePath = moduleNameToPath[moduleName];
+    if (!modulePath) return;
+    
+    setEnabledModules(prev => {
+      const newState = {
+        ...prev,
+        [modulePath]: prev[modulePath] === false ? true : false
+      };
+      localStorage.setItem('enabledModules', JSON.stringify(newState));
+      return newState;
+    });
+  };
+  
+  const isModuleEnabled = (moduleName: string) => {
+    const modulePath = moduleNameToPath[moduleName];
+    if (!modulePath) return true;
+    return enabledModules[modulePath] !== false;
+  };
   
   // Category color mapping
   const categoryColors: Record<string, string> = {
@@ -281,7 +326,11 @@ const ModuleMarketplace = () => {
                         <Icon size={24} className="text-primary" />
                       </div>
                       <div className="flex flex-col gap-1 items-end">
-                        {getStatusBadge(module.status)}
+                        {!isModuleEnabled(module.name) ? (
+                          <Badge variant="secondary" className="bg-muted text-muted-foreground">Inactive</Badge>
+                        ) : (
+                          getStatusBadge(module.status)
+                        )}
                       </div>
                     </div>
                     <CardTitle className="text-lg">{module.name}</CardTitle>
@@ -292,7 +341,18 @@ const ModuleMarketplace = () => {
                       {getTierBadge(module.tier)}
                     </div>
                     <div className="mt-auto">
-                      {module.status === 'active' && (
+                      {module.status === 'active' && moduleCategory === "Core Platform" && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">
+                            {isModuleEnabled(module.name) ? 'Enabled' : 'Disabled'}
+                          </span>
+                          <Switch 
+                            checked={isModuleEnabled(module.name)}
+                            onCheckedChange={() => toggleModule(module.name)}
+                          />
+                        </div>
+                      )}
+                      {module.status === 'active' && moduleCategory !== "Core Platform" && (
                         <Button size="sm" variant="outline" className="w-full">
                           Configure Module
                         </Button>
