@@ -176,7 +176,13 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
 
   // Handle end session button
   const handleEndSession = () => {
-    setShowSummary(true);
+    if (showSummary) {
+      // If already showing summary, close the dialog
+      onOpenChange(false);
+    } else {
+      // Otherwise, show the summary
+      setShowSummary(true);
+    }
   };
 
   // Handle save session notes
