@@ -118,7 +118,9 @@ const Sidebar = () => {
           variant="ghost"
           className={cn(
             "w-full justify-start mb-1 text-left flex items-center gap-3",
-            isActive ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground hover:bg-secondary"
+            isActive 
+              ? "bg-muted-foreground text-background font-medium hover:bg-muted-foreground/90" 
+              : "bg-muted text-muted-foreground hover:bg-muted-foreground/20"
           )}
         >
           <Icon size={18} />
