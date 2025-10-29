@@ -125,16 +125,9 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
   const [whiteboardProcessing, setWhiteboardProcessing] = useState(false);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  if (!appointment) return null;
-
-  // Update local state when appointment changes
-  if (appointment && arrivalStatus !== appointment.arrivalStatus) {
-    setArrivalStatus(appointment.arrivalStatus);
-  }
-
-  // Reset state when appointment changes
+  // Reset state when appointment changes (MUST be before conditional return)
   useEffect(() => {
-    if (open) {
+    if (open && appointment) {
       setShowSplitView(false);
       setShowSummary(false);
       setNoteMode('selection');
@@ -151,6 +144,15 @@ const AppointmentDetailsDialog = ({ open, onOpenChange, appointment, onStatusUpd
       }
     }
   }, [appointment?.id, open]);
+
+  // Update arrival status when appointment changes
+  useEffect(() => {
+    if (appointment && arrivalStatus !== appointment.arrivalStatus) {
+      setArrivalStatus(appointment.arrivalStatus);
+    }
+  }, [appointment?.arrivalStatus]);
+
+  if (!appointment) return null;
 
   // Reset split view when dialog is closed
   const handleDialogOpenChange = (open: boolean) => {
