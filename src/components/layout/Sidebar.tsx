@@ -360,13 +360,13 @@ const Sidebar = () => {
 
   // Client Portal Navigation
   const clientNavItems = [
-    { to: "/client/dashboard", icon: CheckSquare, label: "Dashboard" },
-    { to: "/client/journey", icon: Brain, label: "My Journey" },
-    { to: "/client/reflections", icon: ClipboardCheck, label: "Tasks & Reflections" },
-    { to: "/client/mood-tracker", icon: Brain, label: "Mood Tracker" },
-    { to: "/client/messages", icon: MessageSquare, label: "Messages" },
-    { to: "/client/resources", icon: Book, label: "Resources" },
-    { to: "/client/settings", icon: User, label: "Settings" },
+    { to: "/client/dashboard", icon: CheckSquare, label: "Dashboard", color: "bg-blue-500 hover:bg-blue-600 border-blue-400" },
+    { to: "/client/journey", icon: Brain, label: "My Journey", color: "bg-emerald-500 hover:bg-emerald-600 border-emerald-400" },
+    { to: "/client/reflections", icon: ClipboardCheck, label: "Tasks & Reflections", color: "bg-purple-500 hover:bg-purple-600 border-purple-400" },
+    { to: "/client/mood-tracker", icon: Brain, label: "Mood Tracker", color: "bg-pink-500 hover:bg-pink-600 border-pink-400" },
+    { to: "/client/messages", icon: MessageSquare, label: "Messages", color: "bg-amber-500 hover:bg-amber-600 border-amber-400" },
+    { to: "/client/resources", icon: Book, label: "Resources", color: "bg-cyan-500 hover:bg-cyan-600 border-cyan-400" },
+    { to: "/client/settings", icon: User, label: "Settings", color: "bg-slate-500 hover:bg-slate-600 border-slate-400" },
   ];
 
   return (
@@ -396,9 +396,23 @@ const Sidebar = () => {
         {/* Client Portal Navigation */}
         {isClient ? (
           <>
-            {clientNavItems.map((item) => (
-              <NavItem key={item.to} to={item.to} icon={item.icon} label={item.label} />
-            ))}
+            {clientNavItems.map((item) => {
+              const isActive = location.pathname === item.to;
+              return (
+                <Link key={item.to} to={item.to}>
+                  <div
+                    className={cn(
+                      "w-full px-3 py-3 rounded-lg transition-all flex items-center gap-3 text-white font-medium shadow-md",
+                      item.color,
+                      isActive && "ring-2 ring-white/30 shadow-lg"
+                    )}
+                  >
+                    <item.icon size={20} />
+                    {!collapsed && <span>{item.label}</span>}
+                  </div>
+                </Link>
+              );
+            })}
           </>
         ) : (
           <>
@@ -492,17 +506,19 @@ const Sidebar = () => {
       </div>
 
       <div className="mt-auto">
-        <div className="p-3">
-          <Link to="/module-marketplace">
-            <Button
-              variant="default"
-              className="w-full justify-start text-left flex items-center gap-3"
-            >
-              <Store size={18} />
-              {!collapsed && <span>Module Marketplace</span>}
-            </Button>
-          </Link>
-        </div>
+        {!isClient && (
+          <div className="p-3">
+            <Link to="/module-marketplace">
+              <Button
+                variant="default"
+                className="w-full justify-start text-left flex items-center gap-3"
+              >
+                <Store size={18} />
+                {!collapsed && <span>Module Marketplace</span>}
+              </Button>
+            </Link>
+          </div>
+        )}
 
         <div className="p-3 border-t border-border">
           {!collapsed && (
