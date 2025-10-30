@@ -128,7 +128,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const user = demoUsers[email];
       setCurrentUser(user);
       localStorage.setItem('user', JSON.stringify(user));
-      navigate('/dashboard');
+      
+      // Redirect based on user role
+      if (user.role === 'client' || user.role === 'claimant') {
+        navigate('/client/dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error: any) {
       console.error('Login error:', error);
       throw new Error(error.message || "Failed to login");

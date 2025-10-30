@@ -487,6 +487,8 @@ const Sidebar = () => {
             tier={item.tier}
           />
         ))}
+          </>
+        )}
       </div>
 
       <div className="mt-auto">
