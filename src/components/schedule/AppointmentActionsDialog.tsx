@@ -42,59 +42,44 @@ const AppointmentActionsDialog = ({ open, onOpenChange, appointment }: Appointme
 
   const sections = [
     {
-      title: "Appointment Management",
+      title: "Session Management",
       icon: Calendar,
       actions: [
-        { label: "Reschedule or edit (date, time, duration)", icon: Edit, action: "reschedule" },
-        { label: "Change appointment type (e.g. General → Discharge)", icon: RefreshCw, action: "change-type" },
-        { label: "Modify delivery method (in-person / telehealth / phone)", icon: Phone, action: "change-delivery" },
-        { label: "Duplicate or create recurring sessions", icon: Copy, action: "duplicate" }
+        { label: "Edit / Reschedule (date, time, duration)", icon: Edit, action: "reschedule" },
+        { label: "Change session type or delivery method", icon: RefreshCw, action: "change-type" },
+        { label: "Cancel or mark as DNA (Did Not Attend)", icon: XCircle, action: "cancel" },
+        { label: "Duplicate or create recurring session", icon: Copy, action: "duplicate" }
       ]
     },
     {
-      title: "Attendance & Cancellations",
-      icon: UserX,
-      actions: [
-        { label: "Cancel (with reason and optional client notification)", icon: XCircle, action: "cancel" },
-        { label: 'Mark as "Did Not Attend (DNA)"', icon: CalendarX, action: "mark-dna" },
-        { label: "Record cancellation billing status (billable / non-billable)", icon: CreditCard, action: "billing-status" }
-      ]
-    },
-    {
-      title: "Client Communication",
-      icon: MessageSquare,
-      actions: [
-        { label: "Send rescheduling or follow-up request (SMS/email)", icon: Mail, action: "send-notification" },
-        { label: "Add interpreter or accessibility note", icon: Languages, action: "add-note" }
-      ]
-    },
-    {
-      title: "Billing & Financials",
+      title: "Billing & Claims",
       icon: DollarSign,
       actions: [
-        { label: "Mark as invoiced or paid", icon: Receipt, action: "mark-invoiced" },
+        { label: "Mark as invoiced / paid", icon: Receipt, action: "mark-invoiced" },
         { label: "Add or edit billing notes", icon: Edit, action: "edit-billing-notes" },
         { label: "Link to insurer / claim reference", icon: Link2, action: "link-insurer" },
-        { label: "Submit or export to claim system", icon: Upload, action: "submit-claim" }
+        { label: "Submit to claim system", icon: Upload, action: "submit-claim" }
       ]
     },
     {
-      title: "Clinical Documentation",
+      title: "Clinical Records",
       icon: FileText,
       actions: [
         { label: "Mark session notes as complete", icon: CheckCircle, action: "mark-notes-complete" },
+        { label: "Attach / view case documents", icon: Paperclip, action: "attach-documents" },
         { label: "Flag for review / supervision", icon: Flag, action: "flag-review" },
-        { label: "Attach or view linked case documents", icon: Paperclip, action: "attach-documents" },
-        { label: "Track documentation status per session", icon: Clock, action: "track-status" }
+        { label: "Track documentation status", icon: Clock, action: "track-status" }
       ]
     },
     {
-      title: "History & Insights",
-      icon: History,
+      title: "Client History & Communication",
+      icon: MessageSquare,
       actions: [
-        { label: "View appointment change log", icon: Clock, action: "view-changelog" },
-        { label: "Review past attendance or cancellations", icon: CalendarX, action: "review-attendance" },
-        { label: "See client's appointment history and upcoming sessions", icon: TrendingUp, action: "view-history" }
+        { label: "Send rescheduling / follow-up message", icon: Mail, action: "send-notification" },
+        { label: "Add interpreter / accessibility note", icon: Languages, action: "add-note" },
+        { label: "View change log", icon: History, action: "view-changelog" },
+        { label: "Review past attendance / cancellations", icon: CalendarX, action: "review-attendance" },
+        { label: "See upcoming appointments", icon: TrendingUp, action: "view-history" }
       ]
     }
   ];
@@ -112,28 +97,30 @@ const AppointmentActionsDialog = ({ open, onOpenChange, appointment }: Appointme
         </DialogHeader>
 
         <ScrollArea className="h-[calc(85vh-120px)] pr-4">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             {sections.map((section, index) => (
               <div 
                 key={index} 
-                className="border rounded-lg p-4 bg-card hover:shadow-md transition-shadow"
+                className="border rounded-xl p-5 bg-card hover:shadow-lg transition-all duration-200 hover:border-primary/30"
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <section.icon className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold text-sm">{section.title}</h3>
+                <div className="flex items-center gap-3 mb-4 pb-3 border-b">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <section.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="font-semibold text-base">{section.title}</h3>
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {section.actions.map((actionItem, actionIndex) => (
                     <Button
                       key={actionIndex}
                       variant="ghost"
                       size="sm"
-                      className="w-full justify-start text-left h-auto py-2 px-2 hover:bg-accent"
+                      className="w-full justify-start text-left h-auto py-2.5 px-3 hover:bg-primary/5 hover:text-primary transition-colors"
                       onClick={() => handleAction(actionItem.action)}
                     >
-                      <actionItem.icon className="h-3.5 w-3.5 mr-2 flex-shrink-0" />
-                      <span className="text-xs leading-tight">{actionItem.label}</span>
+                      <actionItem.icon className="h-4 w-4 mr-3 flex-shrink-0 opacity-70" />
+                      <span className="text-sm leading-snug">{actionItem.label}</span>
                     </Button>
                   ))}
                 </div>
