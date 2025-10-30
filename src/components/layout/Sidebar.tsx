@@ -47,6 +47,9 @@ const Sidebar = () => {
   const [showEmergency, setShowEmergency] = useState(false);
   const [enabledModules, setEnabledModules] = useState<Record<string, boolean>>({});
 
+  // Check if user is a client
+  const isClient = currentUser?.role === 'client' || currentUser?.role === 'claimant';
+
   const toggleSidebar = () => setCollapsed(!collapsed);
   
   // Load enabled modules from localStorage on mount
@@ -355,6 +358,17 @@ const Sidebar = () => {
     return currentUser?.role ? roleSpecificItems[currentUser.role] || [] : [];
   };
 
+  // Client Portal Navigation
+  const clientNavItems = [
+    { to: "/client/dashboard", icon: CheckSquare, label: "Dashboard" },
+    { to: "/client/journey", icon: Brain, label: "My Journey" },
+    { to: "/client/reflections", icon: ClipboardCheck, label: "Tasks & Reflections" },
+    { to: "/client/mood-tracker", icon: Brain, label: "Mood Tracker" },
+    { to: "/client/messages", icon: MessageSquare, label: "Messages" },
+    { to: "/client/resources", icon: Book, label: "Resources" },
+    { to: "/client/settings", icon: User, label: "Settings" },
+  ];
+
   return (
     <aside 
       className={cn(
@@ -379,22 +393,31 @@ const Sidebar = () => {
       </div>
       
       <div className="flex flex-col flex-grow p-3 space-y-2 overflow-y-auto">
-        {/* Dashboard - Keep as simple nav item */}
-        <NavItem to="/dashboard" icon={CheckSquare} label="Dashboard" />
+        {/* Client Portal Navigation */}
+        {isClient ? (
+          <>
+            {clientNavItems.map((item) => (
+              <NavItem key={item.to} to={item.to} icon={item.icon} label={item.label} />
+            ))}
+          </>
+        ) : (
+          <>
+            {/* Dashboard - Keep as simple nav item */}
+            <NavItem to="/dashboard" icon={CheckSquare} label="Dashboard" />
         
-        {/* Core Modules Section */}
-        {!collapsed && (
-          <div className="text-xs font-semibold text-muted-foreground px-2 pt-3 pb-1">
-            Core Modules
-          </div>
-        )}
+            {/* Core Modules Section */}
+            {!collapsed && (
+              <div className="text-xs font-semibold text-muted-foreground px-2 pt-3 pb-1">
+                Core Modules
+              </div>
+            )}
         
-        {/* Core Modules (Green) */}
-        {getCoreModules().map((module) => (
-          <ModuleNavItem 
-            key={module.to} 
-            to={module.to} 
-            icon={module.icon} 
+            {/* Core Modules (Green) */}
+            {getCoreModules().map((module) => (
+              <ModuleNavItem 
+                key={module.to} 
+                to={module.to} 
+                icon={module.icon}
             label={module.label}
             tier={module.tier}
           />

@@ -30,6 +30,15 @@ import Knowledge from "./pages/Knowledge";
 import ServiceData from "./pages/ServiceData";
 import ModuleMarketplace from "./pages/ModuleMarketplace";
 
+// Client Portal Pages
+import ClientDashboard from "./pages/client/ClientDashboard";
+import MyJourney from "./pages/client/MyJourney";
+import ReflectionsAndTasks from "./pages/client/ReflectionsAndTasks";
+import MoodTracker from "./pages/client/MoodTracker";
+import Messages from "./pages/client/Messages";
+import Resources from "./pages/client/Resources";
+import AccountSettings from "./pages/client/AccountSettings";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -63,6 +72,15 @@ const App = () => (
               <Route path="/service-data" element={<ServiceData />} />
               <Route path="/module-marketplace" element={<ModuleMarketplace />} />
               <Route path="/profile" element={<Profile />} />
+              
+              {/* Client Portal Routes */}
+              <Route path="/client/dashboard" element={<ClientDashboard />} />
+              <Route path="/client/journey" element={<MyJourney />} />
+              <Route path="/client/reflections" element={<ReflectionsAndTasks />} />
+              <Route path="/client/mood-tracker" element={<MoodTracker />} />
+              <Route path="/client/messages" element={<Messages />} />
+              <Route path="/client/resources" element={<Resources />} />
+              <Route path="/client/settings" element={<AccountSettings />} />
             </Route>
             <Route path="*" element={<NotFound />} />
             </Routes>
