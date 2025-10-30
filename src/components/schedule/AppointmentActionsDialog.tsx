@@ -101,7 +101,7 @@ const AppointmentActionsDialog = ({ open, onOpenChange, appointment }: Appointme
             {sections.map((section, index) => (
               <div 
                 key={index} 
-                className="border rounded-xl p-5 bg-card hover:shadow-lg transition-all duration-200 hover:border-primary/30"
+                className="border-2 border-border rounded-xl p-5 bg-card hover:shadow-lg transition-all duration-200 hover:border-primary/50"
               >
                 <div className="flex items-center gap-3 mb-4 pb-3 border-b">
                   <div className="p-2 rounded-lg bg-primary/10">
