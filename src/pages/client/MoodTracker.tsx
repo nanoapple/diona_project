@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Activity, Brain, Heart, Moon, Smile, TrendingDown, TrendingUp } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -120,179 +120,185 @@ const MoodTracker = () => {
         </Card>
       </div>
 
-      <Tabs defaultValue="log" className="space-y-6">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="log">Log Today</TabsTrigger>
-          <TabsTrigger value="trends">View Trends</TabsTrigger>
-        </TabsList>
+      {/* Three Column Layout */}
+      <div className="grid gap-4 md:grid-cols-3">
+        {/* Column 1: Anxiety Assessment */}
+        <Card className="border-2">
+          <CardHeader>
+            <CardTitle className="text-lg">Quick Self-Assessment</CardTitle>
+            <CardDescription>Rate your anxiety level</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Anxiety Level</label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select level (0 = none, 10 = severe)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[...Array(11)].map((_, i) => (
+                    <SelectItem key={i} value={i.toString()}>
+                      {i} - {i === 0 ? 'None' : i <= 3 ? 'Mild' : i <= 6 ? 'Moderate' : 'Severe'}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button variant="outline" className="w-full">
+              Submit
+            </Button>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="log" className="space-y-6">
-          <Card className="border-2">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Smile className="w-5 h-5 text-primary" />
-                <CardTitle>How are you feeling today?</CardTitle>
-              </div>
-              <CardDescription>Select your current mood and add any notes</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex justify-between gap-2">
-                {moods.map((mood) => (
-                  <button
-                    key={mood.value}
-                    onClick={() => setSelectedMood(mood.value)}
-                    className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all hover:scale-105 flex-1 ${
-                      selectedMood === mood.value 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                  >
-                    <span className="text-4xl mb-2">{mood.label}</span>
-                    <span className="text-xs font-medium text-foreground">{mood.description}</span>
-                  </button>
-                ))}
-              </div>
+        {/* Column 2: Mood Selection */}
+        <Card className="border-2">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Smile className="w-5 h-5 text-primary" />
+              <CardTitle className="text-lg">How are you feeling today?</CardTitle>
+            </div>
+            <CardDescription>Select your current mood</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-5 gap-2">
+              {moods.map((mood) => (
+                <button
+                  key={mood.value}
+                  onClick={() => setSelectedMood(mood.value)}
+                  className={`flex flex-col items-center p-2 rounded-lg border-2 transition-all hover:scale-105 ${
+                    selectedMood === mood.value 
+                      ? 'border-primary bg-primary/5' 
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <span className="text-2xl mb-1">{mood.label}</span>
+                  <span className="text-[10px] font-medium text-foreground">{mood.description}</span>
+                </button>
+              ))}
+            </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Today's reflection (optional)</label>
-                <Textarea
-                  placeholder="How has your day been? Any notable events or feelings..."
-                  className="min-h-[120px]"
-                  value={dailyNote}
-                  onChange={(e) => setDailyNote(e.target.value)}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Today's reflection (optional)</label>
+              <Textarea
+                placeholder="How has your day been? Any notable events or feelings..."
+                className="min-h-[80px]"
+                value={dailyNote}
+                onChange={(e) => setDailyNote(e.target.value)}
+              />
+            </div>
+
+            <Button onClick={handleMoodSubmit} className="w-full">
+              Log Mood
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Column 3: Sleep Quality */}
+        <Card className="border-2">
+          <CardHeader>
+            <CardTitle className="text-lg">Sleep Quality</CardTitle>
+            <CardDescription>Rate your sleep from last night</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Sleep Quality (last night)</label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select quality (0 = very poor, 10 = excellent)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[...Array(11)].map((_, i) => (
+                    <SelectItem key={i} value={i.toString()}>
+                      {i} - {i === 0 ? 'Very Poor' : i <= 3 ? 'Poor' : i <= 6 ? 'Fair' : 'Good'}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button variant="outline" className="w-full">
+              Submit
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Trends Chart - Always Visible */}
+      <Card className="border-2">
+        <CardHeader>
+          <CardTitle>Your Progress Over Time</CardTitle>
+          <CardDescription>Track patterns and improvements in your well-being</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[400px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={moodData}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis 
+                  dataKey="date" 
+                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 />
-              </div>
+                <YAxis 
+                  domain={[0, 10]} 
+                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="anxiety" 
+                  stroke="#3b82f6" 
+                  strokeWidth={2}
+                  name="Anxiety"
+                  dot={{ fill: '#3b82f6', r: 4 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="depression" 
+                  stroke="#ef4444" 
+                  strokeWidth={2}
+                  name="Mood"
+                  dot={{ fill: '#ef4444', r: 4 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="sleep" 
+                  stroke="#8b5cf6" 
+                  strokeWidth={2}
+                  name="Sleep Quality"
+                  dot={{ fill: '#8b5cf6', r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
 
-              <Button onClick={handleMoodSubmit} className="w-full" size="lg">
-                Log Mood for Today
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Quick Assessment */}
-          <Card className="border-2">
-            <CardHeader>
-              <CardTitle>Quick Self-Assessment</CardTitle>
-              <CardDescription>Rate your current state (0-10 scale)</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Anxiety Level</label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select level (0 = none, 10 = severe)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[...Array(11)].map((_, i) => (
-                      <SelectItem key={i} value={i.toString()}>
-                        {i} - {i === 0 ? 'None' : i <= 3 ? 'Mild' : i <= 6 ? 'Moderate' : 'Severe'}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Sleep Quality (last night)</label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select quality (0 = very poor, 10 = excellent)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[...Array(11)].map((_, i) => (
-                      <SelectItem key={i} value={i.toString()}>
-                        {i} - {i === 0 ? 'Very Poor' : i <= 3 ? 'Poor' : i <= 6 ? 'Fair' : 'Good'}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <Button variant="outline" className="w-full">
-                Submit Assessment
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="trends" className="space-y-6">
-          <Card className="border-2">
-            <CardHeader>
-              <CardTitle>Your Progress Over Time</CardTitle>
-              <CardDescription>Track patterns and improvements in your well-being</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[400px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={moodData}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                    <XAxis 
-                      dataKey="date" 
-                      className="text-xs"
-                      tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                    />
-                    <YAxis 
-                      domain={[0, 10]} 
-                      className="text-xs"
-                      tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                    />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
-                      }}
-                    />
-                    <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="anxiety" 
-                      stroke="#3b82f6" 
-                      strokeWidth={2}
-                      name="Anxiety"
-                      dot={{ fill: '#3b82f6', r: 4 }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="depression" 
-                      stroke="#ef4444" 
-                      strokeWidth={2}
-                      name="Mood"
-                      dot={{ fill: '#ef4444', r: 4 }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="sleep" 
-                      stroke="#8b5cf6" 
-                      strokeWidth={2}
-                      name="Sleep Quality"
-                      dot={{ fill: '#8b5cf6', r: 4 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2">
-            <CardHeader>
-              <CardTitle>Insights & Patterns</CardTitle>
-              <CardDescription>AI-generated observations from your tracking</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
-                <p className="text-sm font-medium text-green-700 dark:text-green-400 mb-1">Positive Trend</p>
-                <p className="text-sm text-foreground">Your anxiety levels have decreased by 30% over the past week. Keep up the good work with your coping strategies!</p>
-              </div>
-              
-              <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                <p className="text-sm font-medium text-blue-700 dark:text-blue-400 mb-1">Observation</p>
-                <p className="text-sm text-foreground">Your sleep quality improves on days when you log higher mood scores. Consider maintaining your current sleep routine.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      {/* Insights */}
+      <Card className="border-2">
+        <CardHeader>
+          <CardTitle>Insights & Patterns</CardTitle>
+          <CardDescription>AI-generated observations from your tracking</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+            <p className="text-sm font-medium text-green-700 dark:text-green-400 mb-1">Positive Trend</p>
+            <p className="text-sm text-foreground">Your anxiety levels have decreased by 30% over the past week. Keep up the good work with your coping strategies!</p>
+          </div>
+          
+          <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+            <p className="text-sm font-medium text-blue-700 dark:text-blue-400 mb-1">Observation</p>
+            <p className="text-sm text-foreground">Your sleep quality improves on days when you log higher mood scores. Consider maintaining your current sleep routine.</p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
