@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { Users, User, FileText, ClipboardCheck, FileCheck, File, Search, MessageSquare, Hand } from 'lucide-react';
+import { Users, User, FileText, ClipboardCheck, FileCheck, File, Search } from 'lucide-react';
+import newMessageIcon from '@/assets/new-message-icon.png';
 import { formatDate } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
@@ -1133,14 +1134,11 @@ const Clients = () => {
                             : 'bg-gray-600 text-white'
                         }`}>
                           <span className="text-xs font-bold">
-                            {isEnabled ? 'Enabled' : 'Inactive'}
+                            {isEnabled ? 'Enabled' : 'Click to enable'}
                           </span>
                         </div>
                         {hasNewActivity && (
-                          <MessageSquare className="h-4 w-4 absolute right-3 top-1/2 -translate-y-1/2 text-green-700" fill="currentColor" />
-                        )}
-                        {!isEnabled && (
-                          <Hand className="h-4 w-4 absolute right-3 top-1/2 -translate-y-1/2 text-black" />
+                          <img src={newMessageIcon} alt="New message" className="h-6 w-6 absolute right-2 bottom-2" />
                         )}
                       </Button>
                     </div>
