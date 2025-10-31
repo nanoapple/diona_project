@@ -8,8 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { Users, User, FileText, ClipboardCheck, FileCheck, File, Search } from 'lucide-react';
+import { Users, User, FileText, ClipboardCheck, FileCheck, File, Search, ClipboardList, Brain, MessageSquare as MessageSquareIcon, BookOpen, Mail, Smartphone } from 'lucide-react';
 import newMessageIcon from '@/assets/new-message-icon.png';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { formatDate } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
@@ -371,6 +372,10 @@ const Clients = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLetter, setSelectedLetter] = useState<string>('');
   const [orderBy, setOrderBy] = useState<'firstName' | 'surname'>('firstName');
+  const [isEngagementDialogOpen, setIsEngagementDialogOpen] = useState(false);
+  const [engagementClient, setEngagementClient] = useState<Client | null>(null);
+  const [smsMessage, setSmsMessage] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
 
   const handleSelectClient = (client: Client) => {
     setActiveClient(client);
@@ -1124,6 +1129,12 @@ const Clients = () => {
                             ? 'bg-green-100 hover:bg-green-600 hover:text-white text-green-700 border-green-300' 
                             : 'bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-200'
                         }`}
+                        onClick={() => {
+                          if (isEnabled) {
+                            setEngagementClient(client);
+                            setIsEngagementDialogOpen(true);
+                          }
+                        }}
                       >
                         <span className="text-sm">Engagement</span>
                         <span className="text-sm leading-none">&</span>
@@ -1182,6 +1193,107 @@ const Clients = () => {
           </Card>
         </>
       )}
+      
+      {/* Engagement & Homework Dialog */}
+      <Dialog open={isEngagementDialogOpen} onOpenChange={setIsEngagementDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              Engagement & Homework - {engagementClient?.name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {/* 2x2 Grid of Client Sections */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Tasks & Reflections */}
+              <Button 
+                variant="outline" 
+                className="h-24 bg-violet-500 hover:bg-violet-600 text-white border-violet-600 flex items-center justify-center gap-3 text-lg font-semibold"
+              >
+                <ClipboardList className="h-6 w-6" />
+                Tasks & Reflections
+              </Button>
+              
+              {/* Mood Tracker */}
+              <Button 
+                variant="outline" 
+                className="h-24 bg-pink-500 hover:bg-pink-600 text-white border-pink-600 flex items-center justify-center gap-3 text-lg font-semibold"
+              >
+                <Brain className="h-6 w-6" />
+                Mood Tracker
+              </Button>
+              
+              {/* Messages */}
+              <Button 
+                variant="outline" 
+                className="h-24 bg-amber-500 hover:bg-amber-600 text-white border-amber-600 flex items-center justify-center gap-3 text-lg font-semibold"
+              >
+                <MessageSquareIcon className="h-6 w-6" />
+                Messages
+              </Button>
+              
+              {/* Resources */}
+              <Button 
+                variant="outline" 
+                className="h-24 bg-cyan-500 hover:bg-cyan-600 text-white border-cyan-600 flex items-center justify-center gap-3 text-lg font-semibold"
+              >
+                <BookOpen className="h-6 w-6" />
+                Resources
+              </Button>
+            </div>
+            
+            {/* SMS and Email Input Boxes */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="sms-message" className="flex items-center gap-2">
+                  <Smartphone className="h-4 w-4" />
+                  Send SMS
+                </Label>
+                <Textarea
+                  id="sms-message"
+                  placeholder="Type your SMS message here..."
+                  value={smsMessage}
+                  onChange={(e) => setSmsMessage(e.target.value)}
+                  rows={3}
+                />
+                <Button className="w-full" onClick={() => {
+                  toast({
+                    title: "SMS Sent",
+                    description: `Message sent to ${engagementClient?.name}`,
+                  });
+                  setSmsMessage('');
+                }}>
+                  Send SMS
+                </Button>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email-message" className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  Send Email
+                </Label>
+                <Textarea
+                  id="email-message"
+                  placeholder="Type your email message here..."
+                  value={emailMessage}
+                  onChange={(e) => setEmailMessage(e.target.value)}
+                  rows={3}
+                />
+                <Button className="w-full" onClick={() => {
+                  toast({
+                    title: "Email Sent",
+                    description: `Email sent to ${engagementClient?.name}`,
+                  });
+                  setEmailMessage('');
+                }}>
+                  Send Email
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
