@@ -1111,8 +1111,13 @@ const Clients = () => {
                         </CardContent>
                       </div>
                     </Card>
-                    <Button variant="outline" className="h-full whitespace-nowrap px-6 min-w-fit">
-                      Engagement & Homework
+                    <Button 
+                      variant="outline" 
+                      className="h-full px-6 min-w-fit bg-green-100 hover:bg-green-600 hover:text-white text-green-700 border-green-200 transition-colors flex flex-col items-center justify-center leading-tight"
+                    >
+                      <span className="text-sm">Engagement</span>
+                      <span className="text-sm">&</span>
+                      <span className="text-sm">Homework</span>
                     </Button>
                   </div>
                 ))}
