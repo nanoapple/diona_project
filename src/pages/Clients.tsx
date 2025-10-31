@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { Users, User, FileText, ClipboardCheck, FileCheck, File, Search, MessageSquare } from 'lucide-react';
+import { Users, User, FileText, ClipboardCheck, FileCheck, File, Search, MessageSquare, Hand } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
@@ -1118,12 +1118,11 @@ const Clients = () => {
                       </Card>
                       <Button 
                         variant="outline" 
-                        className={`h-full px-6 min-w-fit transition-colors flex flex-col items-center justify-center gap-0 leading-none ${
+                        className={`h-full px-6 w-44 transition-colors flex flex-col items-center justify-center gap-0 leading-none relative ${
                           isEnabled 
                             ? 'bg-green-100 hover:bg-green-600 hover:text-white text-green-700 border-green-300' 
-                            : 'bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-100 cursor-default'
+                            : 'bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-200'
                         }`}
-                        disabled={!isEnabled}
                       >
                         <span className="text-sm">Engagement</span>
                         <span className="text-sm leading-none">&</span>
@@ -1136,10 +1135,13 @@ const Clients = () => {
                           <span className="text-xs font-bold">
                             {isEnabled ? 'Enabled' : 'Inactive'}
                           </span>
-                          {hasNewActivity && (
-                            <MessageSquare className="h-3.5 w-3.5" fill="currentColor" />
-                          )}
                         </div>
+                        {hasNewActivity && (
+                          <MessageSquare className="h-4 w-4 absolute right-3 top-1/2 -translate-y-1/2 text-green-700" fill="currentColor" />
+                        )}
+                        {!isEnabled && (
+                          <Hand className="h-4 w-4 absolute right-3 top-1/2 -translate-y-1/2 text-black" />
+                        )}
                       </Button>
                     </div>
                   );
