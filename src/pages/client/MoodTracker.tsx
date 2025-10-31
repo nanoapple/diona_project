@@ -70,7 +70,7 @@ const MoodTracker = () => {
       </div>
 
       {/* Three Column Layout - Each column contains metric card + assessment */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-3 items-start">
         {/* Column 1: Anxiety Level + Assessment */}
         <div className="space-y-4">
           <Card className="border-2">
@@ -89,7 +89,7 @@ const MoodTracker = () => {
             </CardContent>
           </Card>
           
-          <Card className="border-2 flex flex-col">
+          <Card className="border-2 flex flex-col h-[400px]">
             <CardHeader>
               <CardTitle className="text-lg">Quick Self-Assessment</CardTitle>
               <CardDescription>Rate your anxiety level</CardDescription>
@@ -135,7 +135,7 @@ const MoodTracker = () => {
             </CardContent>
           </Card>
           
-          <Card className="border-2 flex flex-col">
+          <Card className="border-2 flex flex-col h-[400px]">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Smile className="w-5 h-5 text-primary" />
@@ -196,7 +196,7 @@ const MoodTracker = () => {
             </CardContent>
           </Card>
           
-          <Card className="border-2 flex flex-col">
+          <Card className="border-2 flex flex-col h-[400px]">
             <CardHeader>
               <CardTitle className="text-lg">Sleep Quality</CardTitle>
               <CardDescription>Rate your sleep from last night</CardDescription>
