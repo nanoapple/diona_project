@@ -1079,37 +1079,42 @@ const Clients = () => {
             <CardContent>
               <div className="grid gap-4">
                 {filteredClients.map((client) => (
-                  <Card key={client.id} className="overflow-hidden hover:bg-accent/50 cursor-pointer transition-colors" onClick={() => handleSelectClient(client)}>
-                    <div className="flex flex-col md:flex-row">
-                      <div className="md:w-16 flex items-center justify-center p-4 bg-primary/10">
-                        <User className="h-8 w-8 text-primary" />
-                      </div>
-                      <CardContent className="p-6 flex-1">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                          <div>
-                            <h3 className="text-lg font-medium">{client.name}</h3>
-                            <div className="flex flex-col md:flex-row md:items-center gap-0 md:gap-3 mt-1 text-sm text-muted-foreground">
-                              <p>Date of Birth: {formatDate(client.dateOfBirth)}</p>
-                              <span className="hidden md:inline">•</span>
-                              <p>Injury Type: {client.injuryType}</p>
-                            </div>
-                            <div className="mt-1 text-xs">
-                              <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                                {client.assessments.length} Assessments
-                              </span>
-                              <span className="ml-2 bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                                {client.documents.length} Documents
-                              </span>
-                            </div>
-                          </div>
-                          
-                          <Button size="sm">
-                            View Profile
-                          </Button>
+                  <div key={client.id} className="flex gap-4 items-stretch">
+                    <Card className="overflow-hidden hover:bg-accent/50 cursor-pointer transition-colors" style={{ width: '80%' }} onClick={() => handleSelectClient(client)}>
+                      <div className="flex flex-col md:flex-row">
+                        <div className="md:w-16 flex items-center justify-center p-4 bg-primary/10">
+                          <User className="h-8 w-8 text-primary" />
                         </div>
-                      </CardContent>
-                    </div>
-                  </Card>
+                        <CardContent className="p-6 flex-1">
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                            <div>
+                              <h3 className="text-lg font-medium">{client.name}</h3>
+                              <div className="flex flex-col md:flex-row md:items-center gap-0 md:gap-3 mt-1 text-sm text-muted-foreground">
+                                <p>Date of Birth: {formatDate(client.dateOfBirth)}</p>
+                                <span className="hidden md:inline">•</span>
+                                <p>Injury Type: {client.injuryType}</p>
+                              </div>
+                              <div className="mt-1 text-xs">
+                                <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                  {client.assessments.length} Assessments
+                                </span>
+                                <span className="ml-2 bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                  {client.documents.length} Documents
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <Button size="sm">
+                              View Profile
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </div>
+                    </Card>
+                    <Button variant="outline" className="h-full whitespace-nowrap px-6 min-w-fit">
+                      Engagement & Homework
+                    </Button>
+                  </div>
                 ))}
                 
                 {filteredClients.length === 0 && clients.length > 0 && (
