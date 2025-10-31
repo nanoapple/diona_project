@@ -8,12 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { Users, User, FileText, ClipboardCheck, FileCheck, File } from 'lucide-react';
+import { Users, User, FileText, ClipboardCheck, FileCheck, File, Search } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import AddClientDialog from '@/components/clients/AddClientDialog';
 import { useTheme } from '@/components/ThemeProvider';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 interface Client {
   id: string;
@@ -366,6 +367,9 @@ const Clients = () => {
   const [editedClient, setEditedClient] = useState<Partial<Client>>({});
   const [isNewDialogOpen, setIsNewDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedLetter, setSelectedLetter] = useState<string>('');
+  const [orderBy, setOrderBy] = useState<'firstName' | 'surname'>('firstName');
 
   const handleSelectClient = (client: Client) => {
     setActiveClient(client);
@@ -439,6 +443,29 @@ const Clients = () => {
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  // Filter clients based on search term, selected letter, and order
+  const filteredClients = clients.filter(client => {
+    // Search filter
+    const matchesSearch = searchTerm === '' || 
+      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.injuryType.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Letter filter
+    if (!matchesSearch) return false;
+    if (!selectedLetter) return true;
+    
+    if (orderBy === 'firstName') {
+      const firstName = client.firstName || client.name.split(' ')[0];
+      return firstName.toUpperCase().startsWith(selectedLetter);
+    } else {
+      const lastName = client.lastName || client.name.split(' ')[1] || '';
+      return lastName.toUpperCase().startsWith(selectedLetter);
+    }
+  });
+
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
   return (
     <div className="container mx-auto max-w-6xl">
@@ -985,6 +1012,62 @@ const Clients = () => {
               onClientCreated={handleCreateClient}
             />
           </div>
+
+          {/* Search Bar */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search clients by name, email, or injury type..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
+          {/* Alphabetic Filter with Order Toggle */}
+          <div className="mb-6 space-y-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              <ToggleGroup 
+                type="single" 
+                value={orderBy} 
+                onValueChange={(value) => {
+                  if (value) setOrderBy(value as 'firstName' | 'surname');
+                }}
+                className="justify-start"
+              >
+                <ToggleGroupItem value="firstName" aria-label="Order by first name" className="text-xs">
+                  Order by First Name
+                </ToggleGroupItem>
+                <ToggleGroupItem value="surname" aria-label="Order by surname" className="text-xs">
+                  Order by Surname
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+            
+            <div className="flex flex-wrap gap-1">
+              <Button
+                variant={selectedLetter === '' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedLetter('')}
+                className="h-8 w-12 text-xs"
+              >
+                All
+              </Button>
+              {alphabet.map((letter) => (
+                <Button
+                  key={letter}
+                  variant={selectedLetter === letter ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setSelectedLetter(letter)}
+                  className="h-8 w-8 text-xs p-0"
+                >
+                  {letter}
+                </Button>
+              ))}
+            </div>
+          </div>
           
           <Card>
             <CardHeader>
@@ -995,7 +1078,7 @@ const Clients = () => {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
-                {clients.map((client) => (
+                {filteredClients.map((client) => (
                   <Card key={client.id} className="overflow-hidden hover:bg-accent/50 cursor-pointer transition-colors" onClick={() => handleSelectClient(client)}>
                     <div className="flex flex-col md:flex-row">
                       <div className="md:w-16 flex items-center justify-center p-4 bg-primary/10">
@@ -1028,6 +1111,24 @@ const Clients = () => {
                     </div>
                   </Card>
                 ))}
+                
+                {filteredClients.length === 0 && clients.length > 0 && (
+                  <Card className="p-10 text-center">
+                    <div className="flex flex-col items-center">
+                      <Users className="h-10 w-10 text-muted-foreground mb-2" />
+                      <CardTitle className="mb-2">No Matching Clients</CardTitle>
+                      <CardDescription>
+                        No clients match your current search or filter criteria.
+                      </CardDescription>
+                      <Button className="mt-4" variant="outline" onClick={() => {
+                        setSearchTerm('');
+                        setSelectedLetter('');
+                      }}>
+                        Clear Filters
+                      </Button>
+                    </div>
+                  </Card>
+                )}
                 
                 {clients.length === 0 && (
                   <Card className="p-10 text-center">
