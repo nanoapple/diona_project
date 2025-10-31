@@ -1080,7 +1080,7 @@ const Clients = () => {
               <div className="grid gap-4">
                 {filteredClients.map((client) => (
                   <div key={client.id} className="flex gap-4 items-stretch">
-                    <Card className="overflow-hidden hover:bg-accent/50 cursor-pointer transition-colors" style={{ width: '80%' }} onClick={() => handleSelectClient(client)}>
+                    <Card className="overflow-hidden hover:bg-accent/50 cursor-pointer transition-colors flex-1" onClick={() => handleSelectClient(client)}>
                       <div className="flex flex-col md:flex-row">
                         <div className="md:w-16 flex items-center justify-center p-4 bg-primary/10">
                           <User className="h-8 w-8 text-primary" />
