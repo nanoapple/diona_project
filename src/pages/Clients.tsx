@@ -1127,8 +1127,12 @@ const Clients = () => {
                       >
                         <span className="text-sm">Engagement</span>
                         <span className="text-sm leading-none">&</span>
-                        <span className="text-sm mb-1">Homework</span>
-                        <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-sm">Homework</span>
+                        <div className={`flex items-center gap-1.5 mt-3 px-3 py-1 rounded ${
+                          isEnabled 
+                            ? 'bg-green-700 text-white' 
+                            : 'bg-gray-600 text-white'
+                        }`}>
                           <span className="text-xs font-bold">
                             {isEnabled ? 'Enabled' : 'Inactive'}
                           </span>
