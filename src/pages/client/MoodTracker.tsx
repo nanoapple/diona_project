@@ -69,57 +69,6 @@ const MoodTracker = () => {
         <p className="text-muted-foreground">Monitor your emotional well-being and track patterns over time</p>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-2">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Anxiety Level</p>
-                <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold text-foreground">{currentWeekAverage.anxiety}</p>
-                  <p className="text-sm text-muted-foreground">/10</p>
-                  {getTrendIcon(currentWeekAverage.anxiety)}
-                </div>
-              </div>
-              <Brain className="w-8 h-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-2">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Mood Score</p>
-                <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold text-foreground">{currentWeekAverage.depression}</p>
-                  <p className="text-sm text-muted-foreground">/10</p>
-                  {getTrendIcon(currentWeekAverage.depression)}
-                </div>
-              </div>
-              <Heart className="w-8 h-8 text-red-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-2">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Sleep Quality</p>
-                <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold text-foreground">{currentWeekAverage.sleep}</p>
-                  <p className="text-sm text-muted-foreground">/10</p>
-                  {getTrendIcon(currentWeekAverage.sleep, 5)}
-                </div>
-              </div>
-              <Moon className="w-8 h-8 text-purple-500" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Three Column Layout - Each column contains metric card + assessment */}
       <div className="grid gap-4 md:grid-cols-3">
         {/* Column 1: Anxiety Level + Assessment */}
