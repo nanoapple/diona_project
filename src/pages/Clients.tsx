@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { Users, User, FileText, ClipboardCheck, FileCheck, File, Search } from 'lucide-react';
+import { Users, User, FileText, ClipboardCheck, FileCheck, File, Search, MessageSquare } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
@@ -1078,49 +1078,68 @@ const Clients = () => {
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
-                {filteredClients.map((client) => (
-                  <div key={client.id} className="flex gap-4 items-stretch">
-                    <Card className="overflow-hidden hover:bg-accent/50 cursor-pointer transition-colors flex-1" onClick={() => handleSelectClient(client)}>
-                      <div className="flex flex-col md:flex-row">
-                        <div className="md:w-16 flex items-center justify-center p-4 bg-primary/10">
-                          <User className="h-8 w-8 text-primary" />
-                        </div>
-                        <CardContent className="p-6 flex-1">
-                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                            <div>
-                              <h3 className="text-lg font-medium">{client.name}</h3>
-                              <div className="flex flex-col md:flex-row md:items-center gap-0 md:gap-3 mt-1 text-sm text-muted-foreground">
-                                <p>Date of Birth: {formatDate(client.dateOfBirth)}</p>
-                                <span className="hidden md:inline">•</span>
-                                <p>Injury Type: {client.injuryType}</p>
-                              </div>
-                              <div className="mt-1 text-xs">
-                                <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                                  {client.assessments.length} Assessments
-                                </span>
-                                <span className="ml-2 bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                                  {client.documents.length} Documents
-                                </span>
-                              </div>
-                            </div>
-                            
-                            <Button size="sm">
-                              View Profile
-                            </Button>
+                {filteredClients.map((client) => {
+                  // Demo status based on client name
+                  const isEnabled = client.name === "John Doe";
+                  const hasNewActivity = client.name === "John Doe";
+                  
+                  return (
+                    <div key={client.id} className="flex gap-4 items-stretch">
+                      <Card className="overflow-hidden hover:bg-accent/50 cursor-pointer transition-colors flex-1" onClick={() => handleSelectClient(client)}>
+                        <div className="flex flex-col md:flex-row">
+                          <div className="md:w-16 flex items-center justify-center p-4 bg-primary/10">
+                            <User className="h-8 w-8 text-primary" />
                           </div>
-                        </CardContent>
-                      </div>
-                    </Card>
-                    <Button 
-                      variant="outline" 
-                      className="h-full px-6 min-w-fit bg-green-100 hover:bg-green-600 hover:text-white text-green-700 border-green-200 transition-colors flex flex-col items-center justify-center leading-tight"
-                    >
-                      <span className="text-sm">Engagement</span>
-                      <span className="text-sm">&</span>
-                      <span className="text-sm">Homework</span>
-                    </Button>
-                  </div>
-                ))}
+                          <CardContent className="p-6 flex-1">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                              <div>
+                                <h3 className="text-lg font-medium">{client.name}</h3>
+                                <div className="flex flex-col md:flex-row md:items-center gap-0 md:gap-3 mt-1 text-sm text-muted-foreground">
+                                  <p>Date of Birth: {formatDate(client.dateOfBirth)}</p>
+                                  <span className="hidden md:inline">•</span>
+                                  <p>Injury Type: {client.injuryType}</p>
+                                </div>
+                                <div className="mt-1 text-xs">
+                                  <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                    {client.assessments.length} Assessments
+                                  </span>
+                                  <span className="ml-2 bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                                    {client.documents.length} Documents
+                                  </span>
+                                </div>
+                              </div>
+                              
+                              <Button size="sm">
+                                View Profile
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </div>
+                      </Card>
+                      <Button 
+                        variant="outline" 
+                        className={`h-full px-6 min-w-fit transition-colors flex flex-col items-center justify-center gap-0 leading-none ${
+                          isEnabled 
+                            ? 'bg-green-100 hover:bg-green-600 hover:text-white text-green-700 border-green-300' 
+                            : 'bg-gray-100 text-gray-500 border-gray-300 hover:bg-gray-100 cursor-default'
+                        }`}
+                        disabled={!isEnabled}
+                      >
+                        <span className="text-sm">Engagement</span>
+                        <span className="text-sm leading-none">&</span>
+                        <span className="text-sm mb-1">Homework</span>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="text-xs font-bold">
+                            {isEnabled ? 'Enabled' : 'Inactive'}
+                          </span>
+                          {hasNewActivity && (
+                            <MessageSquare className="h-3.5 w-3.5" fill="currentColor" />
+                          )}
+                        </div>
+                      </Button>
+                    </div>
+                  );
+                })}
                 
                 {filteredClients.length === 0 && clients.length > 0 && (
                   <Card className="p-10 text-center">
