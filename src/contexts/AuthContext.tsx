@@ -43,29 +43,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         if (session?.user) {
-          // Fetch user profile
-          const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-
-          if (profile) {
-            setCurrentUser({
-              id: session.user.id,
-              email: session.user.email || '',
-              name: profile.full_name,
-              role: profile.role as UserRole,
-              avatar: profile.avatar_url,
-            });
-          }
+          // Defer profile fetch to avoid deadlocks inside the auth callback
+          setTimeout(() => {
+            (async () => {
+              try {
+                const { data: profile } = await supabase
+                  .from('user_profiles')
+                  .select('*')
+                  .eq('user_id', session.user!.id)
+                  .single();
+                if (profile) {
+                  setCurrentUser({
+                    id: session.user!.id,
+                    email: session.user!.email || '',
+                    name: profile.full_name,
+                    role: profile.role as UserRole,
+                    avatar: profile.avatar_url,
+                  });
+                }
+              } finally {
+                setIsLoading(false);
+              }
+            })();
+          }, 0);
         } else {
           setCurrentUser(null);
+          setIsLoading(false);
         }
-        setIsLoading(false);
       }
     );
 
