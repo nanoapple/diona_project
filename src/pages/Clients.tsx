@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import AddClientDialog from '@/components/clients/AddClientDialog';
 import { useTheme } from '@/components/ThemeProvider';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { useClients, Client as DBClient } from '@/hooks/useClients';
 
 interface Client {
   id: string;
@@ -124,245 +125,66 @@ interface Document {
 const Clients = () => {
   const { toast } = useToast();
   const { theme } = useTheme();
-  const [clients, setClients] = useState<Client[]>([
-    {
-      id: '1',
-      // Personal
-      title: 'Mr',
-      firstName: 'John',
-      lastName: 'Doe',
-      name: 'John Doe',
-      preferredFirstName: 'Johnny',
-      dateOfBirth: '1985-06-12',
-      sex: 'Male',
-      genderIdentity: 'Man',
-      pronouns: 'he/him',
-      culturalIdentity: 'Australian, Anglo-Celtic background',
-      
-      // Contact
-      email: 'john.doe@example.com',
-      phone: '0412 345 678',
-      mobilePhone: '0412 345 678',
-      alternatePhone: '02 9876 5432',
-      address: '123 Main St, Unit 5, Sydney NSW 2000',
-      addressLine1: '123 Main Street',
-      addressLine2: 'Unit 5',
-      suburb: 'Sydney',
-      state: 'NSW',
-      postcode: '2000',
-      country: 'Australia',
-      timeZone: 'Australia/Sydney',
-      
-      // Communication
-      appointmentReminders: ['SMS', 'Email'],
-      marketingMessages: false,
-      
-      // NDIS
-      ndisParticipantNumber: '4300123456',
-      ndisFundingType: 'Plan Managed',
-      ndisStartDate: '2023-01-01',
-      ndisEndDate: '2024-12-31',
-      ndisAmountRemaining: '$45,000',
-      
-      // Clinical
-      dateOfInjury: '2023-01-15',
-      injuryType: 'Workplace Injury - Back',
-      primaryReason: 'Workplace Injury - Back and psychological adjustment',
-      concessionType: 'Healthcare Card',
-      insurer: 'WorkCover NSW',
-      lawyerSolicitor: 'Smith & Partners Legal',
-      
-      // Legal
-      hasLegalIssues: true,
-      courtOrder: false,
-      detention: false,
-      communityService: true,
-      legalNotes: 'Ongoing WorkCover claim. Currently under review for permanent impairment assessment. Legal representation secured for claim proceedings.',
-      
-      // Billing
-      invoiceTo: 'WorkCover NSW',
-      emailInvoiceTo: 'claims@workcover.nsw.gov.au',
-      invoiceExtraInfo: 'Claim Reference: WC-2023-045678. Please include claim number in all invoices.',
-      
-      // Emergency Contact
-      emergencyContactName: 'Sarah Doe',
-      emergencyContactRelationship: 'Spouse',
-      emergencyContactPhone: '0423 456 789',
-      emergencyContactEmail: 'sarah.doe@example.com',
-      
-      // Referral
-      referralSource: 'WorkCover Insurance',
-      referringPractitioner: 'Dr. Michael Chen',
-      referralType: 'GP Referral',
-      
-      notes: 'Client has reported significant psychological distress following the workplace incident. Initial assessment indicates development of adjustment disorder with anxiety features. Prefers morning appointments.',
-      assessments: [
-        {
-          id: '1',
-          title: 'Work-Related Stress Assessment',
-          date: '2023-02-15',
-          type: 'Psychological',
-          status: 'completed',
-          score: 'Moderate (65/100)',
-          summary: 'Assessment indicates moderate levels of work-related stress with significant impact on daily functioning.'
-        },
-        {
-          id: '2',
-          title: 'Depression, Anxiety & Stress Scale (DASS-21)',
-          date: '2023-03-05',
-          type: 'Psychological',
-          status: 'completed',
-          score: 'Severe (78/100)',
-          summary: 'Client shows severe levels of depression and anxiety, moderate levels of stress.'
-        }
-      ],
-      interviews: [
-        {
-          id: '1',
-          title: 'Initial Self-Guided Interview',
-          date: '2023-02-12',
-          status: 'completed',
-          summary: 'Client reports significant pain and emotional distress following workplace incident. Unable to return to previous duties. Experiencing sleep disturbances, irritability, and persistent worries about financial security.'
-        }
-      ],
-      documents: [
-        {
-          id: '1',
-          title: 'Initial Medical Report',
-          date: '2023-01-20',
-          type: 'medical',
-          uploadedBy: 'Dr. Sarah Johnson',
-          fileSize: '1.2 MB'
-        },
-        {
-          id: '2',
-          title: 'WorkCover Claim Documentation',
-          date: '2023-01-25',
-          type: 'legal',
-          uploadedBy: 'John Doe',
-          fileSize: '3.5 MB'
-        }
-      ]
-    },
-    {
-      id: '2',
-      // Personal
-      title: 'Ms',
-      firstName: 'Jane',
-      lastName: 'Smith',
-      name: 'Jane Smith',
-      preferredFirstName: 'Jane',
-      dateOfBirth: '1978-09-23',
-      sex: 'Female',
-      genderIdentity: 'Woman',
-      pronouns: 'she/her',
-      culturalIdentity: 'Australian, South Asian heritage',
-      
-      // Contact
-      email: 'jane.smith@example.com',
-      phone: '0456 789 012',
-      mobilePhone: '0456 789 012',
-      alternatePhone: '03 8765 4321',
-      address: '456 Park Ave, Melbourne VIC 3000',
-      addressLine1: '456 Park Avenue',
-      addressLine2: '',
-      suburb: 'Melbourne',
-      state: 'VIC',
-      postcode: '3000',
-      country: 'Australia',
-      timeZone: 'Australia/Melbourne',
-      
-      // Communication
-      appointmentReminders: ['Email', 'SMS'],
-      marketingMessages: true,
-      
-      // NDIS
-      ndisParticipantNumber: '4300654321',
-      ndisFundingType: 'Self Managed',
-      ndisStartDate: '2023-07-01',
-      ndisEndDate: '2025-06-30',
-      ndisAmountRemaining: '$38,500',
-      
-      // Clinical
-      dateOfInjury: '2023-02-05',
-      injuryType: 'Motor Vehicle Accident',
-      primaryReason: 'Post-traumatic stress and anxiety following motor vehicle accident',
-      concessionType: 'Pension Card',
-      insurer: 'TAC Victoria',
-      lawyerSolicitor: 'Smith & Associates Law Firm',
-      
-      // Legal
-      hasLegalIssues: true,
-      courtOrder: false,
-      detention: false,
-      communityService: false,
-      legalNotes: 'Third-party claim in progress with TAC. Awaiting independent medical examination report. Legal proceedings expected to continue for 12-18 months.',
-      
-      // Billing
-      invoiceTo: 'TAC Victoria',
-      emailInvoiceTo: 'claims@tac.vic.gov.au',
-      invoiceExtraInfo: 'TAC Claim Number: TAC-2023-789012. Include claim number and client name on all correspondence.',
-      
-      // Emergency Contact
-      emergencyContactName: 'Robert Smith',
-      emergencyContactRelationship: 'Brother',
-      emergencyContactPhone: '0487 654 321',
-      emergencyContactEmail: 'robert.smith@example.com',
-      
-      // Referral
-      referralSource: 'Smith & Associates Law Firm',
-      referringPractitioner: 'Dr. Emily Watson',
-      referralType: 'Legal Referral',
-      
-      notes: 'Client was involved in a significant motor vehicle accident as a passenger. Displaying symptoms consistent with PTSD including flashbacks, avoidance behaviors, and heightened anxiety when in vehicles. Unable to use public transport.',
-      assessments: [
-        {
-          id: '3',
-          title: 'Post-Accident Trauma Screening',
-          date: '2023-03-10',
-          type: 'Psychological',
-          status: 'completed',
-          score: 'Significant (72/100)',
-          summary: 'Client displays clinically significant symptoms of post-traumatic stress including intrusive thoughts, hypervigilance, and avoidance behaviors.'
-        }
-      ],
-      interviews: [
-        {
-          id: '2',
-          title: 'Structured Clinical Interview',
-          date: '2023-03-15',
-          status: 'completed',
-          summary: 'Client demonstrates symptoms consistent with PTSD following MVA. Reports flashbacks and anxiety when in vehicles. Significant impact on daily functioning and inability to return to work due to required travel.'
-        }
-      ],
-      documents: [
-        {
-          id: '3',
-          title: 'Emergency Room Records',
-          date: '2023-02-05',
-          type: 'medical',
-          uploadedBy: 'Melbourne City Hospital',
-          fileSize: '2.3 MB'
-        },
-        {
-          id: '4',
-          title: 'Insurance Claim Documentation',
-          date: '2023-02-15',
-          type: 'legal',
-          uploadedBy: 'Smith & Associates',
-          fileSize: '1.8 MB'
-        },
-        {
-          id: '5',
-          title: 'Police Report',
-          date: '2023-02-06',
-          type: 'legal',
-          uploadedBy: 'Melbourne Police Department',
-          fileSize: '1.1 MB'
-        }
-      ]
-    }
-  ]);
+  const { clients: dbClients, isLoading, updateClient } = useClients();
+  
+  // Convert DB clients to UI clients format
+  const clients: Client[] = dbClients.map((dbClient) => ({
+    id: dbClient.id,
+    title: dbClient.title,
+    firstName: dbClient.first_name,
+    lastName: dbClient.last_name,
+    name: `${dbClient.first_name} ${dbClient.last_name}`,
+    preferredFirstName: dbClient.preferred_first_name,
+    dateOfBirth: dbClient.date_of_birth,
+    sex: dbClient.sex,
+    genderIdentity: dbClient.gender_identity,
+    pronouns: dbClient.pronouns,
+    culturalIdentity: dbClient.cultural_identity,
+    email: dbClient.email || '',
+    phone: dbClient.mobile_phone,
+    mobilePhone: dbClient.mobile_phone,
+    alternatePhone: dbClient.alternate_phone,
+    address: `${dbClient.address_line1}${dbClient.address_line2 ? ', ' + dbClient.address_line2 : ''}${dbClient.suburb ? ', ' + dbClient.suburb : ''} ${dbClient.state || ''} ${dbClient.postcode || ''}`,
+    addressLine1: dbClient.address_line1,
+    addressLine2: dbClient.address_line2,
+    suburb: dbClient.suburb,
+    state: dbClient.state,
+    postcode: dbClient.postcode,
+    country: dbClient.country,
+    timeZone: dbClient.time_zone,
+    appointmentReminders: dbClient.communication_preferences?.appointmentReminders || [],
+    marketingMessages: dbClient.communication_preferences?.marketingMessages || false,
+    ndisParticipantNumber: dbClient.ndis_participant_number,
+    ndisFundingType: dbClient.ndis_funding_type,
+    ndisStartDate: dbClient.ndis_start_date,
+    ndisEndDate: dbClient.ndis_end_date,
+    ndisAmountRemaining: dbClient.ndis_amount_remaining,
+    dateOfInjury: dbClient.date_of_injury || '',
+    injuryType: dbClient.injury_type || dbClient.primary_reason || '',
+    primaryReason: dbClient.primary_reason,
+    concessionType: dbClient.concession_type,
+    insurer: dbClient.insurer,
+    lawyerSolicitor: dbClient.lawyer_solicitor,
+    hasLegalIssues: dbClient.has_legal_issues,
+    courtOrder: dbClient.legal_details?.courtOrder,
+    detention: dbClient.legal_details?.detention,
+    communityService: dbClient.legal_details?.communityService,
+    legalNotes: dbClient.legal_details?.notes,
+    invoiceTo: dbClient.billing_details?.invoiceTo,
+    emailInvoiceTo: dbClient.billing_details?.emailInvoiceTo,
+    invoiceExtraInfo: dbClient.billing_details?.extraInfo,
+    emergencyContactName: dbClient.emergency_contact?.name,
+    emergencyContactRelationship: dbClient.emergency_contact?.relationship,
+    emergencyContactPhone: dbClient.emergency_contact?.phone,
+    emergencyContactEmail: dbClient.emergency_contact?.email,
+    referralSource: dbClient.referral_details?.source || '',
+    referringPractitioner: dbClient.referral_details?.referringPractitioner,
+    referralType: dbClient.referral_details?.referralType,
+    notes: dbClient.notes || '',
+    assessments: [],
+    interviews: [],
+    documents: [],
+  }));
   
   const [activeClient, setActiveClient] = useState<Client | null>(null);
   const [editMode, setEditMode] = useState(false);
@@ -383,45 +205,26 @@ const Clients = () => {
     setActiveTab('profile');
   };
 
-  const handleEditToggle = () => {
-    if (editMode) {
-      // If we're saving changes
-      const updatedClients = clients.map(client => 
-        client.id === activeClient?.id 
-          ? {...client, ...editedClient} as Client
-          : client
-      );
-      
-      setClients(updatedClients);
-      setActiveClient({...activeClient!, ...editedClient} as Client);
-      
-      toast({
-        title: "Changes saved",
-        description: "Client information has been updated",
-      });
+  const handleEditToggle = async () => {
+    if (editMode && activeClient) {
+      // Save changes to database
+      try {
+        await updateClient({
+          id: activeClient.id,
+          ...editedClient,
+        });
+        setActiveClient({...activeClient, ...editedClient} as Client);
+      } catch (error) {
+        console.error('Error updating client:', error);
+      }
     }
     
     setEditMode(!editMode);
   };
 
-  const handleCreateClient = (clientData: any) => {
-    const client: Client = {
-      id: clientData.id,
-      name: clientData.name,
-      dateOfBirth: clientData.dateOfBirth,
-      email: clientData.email,
-      phone: clientData.phone,
-      address: clientData.address,
-      dateOfInjury: clientData.dateOfInjury,
-      injuryType: clientData.injuryType,
-      referralSource: clientData.referralSource,
-      notes: clientData.notes,
-      assessments: [],
-      interviews: [],
-      documents: []
-    };
-
-    setClients([...clients, client]);
+  const handleCreateClient = () => {
+    // Client is created via the hook, just close the dialog
+    // The hook will automatically refetch and update the list
   };
 
   const getDocumentIcon = (type: string) => {

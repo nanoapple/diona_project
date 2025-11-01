@@ -18,6 +18,7 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from '@/components/ThemeProvider';
+import { useClients } from '@/hooks/useClients';
 
 interface ClientFormData {
   // Personal Details
@@ -107,6 +108,7 @@ const DRAFT_KEY = 'addClientDraft';
 export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddClientDialogProps) {
   const { toast } = useToast();
   const { theme } = useTheme();
+  const { createClient, isCreating } = useClients();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<ClientFormData>({
     title: '',
@@ -233,7 +235,7 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateForm()) {
       toast({
         title: "Validation Error",
@@ -243,38 +245,84 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
       return;
     }
 
-    const newClient = {
-      id: Date.now().toString(),
-      name: `${formData.firstName} ${formData.lastName}`,
-      preferredName: formData.preferredFirstName,
-      dateOfBirth: formData.birthDay && formData.birthMonth && formData.birthYear 
+    try {
+      // Format date of birth
+      const dateOfBirth = formData.birthDay && formData.birthMonth && formData.birthYear 
         ? `${formData.birthYear}-${formData.birthMonth.padStart(2, '0')}-${formData.birthDay.padStart(2, '0')}`
-        : '',
-      email: formData.email,
-      phone: formData.mobilePhone,
-      address: `${formData.addressLine1}${formData.addressLine2 ? ', ' + formData.addressLine2 : ''}, ${formData.suburb} ${formData.state} ${formData.postcode}`,
-      dateOfInjury: formData.dateOfInjury?.toISOString().split('T')[0],
-      injuryType: formData.primaryReason,
-      referralSource: formData.referralSource,
-      notes: formData.appointmentNotes,
-      assessments: [],
-      interviews: [],
-      documents: [],
-      ...formData
-    };
+        : '';
 
-    onClientCreated(newClient);
-    
-    // Clear form and draft
-    localStorage.removeItem(DRAFT_KEY);
-    localStorage.removeItem(`${DRAFT_KEY}_timestamp`);
-    
-    toast({
-      title: "Client record created",
-      description: "New client has been added successfully"
-    });
+      await createClient({
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        preferred_first_name: formData.preferredFirstName || undefined,
+        title: formData.title || undefined,
+        date_of_birth: dateOfBirth,
+        sex: formData.sex,
+        gender_identity: formData.genderIdentity || undefined,
+        pronouns: formData.pronouns === 'other' ? formData.customPronouns : formData.pronouns || undefined,
+        cultural_identity: formData.culturalIdentity || undefined,
+        email: formData.email || undefined,
+        mobile_phone: formData.mobilePhone,
+        alternate_phone: formData.alternatePhone || undefined,
+        address_line1: formData.addressLine1,
+        address_line2: formData.addressLine2 || undefined,
+        suburb: formData.suburb || undefined,
+        state: formData.state || undefined,
+        postcode: formData.postcode || undefined,
+        country: formData.country || 'Australia',
+        time_zone: formData.timeZone || 'Australia/Sydney',
+        communication_preferences: {
+          appointmentReminders: formData.appointmentReminders,
+          marketingMessages: formData.marketingMessages,
+          bookingConfirmationEmails: formData.bookingConfirmationEmails,
+          bookingCancellationEmails: formData.bookingCancellationEmails,
+        },
+        ndis_participant_number: formData.ndisParticipantNumber || undefined,
+        ndis_funding_type: formData.ndisFundingType || undefined,
+        ndis_start_date: formData.ndisStartDate?.toISOString().split('T')[0],
+        ndis_end_date: formData.ndisEndDate?.toISOString().split('T')[0],
+        ndis_amount_remaining: formData.ndisAmountRemaining || undefined,
+        date_of_injury: formData.dateOfInjury?.toISOString().split('T')[0],
+        primary_reason: formData.primaryReason || undefined,
+        concession_type: formData.concessionType || undefined,
+        insurer: formData.insurer || undefined,
+        lawyer_solicitor: formData.lawyerSolicitor || undefined,
+        has_legal_issues: formData.hasLegalIssues,
+        legal_details: formData.hasLegalIssues ? {
+          courtOrder: formData.courtOrder,
+          detention: formData.detention,
+          communityService: formData.communityService,
+          notes: formData.legalNotes,
+        } : undefined,
+        billing_details: {
+          invoiceTo: formData.invoiceTo,
+          emailInvoiceTo: formData.emailInvoiceTo,
+          extraInfo: formData.invoiceExtraInfo,
+        },
+        emergency_contact: {
+          name: formData.emergencyContactName,
+          relationship: formData.emergencyContactRelationship,
+          phone: formData.emergencyContactPhone,
+          email: formData.emergencyContactEmail,
+        },
+        referral_details: {
+          source: formData.referralSource,
+          referringPractitioner: formData.referringPractitioner,
+          referralType: formData.referralType,
+        },
+        notes: formData.appointmentNotes || undefined,
+        engagement_enabled: false,
+      });
 
-    onOpenChange(false);
+      // Clear form and draft
+      localStorage.removeItem(DRAFT_KEY);
+      localStorage.removeItem(`${DRAFT_KEY}_timestamp`);
+      
+      onOpenChange(false);
+      onClientCreated(null); // Trigger refresh in parent
+    } catch (error) {
+      console.error('Error creating client:', error);
+    }
   };
 
   const handleCancel = () => {
@@ -1208,10 +1256,10 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
           </Button>
           <Button 
             onClick={handleSubmit}
-            disabled={!isFormValid}
+            disabled={!isFormValid || isCreating}
             className="min-w-[120px]"
           >
-            Create Client
+            {isCreating ? 'Creating...' : 'Create Client'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,6 +1,8 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserRole } from '../types';
+import { supabase } from '@/integrations/supabase/client';
+import { Session } from '@supabase/supabase-js';
 
 // User interface
 export interface User {
@@ -16,6 +18,7 @@ export interface User {
 // Auth context interface
 interface AuthContextType {
   currentUser: User | null;
+  session: Session | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -32,22 +35,68 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   // Check if user is logged in on initial load
   useEffect(() => {
-    const checkAuthStatus = () => {
-      // In a real app, we'd check with the backend
-      // For demo, we'll check localStorage
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        setCurrentUser(JSON.parse(storedUser));
-      }
-      setIsLoading(false);
-    };
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        if (session?.user) {
+          // Fetch user profile
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .single();
 
-    checkAuthStatus();
+          if (profile) {
+            setCurrentUser({
+              id: session.user.id,
+              email: session.user.email || '',
+              name: profile.full_name,
+              role: profile.role as UserRole,
+              avatar: profile.avatar_url,
+            });
+          }
+        } else {
+          setCurrentUser(null);
+        }
+        setIsLoading(false);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        // Fetch user profile
+        supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .single()
+          .then(({ data: profile }) => {
+            if (profile) {
+              setCurrentUser({
+                id: session.user.id,
+                email: session.user.email || '',
+                name: profile.full_name,
+                role: profile.role as UserRole,
+                avatar: profile.avatar_url,
+              });
+            }
+            setIsLoading(false);
+          });
+      } else {
+        setIsLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Login function
@@ -55,85 +104,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      // Demo users for testing different roles
-      const demoUsers: Record<string, User> = {
-        "admin@example.com": {
-          id: "admin1",
-          email: "admin@example.com",
-          name: "Admin User",
-          role: "admin",
-          avatar: "https://i.pravatar.cc/150?u=admin"
-        },
-        "lawyer@example.com": {
-          id: "lawyer1",
-          email: "lawyer@example.com",
-          name: "John Smith",
-          role: "lawyer",
-          avatar: "https://i.pravatar.cc/150?u=lawyer",
-          company: "Smith & Associates",
-          title: "Senior Partner"
-        },
-        "therapist@example.com": {
-          id: "therapist1",
-          email: "therapist@example.com",
-          name: "Dr. Emma Wilson",
-          role: "therapist",
-          avatar: "https://i.pravatar.cc/150?u=therapist",
-          company: "Mind Wellness Clinic",
-          title: "Clinical Psychologist"
-        },
-        "claimant@example.com": {
-          id: "client1",
-          email: "claimant@example.com",
-          name: "Sarah Johnson",
-          role: "claimant",
-          avatar: "https://i.pravatar.cc/150?u=client"
-        },
-        "client@example.com": {
-          id: "client2",
-          email: "client@example.com",
-          name: "Sarah Johnson",
-          role: "client",
-          avatar: "https://i.pravatar.cc/150?u=client"
-        },
-        "orgadmin@example.com": {
-          id: "orgadmin1",
-          email: "orgadmin@example.com",
-          name: "Admin User",
-          role: "orgadmin",
-          avatar: "https://i.pravatar.cc/150?u=orgadmin"
-        },
-        "intake@example.com": {
-          id: "intake1",
-          email: "intake@example.com",
-          name: "John Smith",
-          role: "intake",
-          avatar: "https://i.pravatar.cc/150?u=intake",
-          company: "Intake Services",
-          title: "Intake Officer"
+      if (error) throw error;
+
+      // Fetch user profile
+      if (data.user) {
+        const { data: profile, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('user_id', data.user.id)
+          .single();
+
+        if (profileError) throw profileError;
+
+        if (profile) {
+          const user: User = {
+            id: data.user.id,
+            email: data.user.email || '',
+            name: profile.full_name,
+            role: profile.role as UserRole,
+            avatar: profile.avatar_url,
+          };
+
+          setCurrentUser(user);
+          
+          // Redirect based on user role
+          if (user.role === 'client' || user.role === 'claimant') {
+            navigate('/client/dashboard');
+          } else {
+            navigate('/dashboard');
+          }
         }
-      };
-
-      // Check if email exists
-      if (!demoUsers[email]) {
-        throw new Error("Invalid email or password");
-      }
-
-      // In a real app, we would check password here
-      // For demo, any password is valid
-
-      const user = demoUsers[email];
-      setCurrentUser(user);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      // Redirect based on user role
-      if (user.role === 'client' || user.role === 'claimant') {
-        navigate('/client/dashboard');
-      } else {
-        navigate('/dashboard');
       }
     } catch (error: any) {
       console.error('Login error:', error);
@@ -144,14 +149,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   // Logout function
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setCurrentUser(null);
-    localStorage.removeItem('user');
+    setSession(null);
     navigate('/login');
   };
 
   const value = {
     currentUser,
+    session,
     login,
     logout,
     isAuthenticated: !!currentUser,
