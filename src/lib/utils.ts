@@ -14,10 +14,17 @@ export function getInitials(name: string): string {
     .substring(0, 2);
 }
 
-export function formatDate(date: Date | string): string {
+export function formatDate(date: Date | string | null | undefined): string {
+  if (!date) return 'N/A';
+  
   if (typeof date === 'string') {
+    if (date.trim() === '') return 'N/A';
     date = new Date(date);
   }
+  
+  // Check if date is valid
+  if (isNaN(date.getTime())) return 'N/A';
+  
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'short',
