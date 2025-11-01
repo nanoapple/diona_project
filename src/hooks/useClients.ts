@@ -156,18 +156,23 @@ export function useClients() {
   // Create client mutation
   const createClientMutation = useMutation({
     mutationFn: async (clientData: CreateClientInput) => {
-      // Get current user's profile
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      // Get current session (more reliable than getUser)
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        throw new Error('Not authenticated. Please log in and try again.');
+      }
 
       // Get user profile to get tenant_id
       const { data: userProfile, error: profileError } = await supabase
         .from('user_profiles')
         .select('id, tenant_id')
-        .eq('user_id', user.id)
+        .eq('user_id', session.user.id)
         .single();
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('Profile error:', profileError);
+        throw new Error(`Failed to fetch user profile: ${profileError.message}`);
+      }
       if (!userProfile) throw new Error('User profile not found');
 
       // Insert client
