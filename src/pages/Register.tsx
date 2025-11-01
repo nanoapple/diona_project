@@ -89,18 +89,64 @@ export default function Register() {
     try {
       setLoading(true);
       
-      // Simulate API request
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Map frontend role to database enum
+      let dbRole: 'client' | 'psychologist' | 'counsellor' | 'social_worker' | 'admin' = 'client';
+      if (formData.role === 'therapist') {
+        dbRole = 'psychologist';
+      } else if (formData.role === 'orgadmin') {
+        dbRole = 'admin';
+      } else if (formData.role === 'intake') {
+        dbRole = 'social_worker';
+      } else {
+        dbRole = 'client';
+      }
+
+      // Import supabase dynamically to avoid circular dependencies
+      const { supabase } = await import('@/integrations/supabase/client');
       
-      // In a real app, we would register the user with the backend
-      
-      // Mock success, navigate to login
-      navigate("/login", { 
-        state: { message: "Account created. Please log in." } 
+      // Sign up with Supabase Auth
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.name,
+            role: dbRole,
+          },
+          emailRedirectTo: `${window.location.origin}/`,
+        },
       });
-    } catch (error) {
+
+      if (signUpError) {
+        throw signUpError;
+      }
+
+      if (!authData.user) {
+        throw new Error('User creation failed');
+      }
+
+      // The handle_new_user_comprehensive trigger will create the user_profile
+      // but we need to add them to a tenant
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .update({
+          full_name: formData.name,
+          role: dbRole,
+          specializations: formData.specialization ? [formData.specialization] : null,
+        })
+        .eq('user_id', authData.user.id);
+
+      if (profileError) {
+        console.error('Profile update error:', profileError);
+      }
+
+      // Navigate to login
+      navigate("/login", { 
+        state: { message: "Account created successfully! Please check your email to verify your account, then log in." } 
+      });
+    } catch (error: any) {
       console.error("Registration error:", error);
-      setFormError("Failed to create account. Please try again.");
+      setFormError(error.message || "Failed to create account. Please try again.");
     } finally {
       setLoading(false);
     }
