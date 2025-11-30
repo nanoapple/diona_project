@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.12 (cd3cf9e)"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
@@ -26,7 +26,6 @@ export type Database = {
           id: string
           location: string | null
           notes: string | null
-          session_notes_count: number | null
           start_time: string
           status: string
           tenant_id: string
@@ -44,7 +43,6 @@ export type Database = {
           id?: string
           location?: string | null
           notes?: string | null
-          session_notes_count?: number | null
           start_time: string
           status?: string
           tenant_id: string
@@ -62,7 +60,6 @@ export type Database = {
           id?: string
           location?: string | null
           notes?: string | null
-          session_notes_count?: number | null
           start_time?: string
           status?: string
           tenant_id?: string
@@ -245,58 +242,42 @@ export type Database = {
       }
       case_notes: {
         Row: {
-          appointment_id: string | null
           case_silo_id: string
           content: string
           created_at: string
           created_by: string
           id: string
           is_private: boolean | null
-          metadata: Json | null
           note_type: string | null
-          template_data: Json | null
           tenant_id: string
           title: string
           updated_at: string
         }
         Insert: {
-          appointment_id?: string | null
           case_silo_id: string
           content: string
           created_at?: string
           created_by: string
           id?: string
           is_private?: boolean | null
-          metadata?: Json | null
           note_type?: string | null
-          template_data?: Json | null
           tenant_id: string
           title: string
           updated_at?: string
         }
         Update: {
-          appointment_id?: string | null
           case_silo_id?: string
           content?: string
           created_at?: string
           created_by?: string
           id?: string
           is_private?: boolean | null
-          metadata?: Json | null
           note_type?: string | null
-          template_data?: Json | null
           tenant_id?: string
           title?: string
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "case_notes_appointment_id_fkey"
-            columns: ["appointment_id"]
-            isOneToOne: false
-            referencedRelation: "appointments"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "case_notes_case_silo_id_fkey"
             columns: ["case_silo_id"]
@@ -396,162 +377,6 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      clients: {
-        Row: {
-          address_line1: string
-          address_line2: string | null
-          alternate_phone: string | null
-          billing_details: Json | null
-          communication_preferences: Json | null
-          concession_type: string | null
-          country: string | null
-          created_at: string
-          created_by: string
-          cultural_identity: string | null
-          date_of_birth: string
-          date_of_injury: string | null
-          email: string | null
-          emergency_contact: Json | null
-          engagement_enabled: boolean | null
-          first_name: string
-          gender_identity: string | null
-          has_legal_issues: boolean | null
-          id: string
-          injury_type: string | null
-          insurer: string | null
-          last_name: string
-          lawyer_solicitor: string | null
-          legal_details: Json | null
-          mobile_phone: string
-          ndis_amount_remaining: string | null
-          ndis_end_date: string | null
-          ndis_funding_type: string | null
-          ndis_participant_number: string | null
-          ndis_start_date: string | null
-          notes: string | null
-          postcode: string | null
-          preferred_first_name: string | null
-          primary_reason: string | null
-          pronouns: string | null
-          referral_details: Json | null
-          sex: string
-          state: string | null
-          suburb: string | null
-          tenant_id: string
-          time_zone: string | null
-          title: string | null
-          updated_at: string
-          user_profile_id: string | null
-        }
-        Insert: {
-          address_line1: string
-          address_line2?: string | null
-          alternate_phone?: string | null
-          billing_details?: Json | null
-          communication_preferences?: Json | null
-          concession_type?: string | null
-          country?: string | null
-          created_at?: string
-          created_by: string
-          cultural_identity?: string | null
-          date_of_birth: string
-          date_of_injury?: string | null
-          email?: string | null
-          emergency_contact?: Json | null
-          engagement_enabled?: boolean | null
-          first_name: string
-          gender_identity?: string | null
-          has_legal_issues?: boolean | null
-          id?: string
-          injury_type?: string | null
-          insurer?: string | null
-          last_name: string
-          lawyer_solicitor?: string | null
-          legal_details?: Json | null
-          mobile_phone: string
-          ndis_amount_remaining?: string | null
-          ndis_end_date?: string | null
-          ndis_funding_type?: string | null
-          ndis_participant_number?: string | null
-          ndis_start_date?: string | null
-          notes?: string | null
-          postcode?: string | null
-          preferred_first_name?: string | null
-          primary_reason?: string | null
-          pronouns?: string | null
-          referral_details?: Json | null
-          sex: string
-          state?: string | null
-          suburb?: string | null
-          tenant_id: string
-          time_zone?: string | null
-          title?: string | null
-          updated_at?: string
-          user_profile_id?: string | null
-        }
-        Update: {
-          address_line1?: string
-          address_line2?: string | null
-          alternate_phone?: string | null
-          billing_details?: Json | null
-          communication_preferences?: Json | null
-          concession_type?: string | null
-          country?: string | null
-          created_at?: string
-          created_by?: string
-          cultural_identity?: string | null
-          date_of_birth?: string
-          date_of_injury?: string | null
-          email?: string | null
-          emergency_contact?: Json | null
-          engagement_enabled?: boolean | null
-          first_name?: string
-          gender_identity?: string | null
-          has_legal_issues?: boolean | null
-          id?: string
-          injury_type?: string | null
-          insurer?: string | null
-          last_name?: string
-          lawyer_solicitor?: string | null
-          legal_details?: Json | null
-          mobile_phone?: string
-          ndis_amount_remaining?: string | null
-          ndis_end_date?: string | null
-          ndis_funding_type?: string | null
-          ndis_participant_number?: string | null
-          ndis_start_date?: string | null
-          notes?: string | null
-          postcode?: string | null
-          preferred_first_name?: string | null
-          primary_reason?: string | null
-          pronouns?: string | null
-          referral_details?: Json | null
-          sex?: string
-          state?: string | null
-          suburb?: string | null
-          tenant_id?: string
-          time_zone?: string | null
-          title?: string | null
-          updated_at?: string
-          user_profile_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "clients_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "clients_user_profile_id_fkey"
-            columns: ["user_profile_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1148,27 +973,6 @@ export type Database = {
           },
         ]
       }
-      user_roles: {
-        Row: {
-          created_at: string
-          id: string
-          role: Database["public"]["Enums"]["user_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          role: Database["public"]["Enums"]["user_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          role?: Database["public"]["Enums"]["user_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
@@ -1184,13 +988,6 @@ export type Database = {
       }
       get_user_current_tenant: { Args: never; Returns: string }
       get_user_profile_id: { Args: never; Returns: string }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["user_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
       user_belongs_to_tenant: { Args: { _tenant_id: string }; Returns: boolean }
       user_has_tenant_role: {
         Args: { _role: string; _tenant_id: string }
