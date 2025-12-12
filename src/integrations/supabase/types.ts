@@ -845,10 +845,10 @@ export type Database = {
           created_at: string
           created_by: string | null
           date_of_birth: string | null
-          email: string
+          email: string | null
           email_verified: boolean | null
           emergency_contact: Json | null
-          full_name: string
+          full_name: string | null
           google_id: string | null
           id: string
           is_active: boolean
@@ -858,7 +858,7 @@ export type Database = {
           microsoft_id: string | null
           organization: string | null
           phone: string | null
-          role: Database["public"]["Enums"]["user_role"]
+          role: Database["public"]["Enums"]["user_role"] | null
           security_answer_1: string | null
           security_answer_2: string | null
           security_question_1_id: string | null
@@ -866,7 +866,7 @@ export type Database = {
           specializations: string[] | null
           tenant_id: string
           updated_at: string
-          user_id: string
+          user_id: string | null
           username: string | null
         }
         Insert: {
@@ -878,10 +878,10 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           date_of_birth?: string | null
-          email: string
+          email?: string | null
           email_verified?: boolean | null
           emergency_contact?: Json | null
-          full_name: string
+          full_name?: string | null
           google_id?: string | null
           id?: string
           is_active?: boolean
@@ -891,15 +891,15 @@ export type Database = {
           microsoft_id?: string | null
           organization?: string | null
           phone?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
+          role?: Database["public"]["Enums"]["user_role"] | null
           security_answer_1?: string | null
           security_answer_2?: string | null
           security_question_1_id?: string | null
           security_question_2_id?: string | null
           specializations?: string[] | null
-          tenant_id: string
+          tenant_id?: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
           username?: string | null
         }
         Update: {
@@ -911,10 +911,10 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           date_of_birth?: string | null
-          email?: string
+          email?: string | null
           email_verified?: boolean | null
           emergency_contact?: Json | null
-          full_name?: string
+          full_name?: string | null
           google_id?: string | null
           id?: string
           is_active?: boolean
@@ -924,7 +924,7 @@ export type Database = {
           microsoft_id?: string | null
           organization?: string | null
           phone?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
+          role?: Database["public"]["Enums"]["user_role"] | null
           security_answer_1?: string | null
           security_answer_2?: string | null
           security_question_1_id?: string | null
@@ -932,24 +932,10 @@ export type Database = {
           specializations?: string[] | null
           tenant_id?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
           username?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "user_profiles_assigned_practitioner_id_fkey"
-            columns: ["assigned_practitioner_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_profiles_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "user_profiles_security_question_1_id_fkey"
             columns: ["security_question_1_id"]
@@ -1001,6 +987,7 @@ export type Database = {
         | "counsellor"
         | "social_worker"
         | "admin"
+        | "therapist"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1134,6 +1121,7 @@ export const Constants = {
         "counsellor",
         "social_worker",
         "admin",
+        "therapist",
       ],
     },
   },
