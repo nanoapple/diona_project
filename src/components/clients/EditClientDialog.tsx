@@ -1,13 +1,63 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+
+const clientSchema = z.object({
+  title: z.string().optional(),
+  firstName: z.string().min(1, 'First name is required').max(100, 'Max 100 characters'),
+  lastName: z.string().min(1, 'Last name is required').max(100, 'Max 100 characters'),
+  preferredFirstName: z.string().max(100, 'Max 100 characters').optional(),
+  dateOfBirth: z.string().min(1, 'Date of birth is required'),
+  sex: z.string().min(1, 'Sex is required'),
+  genderIdentity: z.string().max(100, 'Max 100 characters').optional(),
+  pronouns: z.string().max(50, 'Max 50 characters').optional(),
+  culturalIdentity: z.string().max(200, 'Max 200 characters').optional(),
+  email: z.string().email('Invalid email address').max(255, 'Max 255 characters').or(z.literal('')).optional(),
+  mobilePhone: z.string().min(1, 'Mobile phone is required').max(20, 'Max 20 characters'),
+  alternatePhone: z.string().max(20, 'Max 20 characters').optional(),
+  addressLine1: z.string().min(1, 'Address is required').max(200, 'Max 200 characters'),
+  addressLine2: z.string().max(200, 'Max 200 characters').optional(),
+  suburb: z.string().max(100, 'Max 100 characters').optional(),
+  state: z.string().max(50, 'Max 50 characters').optional(),
+  postcode: z.string().max(10, 'Max 10 characters').optional(),
+  emergencyContactName: z.string().max(100, 'Max 100 characters').optional(),
+  emergencyContactRelationship: z.string().max(100, 'Max 100 characters').optional(),
+  emergencyContactPhone: z.string().max(20, 'Max 20 characters').optional(),
+  emergencyContactEmail: z.string().email('Invalid email').max(255).or(z.literal('')).optional(),
+  dateOfInjury: z.string().optional(),
+  primaryReason: z.string().max(500, 'Max 500 characters').optional(),
+  concessionType: z.string().max(100, 'Max 100 characters').optional(),
+  insurer: z.string().max(200, 'Max 200 characters').optional(),
+  lawyerSolicitor: z.string().max(200, 'Max 200 characters').optional(),
+  ndisParticipantNumber: z.string().max(50, 'Max 50 characters').optional(),
+  ndisFundingType: z.string().max(100, 'Max 100 characters').optional(),
+  ndisStartDate: z.string().optional(),
+  ndisEndDate: z.string().optional(),
+  notes: z.string().max(2000, 'Max 2000 characters').optional(),
+  hasLegalIssues: z.boolean().optional(),
+  courtOrder: z.boolean().optional(),
+  detention: z.boolean().optional(),
+  communityService: z.boolean().optional(),
+  legalNotes: z.string().max(1000, 'Max 1000 characters').optional(),
+  invoiceTo: z.string().max(200, 'Max 200 characters').optional(),
+  emailInvoiceTo: z.string().email('Invalid email').max(255).or(z.literal('')).optional(),
+  invoiceExtraInfo: z.string().max(500, 'Max 500 characters').optional(),
+  referringPractitioner: z.string().max(200, 'Max 200 characters').optional(),
+  referralType: z.string().max(100, 'Max 100 characters').optional(),
+  referralSource: z.string().max(200, 'Max 200 characters').optional(),
+});
+
+type ClientFormData = z.infer<typeof clientSchema>;
 
 interface Client {
   id: string;
@@ -69,22 +119,114 @@ interface EditClientDialogProps {
   onSave: (client: Partial<Client>) => void;
 }
 
+const RequiredIndicator = () => <span className="text-destructive ml-1">*</span>;
+
 export default function EditClientDialog({ client, open, onOpenChange, onSave }: EditClientDialogProps) {
-  const [editedClient, setEditedClient] = useState<Partial<Client>>({});
-  const [activeTab, setActiveTab] = useState('personal');
+  const form = useForm<ClientFormData>({
+    resolver: zodResolver(clientSchema),
+    defaultValues: {
+      title: '',
+      firstName: '',
+      lastName: '',
+      preferredFirstName: '',
+      dateOfBirth: '',
+      sex: '',
+      genderIdentity: '',
+      pronouns: '',
+      culturalIdentity: '',
+      email: '',
+      mobilePhone: '',
+      alternatePhone: '',
+      addressLine1: '',
+      addressLine2: '',
+      suburb: '',
+      state: '',
+      postcode: '',
+      emergencyContactName: '',
+      emergencyContactRelationship: '',
+      emergencyContactPhone: '',
+      emergencyContactEmail: '',
+      dateOfInjury: '',
+      primaryReason: '',
+      concessionType: '',
+      insurer: '',
+      lawyerSolicitor: '',
+      ndisParticipantNumber: '',
+      ndisFundingType: '',
+      ndisStartDate: '',
+      ndisEndDate: '',
+      notes: '',
+      hasLegalIssues: false,
+      courtOrder: false,
+      detention: false,
+      communityService: false,
+      legalNotes: '',
+      invoiceTo: '',
+      emailInvoiceTo: '',
+      invoiceExtraInfo: '',
+      referringPractitioner: '',
+      referralType: '',
+      referralSource: '',
+    },
+  });
 
   useEffect(() => {
-    if (client) {
-      setEditedClient({ ...client });
+    if (client && open) {
+      form.reset({
+        title: client.title || '',
+        firstName: client.firstName || client.name?.split(' ')[0] || '',
+        lastName: client.lastName || client.name?.split(' ')[1] || '',
+        preferredFirstName: client.preferredFirstName || '',
+        dateOfBirth: client.dateOfBirth || '',
+        sex: client.sex || '',
+        genderIdentity: client.genderIdentity || '',
+        pronouns: client.pronouns || '',
+        culturalIdentity: client.culturalIdentity || '',
+        email: client.email || '',
+        mobilePhone: client.mobilePhone || client.phone || '',
+        alternatePhone: client.alternatePhone || '',
+        addressLine1: client.addressLine1 || '',
+        addressLine2: client.addressLine2 || '',
+        suburb: client.suburb || '',
+        state: client.state || '',
+        postcode: client.postcode || '',
+        emergencyContactName: client.emergencyContactName || '',
+        emergencyContactRelationship: client.emergencyContactRelationship || '',
+        emergencyContactPhone: client.emergencyContactPhone || '',
+        emergencyContactEmail: client.emergencyContactEmail || '',
+        dateOfInjury: client.dateOfInjury || '',
+        primaryReason: client.primaryReason || '',
+        concessionType: client.concessionType || '',
+        insurer: client.insurer || '',
+        lawyerSolicitor: client.lawyerSolicitor || '',
+        ndisParticipantNumber: client.ndisParticipantNumber || '',
+        ndisFundingType: client.ndisFundingType || '',
+        ndisStartDate: client.ndisStartDate || '',
+        ndisEndDate: client.ndisEndDate || '',
+        notes: client.notes || '',
+        hasLegalIssues: client.hasLegalIssues || false,
+        courtOrder: client.courtOrder || false,
+        detention: client.detention || false,
+        communityService: client.communityService || false,
+        legalNotes: client.legalNotes || '',
+        invoiceTo: client.invoiceTo || '',
+        emailInvoiceTo: client.emailInvoiceTo || '',
+        invoiceExtraInfo: client.invoiceExtraInfo || '',
+        referringPractitioner: client.referringPractitioner || '',
+        referralType: client.referralType || '',
+        referralSource: client.referralSource || '',
+      });
     }
-  }, [client]);
+  }, [client, open, form]);
 
-  const handleSave = () => {
-    onSave(editedClient);
+  const handleSubmit = (data: ClientFormData) => {
+    onSave(data);
     onOpenChange(false);
   };
 
   if (!client) return null;
+
+  const hasLegalIssues = form.watch('hasLegalIssues');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -92,448 +234,665 @@ export default function EditClientDialog({ client, open, onOpenChange, onSave }:
         <DialogHeader>
           <DialogTitle>Edit Client Profile</DialogTitle>
         </DialogHeader>
-        
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="personal">Personal</TabsTrigger>
-            <TabsTrigger value="contact">Contact</TabsTrigger>
-            <TabsTrigger value="clinical">Clinical</TabsTrigger>
-            <TabsTrigger value="other">Other</TabsTrigger>
-          </TabsList>
 
-          <ScrollArea className="h-[50vh] mt-4 pr-4">
-            <TabsContent value="personal" className="space-y-4 mt-0">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Title</Label>
-                  <Select
-                    value={editedClient.title || ''}
-                    onValueChange={(value) => setEditedClient({ ...editedClient, title: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select title" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Mr">Mr</SelectItem>
-                      <SelectItem value="Mrs">Mrs</SelectItem>
-                      <SelectItem value="Ms">Ms</SelectItem>
-                      <SelectItem value="Miss">Miss</SelectItem>
-                      <SelectItem value="Dr">Dr</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    value={editedClient.firstName || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, firstName: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    value={editedClient.lastName || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, lastName: e.target.value })}
-                  />
-                </div>
-              </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)}>
+            <Tabs defaultValue="personal" className="w-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="personal">Personal</TabsTrigger>
+                <TabsTrigger value="contact">Contact</TabsTrigger>
+                <TabsTrigger value="clinical">Clinical</TabsTrigger>
+                <TabsTrigger value="other">Other</TabsTrigger>
+              </TabsList>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="preferredFirstName">Preferred First Name</Label>
-                  <Input
-                    id="preferredFirstName"
-                    value={editedClient.preferredFirstName || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, preferredFirstName: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                  <Input
-                    id="dateOfBirth"
-                    type="date"
-                    value={editedClient.dateOfBirth || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, dateOfBirth: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="sex">Sex</Label>
-                  <Select
-                    value={editedClient.sex || ''}
-                    onValueChange={(value) => setEditedClient({ ...editedClient, sex: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select sex" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Male">Male</SelectItem>
-                      <SelectItem value="Female">Female</SelectItem>
-                      <SelectItem value="Intersex">Intersex</SelectItem>
-                      <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="genderIdentity">Gender Identity</Label>
-                  <Input
-                    id="genderIdentity"
-                    value={editedClient.genderIdentity || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, genderIdentity: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="pronouns">Pronouns</Label>
-                  <Input
-                    id="pronouns"
-                    value={editedClient.pronouns || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, pronouns: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="culturalIdentity">Cultural Identity / Language</Label>
-                <Input
-                  id="culturalIdentity"
-                  value={editedClient.culturalIdentity || ''}
-                  onChange={(e) => setEditedClient({ ...editedClient, culturalIdentity: e.target.value })}
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="contact" className="space-y-4 mt-0">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={editedClient.email || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, email: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="mobilePhone">Mobile Phone</Label>
-                  <Input
-                    id="mobilePhone"
-                    value={editedClient.mobilePhone || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, mobilePhone: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="alternatePhone">Alternate Phone</Label>
-                <Input
-                  id="alternatePhone"
-                  value={editedClient.alternatePhone || ''}
-                  onChange={(e) => setEditedClient({ ...editedClient, alternatePhone: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="addressLine1">Address Line 1</Label>
-                <Input
-                  id="addressLine1"
-                  value={editedClient.addressLine1 || ''}
-                  onChange={(e) => setEditedClient({ ...editedClient, addressLine1: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="addressLine2">Address Line 2</Label>
-                <Input
-                  id="addressLine2"
-                  value={editedClient.addressLine2 || ''}
-                  onChange={(e) => setEditedClient({ ...editedClient, addressLine2: e.target.value })}
-                />
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="suburb">Suburb</Label>
-                  <Input
-                    id="suburb"
-                    value={editedClient.suburb || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, suburb: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="state">State</Label>
-                  <Input
-                    id="state"
-                    value={editedClient.state || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, state: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="postcode">Postcode</Label>
-                  <Input
-                    id="postcode"
-                    value={editedClient.postcode || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, postcode: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <h4 className="font-medium pt-4">Emergency Contact</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="emergencyContactName">Name</Label>
-                  <Input
-                    id="emergencyContactName"
-                    value={editedClient.emergencyContactName || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, emergencyContactName: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="emergencyContactRelationship">Relationship</Label>
-                  <Input
-                    id="emergencyContactRelationship"
-                    value={editedClient.emergencyContactRelationship || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, emergencyContactRelationship: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="emergencyContactPhone">Phone</Label>
-                  <Input
-                    id="emergencyContactPhone"
-                    value={editedClient.emergencyContactPhone || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, emergencyContactPhone: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="emergencyContactEmail">Email</Label>
-                  <Input
-                    id="emergencyContactEmail"
-                    value={editedClient.emergencyContactEmail || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, emergencyContactEmail: e.target.value })}
-                  />
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="clinical" className="space-y-4 mt-0">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="dateOfInjury">Date of Injury/Incident</Label>
-                  <Input
-                    id="dateOfInjury"
-                    type="date"
-                    value={editedClient.dateOfInjury || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, dateOfInjury: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="concessionType">Concession Type</Label>
-                  <Input
-                    id="concessionType"
-                    value={editedClient.concessionType || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, concessionType: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="primaryReason">Primary Reason for Service</Label>
-                <Textarea
-                  id="primaryReason"
-                  value={editedClient.primaryReason || ''}
-                  onChange={(e) => setEditedClient({ ...editedClient, primaryReason: e.target.value })}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="insurer">Insurer</Label>
-                  <Input
-                    id="insurer"
-                    value={editedClient.insurer || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, insurer: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lawyerSolicitor">Lawyer/Solicitor</Label>
-                  <Input
-                    id="lawyerSolicitor"
-                    value={editedClient.lawyerSolicitor || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, lawyerSolicitor: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <h4 className="font-medium pt-4">NDIS Details</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="ndisParticipantNumber">Participant Number</Label>
-                  <Input
-                    id="ndisParticipantNumber"
-                    value={editedClient.ndisParticipantNumber || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, ndisParticipantNumber: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="ndisFundingType">Funding Type</Label>
-                  <Input
-                    id="ndisFundingType"
-                    value={editedClient.ndisFundingType || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, ndisFundingType: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="ndisStartDate">Plan Start Date</Label>
-                  <Input
-                    id="ndisStartDate"
-                    type="date"
-                    value={editedClient.ndisStartDate || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, ndisStartDate: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="ndisEndDate">Plan End Date</Label>
-                  <Input
-                    id="ndisEndDate"
-                    type="date"
-                    value={editedClient.ndisEndDate || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, ndisEndDate: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="notes">Clinical Notes</Label>
-                <Textarea
-                  id="notes"
-                  rows={4}
-                  value={editedClient.notes || ''}
-                  onChange={(e) => setEditedClient({ ...editedClient, notes: e.target.value })}
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="other" className="space-y-4 mt-0">
-              <h4 className="font-medium">Legal Issues</h4>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="hasLegalIssues"
-                  checked={editedClient.hasLegalIssues || false}
-                  onCheckedChange={(checked) => setEditedClient({ ...editedClient, hasLegalIssues: !!checked })}
-                />
-                <Label htmlFor="hasLegalIssues">Has Legal Issues</Label>
-              </div>
-
-              {editedClient.hasLegalIssues && (
-                <div className="space-y-4 pl-6">
-                  <div className="flex flex-wrap gap-4">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="courtOrder"
-                        checked={editedClient.courtOrder || false}
-                        onCheckedChange={(checked) => setEditedClient({ ...editedClient, courtOrder: !!checked })}
-                      />
-                      <Label htmlFor="courtOrder">Court Order</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="detention"
-                        checked={editedClient.detention || false}
-                        onCheckedChange={(checked) => setEditedClient({ ...editedClient, detention: !!checked })}
-                      />
-                      <Label htmlFor="detention">Detention</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="communityService"
-                        checked={editedClient.communityService || false}
-                        onCheckedChange={(checked) => setEditedClient({ ...editedClient, communityService: !!checked })}
-                      />
-                      <Label htmlFor="communityService">Community Service</Label>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="legalNotes">Legal Notes</Label>
-                    <Textarea
-                      id="legalNotes"
-                      value={editedClient.legalNotes || ''}
-                      onChange={(e) => setEditedClient({ ...editedClient, legalNotes: e.target.value })}
+              <ScrollArea className="h-[50vh] mt-4 pr-4">
+                <TabsContent value="personal" className="space-y-4 mt-0">
+                  <div className="grid grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select title" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Mr">Mr</SelectItem>
+                              <SelectItem value="Mrs">Mrs</SelectItem>
+                              <SelectItem value="Ms">Ms</SelectItem>
+                              <SelectItem value="Miss">Miss</SelectItem>
+                              <SelectItem value="Dr">Dr</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>First Name<RequiredIndicator /></FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Last Name<RequiredIndicator /></FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
-                </div>
-              )}
 
-              <h4 className="font-medium pt-4">Billing Information</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="invoiceTo">Invoice To</Label>
-                  <Input
-                    id="invoiceTo"
-                    value={editedClient.invoiceTo || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, invoiceTo: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="emailInvoiceTo">Email Invoice To</Label>
-                  <Input
-                    id="emailInvoiceTo"
-                    type="email"
-                    value={editedClient.emailInvoiceTo || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, emailInvoiceTo: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="invoiceExtraInfo">Additional Invoice Info</Label>
-                <Textarea
-                  id="invoiceExtraInfo"
-                  value={editedClient.invoiceExtraInfo || ''}
-                  onChange={(e) => setEditedClient({ ...editedClient, invoiceExtraInfo: e.target.value })}
-                />
-              </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="preferredFirstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Preferred First Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="dateOfBirth"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Date of Birth<RequiredIndicator /></FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-              <h4 className="font-medium pt-4">Referral Information</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="referringPractitioner">Referring Practitioner</Label>
-                  <Input
-                    id="referringPractitioner"
-                    value={editedClient.referringPractitioner || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, referringPractitioner: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="referralType">Referral Type</Label>
-                  <Input
-                    id="referralType"
-                    value={editedClient.referralType || ''}
-                    onChange={(e) => setEditedClient({ ...editedClient, referralType: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="referralSource">Referral Source</Label>
-                <Input
-                  id="referralSource"
-                  value={editedClient.referralSource || ''}
-                  onChange={(e) => setEditedClient({ ...editedClient, referralSource: e.target.value })}
-                />
-              </div>
-            </TabsContent>
-          </ScrollArea>
-        </Tabs>
+                  <div className="grid grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="sex"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Sex<RequiredIndicator /></FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select sex" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Male">Male</SelectItem>
+                              <SelectItem value="Female">Female</SelectItem>
+                              <SelectItem value="Intersex">Intersex</SelectItem>
+                              <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="genderIdentity"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Gender Identity</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="pronouns"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pronouns</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave}>
-            Save Changes
-          </Button>
-        </DialogFooter>
+                  <FormField
+                    control={form.control}
+                    name="culturalIdentity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cultural Identity / Language</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </TabsContent>
+
+                <TabsContent value="contact" className="space-y-4 mt-0">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="mobilePhone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Mobile Phone<RequiredIndicator /></FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="alternatePhone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Alternate Phone</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="addressLine1"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Address Line 1<RequiredIndicator /></FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="addressLine2"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Address Line 2</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="suburb"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Suburb</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="state"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>State</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="postcode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Postcode</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <h4 className="font-medium pt-4">Emergency Contact</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="emergencyContactName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="emergencyContactRelationship"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Relationship</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="emergencyContactPhone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="emergencyContactEmail"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="clinical" className="space-y-4 mt-0">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="dateOfInjury"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Date of Injury/Incident</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="concessionType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Concession Type</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="primaryReason"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Primary Reason for Service</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="insurer"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Insurer</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="lawyerSolicitor"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Lawyer/Solicitor</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <h4 className="font-medium pt-4">NDIS Details</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="ndisParticipantNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Participant Number</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="ndisFundingType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Funding Type</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="ndisStartDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Plan Start Date</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="ndisEndDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Plan End Date</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Clinical Notes</FormLabel>
+                        <FormControl>
+                          <Textarea rows={4} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </TabsContent>
+
+                <TabsContent value="other" className="space-y-4 mt-0">
+                  <h4 className="font-medium">Legal Issues</h4>
+                  <FormField
+                    control={form.control}
+                    name="hasLegalIssues"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">Has Legal Issues</FormLabel>
+                      </FormItem>
+                    )}
+                  />
+
+                  {hasLegalIssues && (
+                    <div className="space-y-4 pl-6">
+                      <div className="flex flex-wrap gap-4">
+                        <FormField
+                          control={form.control}
+                          name="courtOrder"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal">Court Order</FormLabel>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="detention"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal">Detention</FormLabel>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="communityService"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal">Community Service</FormLabel>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <FormField
+                        control={form.control}
+                        name="legalNotes"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Legal Notes</FormLabel>
+                            <FormControl>
+                              <Textarea {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+
+                  <h4 className="font-medium pt-4">Billing Information</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="invoiceTo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Invoice To</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="emailInvoiceTo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email Invoice To</FormLabel>
+                          <FormControl>
+                            <Input type="email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="invoiceExtraInfo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Additional Invoice Info</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <h4 className="font-medium pt-4">Referral Information</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="referringPractitioner"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Referring Practitioner</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="referralType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Referral Type</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="referralSource"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Referral Source</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </TabsContent>
+              </ScrollArea>
+            </Tabs>
+
+            <DialogFooter className="mt-4">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
