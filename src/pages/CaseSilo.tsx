@@ -41,312 +41,155 @@ import { CreateCaseSilo } from '@/components/caseSilo/CreateCaseSilo';
 import MilestoneTracker, { Milestone } from '@/components/caseSilo/MilestoneTracker';
 import CaseMilestoneSummary from '@/components/caseSilo/CaseMilestoneSummary';
 import MsConfeeAssistant from '@/components/caseSilo/MsConfeeAssistant';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 const CaseSiloPage = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const [caseSilos, setCaseSilos] = useState<CaseSiloType[]>([]);
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'overview' | 'documents' | 'assessments' | 'reports' | 'notes' | 'timeline' | 'external' | 'info-requests'>('overview');
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [showCreateSilo, setShowCreateSilo] = useState(false);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
 
+  // Fetch case silos from Supabase
+  const { data: caseSilos = [], isLoading, error, refetch } = useQuery({
+    queryKey: ['case_silos'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('case_silos')
+        .select(`
+          *,
+          case_documents(*),
+          assessments(*),
+          reports(*),
+          case_notes(*),
+          info_requests(*),
+          timeline_items(*)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform database records to match CaseSiloType
+      return (data || []).map(record => ({
+        id: record.id,
+        claimantName: record.claimant_name,
+        caseType: record.case_type,
+        claimNumber: record.case_number || '',
+        referralSource: '',
+        injuryDate: record.incident_date || '',
+        currentStage: record.claim_stage || 'Intake & Triage',
+        status: record.status as 'active' | 'expiring_soon' | 'expired',
+        createdDate: record.created_at?.split('T')[0] || '',
+        expiryDate: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 6 months from now
+        participants: {
+          claimantId: '',
+          lawyerId: record.assigned_lawyer_id || '',
+          psychologistId: record.assigned_psychologist_id || '',
+        },
+        documents: (record.case_documents || []).map((doc: any) => ({
+          id: doc.id,
+          name: doc.title,
+          type: doc.file_type || 'application/pdf',
+          uploadedBy: 'Unknown',
+          uploadRole: 'psychologist',
+          uploadDate: doc.created_at?.split('T')[0] || '',
+          url: doc.file_url,
+          size: doc.file_size ? `${(doc.file_size / 1024 / 1024).toFixed(1)} MB` : 'N/A'
+        })),
+        assessments: (record.assessments || []).map((assess: any) => ({
+          id: assess.id,
+          title: assess.title,
+          description: assess.type,
+          status: assess.status as 'pending' | 'in_progress' | 'completed',
+          completionPercentage: assess.status === 'completed' ? 100 : assess.status === 'in_progress' ? 50 : 0,
+          date: assess.due_date || assess.created_at?.split('T')[0] || '',
+          assignedTo: 'Client'
+        })),
+        reports: (record.reports || []).map((report: any) => ({
+          id: report.id,
+          title: report.title,
+          patientName: record.claimant_name,
+          date: report.due_date || report.created_at?.split('T')[0] || '',
+          type: report.type as any,
+          status: report.status as any,
+          content: report.content || {},
+          lastEdited: report.updated_at?.split('T')[0] || ''
+        })),
+        notes: (record.case_notes || []).map((note: any) => ({
+          id: note.id,
+          content: note.content,
+          createdBy: 'Unknown',
+          createdAt: note.created_at?.split('T')[0] || '',
+          isPrivate: note.is_private || false,
+          visibleTo: ['lawyer', 'psychologist']
+        })),
+        infoRequests: (record.info_requests || []).map((req: any) => ({
+          id: req.id,
+          title: req.title,
+          questions: [req.description],
+          requestedBy: 'Unknown',
+          dateRequested: req.created_at?.split('T')[0] || '',
+          status: req.status as 'pending' | 'completed',
+          dueDate: req.due_date || ''
+        })),
+        externalUploads: [],
+        completedStages: getCompletedStages(record.claim_stage),
+        categoryTags: getCategoryTags(record.case_type)
+      })) as CaseSiloType[];
+    },
+  });
+
+  // Helper to determine completed stages based on current stage
+  function getCompletedStages(currentStage: string | null): ClaimStage[] {
+    const allStages: ClaimStage[] = ['Intake & Triage', 'Legal Review', 'Assessment', 'Report', 'Lodgement', 'Outcome'];
+    const stageMap: Record<string, number> = {
+      'intake': 0,
+      'legal_review': 1,
+      'assessment': 2,
+      'report': 3,
+      'lodgement': 4,
+      'outcome': 5
+    };
+    const idx = stageMap[currentStage || 'intake'] || 0;
+    return allStages.slice(0, idx);
+  }
+
+  // Helper to generate category tags based on case type
+  function getCategoryTags(caseType: string): string[] {
+    const tagMap: Record<string, string[]> = {
+      'Workplace Injury': ['TRM', 'WORK', 'LEGAL'],
+      'Car Accident': ['TRM', 'ANX'],
+      'Personal Injury': ['TRM', 'PAIN'],
+      'Family & Relationships': ['REL', 'MOOD'],
+      'Anxiety & Stress': ['ANX', 'MOOD'],
+      'Trauma & PTSD': ['TRM', 'ANX'],
+    };
+    return tagMap[caseType] || ['LEGAL'];
+  }
+
+  // Fetch milestones when a case is selected
   useEffect(() => {
-    // Fetch mock case silos
-    const fetchData = async () => {
-      try {
-        setError(null);
-        setIsLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-        
-        // Mock data
-        const mockCaseSilos: CaseSiloType[] = [
+    if (selectedCaseId) {
+      // For now, generate mock milestones - could be fetched from timeline_items
+      const selectedCase = caseSilos.find(c => c.id === selectedCaseId);
+      if (selectedCase) {
+        const mockMilestones: Milestone[] = [
           {
-            id: "1",
-            claimantName: "John Doe",
-            caseType: "Workplace Injury",
-            claimNumber: "WC2023-12345",
-            referralSource: "Smith & Associates",
-            injuryDate: "2023-02-10",
-            currentStage: "Assessment",
-            status: "active",
-            createdDate: "2023-03-15",
-            expiryDate: "2023-09-15",
-            participants: {
-              claimantId: "user1",
-              lawyerId: "user2",
-              psychologistId: "user3",
-            },
-            documents: [
-              {
-                id: "doc1",
-                name: "Initial Assessment Report.pdf",
-                type: "application/pdf",
-                uploadedBy: "Dr. Smith",
-                uploadRole: "psychologist",
-                uploadDate: "2023-03-20",
-                url: "#",
-                size: "1.2 MB"
-              },
-              {
-                id: "doc2",
-                name: "Medical Records.pdf",
-                type: "application/pdf",
-                uploadedBy: "Dr. Johnson",
-                uploadRole: "external",
-                uploadDate: "2023-03-25",
-                url: "#",
-                size: "3.4 MB"
-              }
-            ],
-            assessments: [
-              {
-                id: "assess1",
-                title: "DASS-21 Psychological Assessment",
-                description: "Depression, Anxiety and Stress Scale",
-                status: "completed",
-                completionPercentage: 100,
-                date: "2023-04-05",
-                assignedTo: "John Doe"
-              },
-              {
-                id: "assess2",
-                title: "PCL-5 Assessment",
-                description: "PTSD Checklist for DSM-5",
-                status: "in_progress",
-                completionPercentage: 60,
-                date: "2023-05-05",
-                assignedTo: "John Doe"
-              }
-            ],
-            reports: [
-              {
-                id: "report1",
-                title: "Initial Psychological Report",
-                patientName: "John Doe",
-                date: "2023-04-15",
-                type: "workers_comp",
-                status: "completed",
-                content: {
-                  overview: "Patient exhibits symptoms consistent with adjustment disorder following workplace injury.",
-                  findings: [
-                    "Moderate anxiety symptoms",
-                    "Sleep disturbances",
-                    "Reduced concentration"
-                  ],
-                  recommendations: "Cognitive behavioral therapy, 10 sessions"
-                },
-                lastEdited: "2023-04-14"
-              },
-              {
-                id: "report2",
-                title: "Vocational Assessment Report",
-                patientName: "John Doe",
-                date: "2023-04-20",
-                type: "vocational",
-                status: "for_review",
-                content: {
-                  overview: "Analysis of return to work capabilities and restrictions.",
-                  findings: [
-                    "Limited lifting capacity (5kg maximum)",
-                    "Unable to perform repetitive movements",
-                    "Mental health considerations for workplace reintegration"
-                  ],
-                  recommendations: "Graduated return to work plan with accommodations"
-                },
-                lastEdited: "2023-04-19"
-              }
-            ],
-            notes: [
-              {
-                id: "note1",
-                content: "Client reported improvement in sleep patterns after beginning medication.",
-                createdBy: "Dr. Smith",
-                createdAt: "2023-04-20",
-                isPrivate: true,
-                visibleTo: ["lawyer", "psychologist"]
-              },
-              {
-                id: "note2",
-                content: "Discussed potential return to work strategies and accommodations.",
-                createdBy: "Dr. Smith",
-                createdAt: "2023-05-02",
-                isPrivate: false,
-                visibleTo: ["lawyer", "psychologist", "claimant"]
-              }
-            ],
-            infoRequests: [
-              {
-                id: "info1",
-                title: "Additional Medical Information",
-                questions: [
-                  "Please provide the name and contact details of your current GP.",
-                  "Have you had any previous similar injuries?",
-                  "Are you currently taking any medication for pain management?"
-                ],
-                requestedBy: "John Smith, Lawyer",
-                dateRequested: "2023-04-10",
-                status: "pending",
-                dueDate: "2023-04-25"
-              }
-            ],
-            externalUploads: [
-              {
-                id: "ext1",
-                name: "GP Medical Certificate.pdf",
-                type: "application/pdf",
-                uploadedBy: "Dr. Reynolds (GP)",
-                uploadRole: "external",
-                uploadDate: "2023-04-10",
-                url: "#",
-                size: "0.8 MB",
-                isExternal: true
-              }
-            ],
-            completedStages: ["Intake & Triage", "Legal Review"],
-            categoryTags: ["TRM", "WORK", "LEGAL"]
-          },
-          {
-            id: "2",
-            claimantName: "Jane Smith",
-            caseType: "Car Accident",
-            claimNumber: "CTP2023-7890",
-            referralSource: "Johnson Legal",
-            injuryDate: "2023-01-05",
-            currentStage: "Legal Review",
-            status: "expiring_soon",
-            createdDate: "2023-02-10",
-            expiryDate: "2023-08-10",
-            participants: {
-              claimantId: "user4",
-              lawyerId: "user5",
-              psychologistId: "user3",
-            },
-            documents: [
-              {
-                id: "doc3",
-                name: "Accident Report.pdf",
-                type: "application/pdf",
-                uploadedBy: "Officer Miller",
-                uploadRole: "external",
-                uploadDate: "2023-02-11",
-                url: "#",
-                size: "2.7 MB"
-              }
-            ],
-            assessments: [
-              {
-                id: "assess3",
-                title: "PTSD Screening",
-                description: "Initial trauma assessment",
-                status: "completed",
-                completionPercentage: 100,
-                date: "2023-02-25",
-                assignedTo: "Jane Smith"
-              }
-            ],
-            reports: [],
-            notes: [
-              {
-                id: "note3",
-                content: "Client shows signs of post-traumatic stress. Recommended weekly therapy sessions.",
-                createdBy: "Dr. Johnson",
-                createdAt: "2023-02-28",
-                isPrivate: true,
-                visibleTo: ["psychologist"]
-              }
-            ],
-            infoRequests: [],
-            externalUploads: [],
-            completedStages: ["Intake & Triage"],
-            categoryTags: ["ANX", "TRM"]
+            id: "m1",
+            type: "intake",
+            title: "Case Created",
+            date: selectedCase.createdDate,
+            description: "Client onboarded and case created",
+            status: "completed"
           }
         ];
-        
-        // Generate mock milestones for the selected case
-        if (selectedCaseId) {
-          const mockMilestones: Milestone[] = [
-            {
-              id: "m1",
-              type: "intake",
-              title: "Initial Intake Session",
-              date: "2023-03-18",
-              description: "Client onboarded and case created",
-              status: "completed"
-            },
-            {
-              id: "m2",
-              type: "document",
-              title: "Medical Records Added",
-              date: "2023-03-25",
-              description: "GP medical records uploaded",
-              status: "completed",
-              relatedItemId: "doc1"
-            },
-            {
-              id: "m3",
-              type: "assessment",
-              title: "DASS-21 Completed",
-              date: "2023-04-05",
-              description: "Client completed psychological assessment",
-              status: "completed",
-              relatedItemId: "assess1"
-            },
-            {
-              id: "m4",
-              type: "key_session",
-              title: "Trauma Processing Session",
-              date: "2023-04-12",
-              description: "Key therapeutic session - trauma narrative",
-              status: "completed"
-            },
-            {
-              id: "m5",
-              type: "report",
-              title: "Initial Report Completed",
-              date: "2023-04-15",
-              description: "Psychological assessment report finalized",
-              status: "completed",
-              relatedItemId: "report1"
-            }
-          ];
-          setMilestones(mockMilestones);
-        }
-        
-        // Filter cases based on user role
-        // If user is a claimant, only show cases where they are the claimant
-        let filteredSilos = mockCaseSilos;
-        if (currentUser?.role === 'claimant') {
-          filteredSilos = mockCaseSilos.filter(caseSilo => 
-            caseSilo.participants.claimantId === currentUser.id
-          );
-          
-          // For demo purposes, if no cases match the current user's ID, just show the first case
-          // In a real app, this would be removed and only the user's actual cases would be shown
-          if (filteredSilos.length === 0 && mockCaseSilos.length > 0) {
-            filteredSilos = [mockCaseSilos[0]];
-          }
-        }
-        
-        setCaseSilos(filteredSilos);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching case data:", error);
-        setError("Failed to load case data. Please try again.");
-        setIsLoading(false);
-        toast({
-          title: "Error",
-          description: "Failed to load case data. Please try again later.",
-          variant: "destructive",
-        });
+        setMilestones(mockMilestones);
       }
-    };
-    
-    fetchData();
-  }, [currentUser, selectedCaseId]);
+    }
+  }, [selectedCaseId, caseSilos]);
 
   const filteredCaseSilos = caseSilos.filter(caseSilo => 
     caseSilo.claimantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -399,7 +242,7 @@ const CaseSiloPage = () => {
 
   // Handle creation of a new case silo
   const handleCreateSilo = (newSilo: CaseSiloType) => {
-    setCaseSilos([newSilo, ...caseSilos]);
+    refetch(); // Refresh the list from database
     toast({
       title: "Case created",
       description: `New case for ${newSilo.claimantName} has been created successfully.`,
@@ -759,7 +602,7 @@ const CaseSiloPage = () => {
   };
 
   if (error) {
-    return <ErrorDisplay message={error} onRetry={() => window.location.reload()} />;
+    return <ErrorDisplay message={error instanceof Error ? error.message : 'Failed to load cases'} onRetry={() => refetch()} />;
   }
 
   if (isLoading) {
