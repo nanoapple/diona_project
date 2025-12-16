@@ -10,10 +10,13 @@ import { Switch } from '@/components/ui/switch';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Plus, X } from 'lucide-react';
-import { format } from 'date-fns';
+import { CalendarIcon, Plus, X, Loader2 } from 'lucide-react';
+import { format, addMinutes } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 interface CreateAppointmentDialogProps {
   open: boolean;
@@ -162,10 +165,99 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
     }
   };
 
+  // Map UI appointment types to DB types
+  const mapAppointmentTypeToDb = (type: string): string => {
+    const typeMap: Record<string, string> = {
+      'General Session': 'therapy',
+      'Intake Session': 'consultation',
+      'Discharge Session': 'consultation',
+      'Assessment Session': 'assessment',
+      'Team Meeting (Internal)': 'consultation',
+      'Team Meeting (External)': 'legal_meeting',
+      'Supervision': 'consultation',
+      'Administrative Task': 'consultation',
+      'Other': 'consultation',
+    };
+    return typeMap[type] || 'consultation';
+  };
+
+  const queryClient = useQueryClient();
+
+  const createAppointmentMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      // Get the current user's profile id
+      const { data: profile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('id, tenant_id')
+        .eq('user_id', currentUser?.id)
+        .single();
+
+      if (profileError || !profile) {
+        throw new Error('Could not find user profile');
+      }
+
+      // Ensure we have a profile in the profiles table (required by FK)
+      const { error: profileUpsertError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: profile.id,
+          user_id: currentUser?.id,
+          name: currentUser?.name || 'Unknown',
+          role: currentUser?.role || 'psychologist'
+        }, { onConflict: 'id' });
+
+      if (profileUpsertError) {
+        console.error('Profile upsert error:', profileUpsertError);
+      }
+
+      // Calculate start and end times
+      const [hours, minutes] = data.startTime.split(':').map(Number);
+      const startDateTime = new Date(data.date);
+      startDateTime.setHours(hours, minutes, 0, 0);
+      const endDateTime = addMinutes(startDateTime, parseInt(data.duration));
+
+      const appointmentData = {
+        tenant_id: profile.tenant_id,
+        created_by: profile.id,
+        title: data.sessionTitle || `${data.appointmentType} - ${data.client || 'No client'}`,
+        appointment_type: mapAppointmentTypeToDb(data.appointmentType),
+        start_time: startDateTime.toISOString(),
+        end_time: endDateTime.toISOString(),
+        status: 'scheduled',
+        location: data.mode === 'telehealth' ? 'Telehealth' : data.location || 'In Person',
+        notes: data.notes,
+        case_silo_id: null, // Would need to be linked to actual case
+      };
+
+      const { data: appointment, error } = await supabase
+        .from('appointments')
+        .insert(appointmentData)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return appointment;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['appointments'] });
+      toast.success('Appointment created successfully');
+      onOpenChange(false);
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to create appointment: ${error.message}`);
+    },
+  });
+
   const handleSave = () => {
-    console.log('Saving appointment:', formData);
-    // Here you would typically save to your backend
-    onOpenChange(false);
+    if (!formData.appointmentType) {
+      toast.error('Please select an appointment type');
+      return;
+    }
+    if (!formData.startTime) {
+      toast.error('Please select a start time');
+      return;
+    }
+    createAppointmentMutation.mutate(formData);
   };
 
   // Check if user has limited permissions
@@ -590,7 +682,11 @@ const CreateAppointmentDialog = ({ open, onOpenChange, selectedDate, selectedTim
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={!formData.appointmentType || (formData.mode === 'in-person' && !formData.location)}>
+          <Button 
+            onClick={handleSave} 
+            disabled={!formData.appointmentType || !formData.startTime || createAppointmentMutation.isPending}
+          >
+            {createAppointmentMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save Appointment
           </Button>
         </div>
