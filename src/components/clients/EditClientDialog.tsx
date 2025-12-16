@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -122,6 +123,8 @@ interface EditClientDialogProps {
 const RequiredIndicator = () => <span className="text-destructive ml-1">*</span>;
 
 export default function EditClientDialog({ client, open, onOpenChange, onSave }: EditClientDialogProps) {
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  
   const form = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
     defaultValues: {
@@ -224,13 +227,29 @@ export default function EditClientDialog({ client, open, onOpenChange, onSave }:
     onOpenChange(false);
   };
 
+  const handleClose = (isOpen: boolean) => {
+    if (!isOpen && form.formState.isDirty) {
+      setShowConfirmDialog(true);
+    } else {
+      onOpenChange(isOpen);
+    }
+  };
+
+  const handleConfirmClose = () => {
+    setShowConfirmDialog(false);
+    form.reset();
+    onOpenChange(false);
+  };
+
   if (!client) return null;
 
   const hasLegalIssues = form.watch('hasLegalIssues');
 
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh]">
+    <>
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="max-w-3xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit Client Profile</DialogTitle>
         </DialogHeader>
@@ -884,7 +903,7 @@ export default function EditClientDialog({ client, open, onOpenChange, onSave }:
             </Tabs>
 
             <DialogFooter className="mt-4">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button type="button" variant="outline" onClick={() => handleClose(false)}>
                 Cancel
               </Button>
               <Button type="submit">
@@ -895,5 +914,21 @@ export default function EditClientDialog({ client, open, onOpenChange, onSave }:
         </Form>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Discard unsaved changes?</AlertDialogTitle>
+          <AlertDialogDescription>
+            You have unsaved changes. Are you sure you want to close without saving?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Continue Editing</AlertDialogCancel>
+          <AlertDialogAction onClick={handleConfirmClose}>Discard Changes</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
