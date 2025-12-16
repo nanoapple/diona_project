@@ -27,9 +27,13 @@ export interface Appointment {
 const mapAppointmentType = (type: string): Appointment['type'] => {
   const typeMap: Record<string, Appointment['type']> = {
     'general': 'General Session',
+    'consultation': 'Intake Session',
     'intake': 'Intake Session',
-    'discharge': 'Discharge Session',
+    'therapy': 'General Session',
     'assessment': 'Assessment Session',
+    'discharge': 'Discharge Session',
+    'legal_meeting': 'Team Meeting (External)',
+    'medical_exam': 'Assessment Session',
     'team_internal': 'Team Meeting (Internal)',
     'team_external': 'Team Meeting (External)',
     'supervision': 'Supervision',
