@@ -1,16 +1,15 @@
-
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { format, startOfWeek, endOfWeek, addDays, isSameWeek, isSameDay } from 'date-fns';
-import { Plus, CheckCircle, AlertCircle, RotateCcw, XCircle, Check, Clock, Settings } from 'lucide-react';
+import { Plus, CheckCircle, AlertCircle, RotateCcw, XCircle, Check, Clock, Settings, Loader2 } from 'lucide-react';
 import CreateAppointmentDialog from '@/components/schedule/CreateAppointmentDialog';
 import AppointmentDetailsDialog from '@/components/schedule/AppointmentDetailsDialog';
 import WorkingHoursDialog from '@/components/schedule/WorkingHoursDialog';
 import AppointmentActionsDialog from '@/components/schedule/AppointmentActionsDialog';
 import { useTheme } from '@/components/ThemeProvider';
-
+import { useAppointments, Appointment } from '@/hooks/useAppointments';
 const Schedule = () => {
   const { theme } = useTheme();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -94,28 +93,31 @@ const Schedule = () => {
 
   const weekDays = generateWeekDays();
 
-  // Mock appointments data - now using state to allow updates
-  const [appointments, setAppointments] = useState([
+  // Fetch appointments from database
+  const { appointments: dbAppointments, isLoading, updateStatus } = useAppointments(selectedWeek);
+
+  // Mock appointments as fallback when no DB data
+  const mockAppointments: Appointment[] = useMemo(() => [
     {
       id: 'apt1',
       title: 'Initial Assessment',
       clientName: 'John Doe',
       clientGender: 'Male',
       clientDOB: '15/03/1985',
-      date: weekDays[1]?.date, // Tuesday
+      date: weekDays[1]?.date || new Date(),
       startTime: '10:15',
       endTime: '11:00',
-      type: 'General Session' as const,
-      deliveryMethod: 'in-person' as const,
-      arrivalStatus: 'Arrived' as const,
+      type: 'General Session',
+      deliveryMethod: 'in-person',
+      arrivalStatus: 'Arrived',
       notes: 'First session focusing on work-related stress and anxiety management techniques.',
       appointmentNumber: 3,
       financialYear: 'Yr 24/25',
       dayName: 'Tue',
-      startSlot: 5, // 10:15 is the 5th slot (starting from 9:00)
-      duration: 3, // 45 minutes = 3 slots
-      sessionNoteDone: true, // For demonstration
-      assessmentDone: true // For demonstration
+      startSlot: 5,
+      duration: 3,
+      sessionNoteDone: true,
+      assessmentDone: true
     },
     {
       id: 'apt2',
@@ -123,18 +125,18 @@ const Schedule = () => {
       clientName: 'Jane Smith',
       clientGender: 'Female',
       clientDOB: '22/08/1992',
-      date: weekDays[3]?.date, // Thursday
+      date: weekDays[3]?.date || new Date(),
       startTime: '14:30',
       endTime: '15:15',
-      type: 'General Session' as const,
-      deliveryMethod: 'telehealth' as const,
-      arrivalStatus: '' as any, // Blank status
-      notes: 'Continuation of CBT therapy for anxiety disorders. Review homework assignments.',
+      type: 'General Session',
+      deliveryMethod: 'telehealth',
+      arrivalStatus: '',
+      notes: 'Continuation of CBT therapy for anxiety disorders.',
       appointmentNumber: 7,
       financialYear: 'Yr 24/25',
       dayName: 'Thu',
-      startSlot: 22, // 14:30 (2:30 PM)
-      duration: 3, // 45 minutes
+      startSlot: 22,
+      duration: 3,
       sessionNoteDone: false,
       assessmentDone: false
     },
@@ -144,177 +146,29 @@ const Schedule = () => {
       clientName: 'Robert Johnson',
       clientGender: 'Male',
       clientDOB: '08/12/1982',
-      date: weekDays[0]?.date, // Monday
+      date: weekDays[0]?.date || new Date(),
       startTime: '11:00',
       endTime: '11:45',
-      type: 'General Session' as const,
-      deliveryMethod: 'in-person' as const,
-      arrivalStatus: '' as any,
+      type: 'General Session',
+      deliveryMethod: 'in-person',
+      arrivalStatus: '',
       notes: 'Stress management and coping strategies discussion.',
       appointmentNumber: 4,
       financialYear: 'Yr 24/25',
       dayName: 'Mon',
-      startSlot: 8, // 11:00
-      duration: 3, // 45 minutes
-      sessionNoteDone: false,
-      assessmentDone: false
-    },
-    {
-      id: 'apt4',
-      title: 'Initial Consultation',
-      clientName: 'Sarah Wilson',
-      clientGender: 'Female',
-      clientDOB: '05/11/1988',
-      date: weekDays[2]?.date, // Wednesday
-      startTime: '11:00',
-      endTime: '11:45',
-      type: 'Intake Session' as const,
-      deliveryMethod: 'in-person' as const,
-      arrivalStatus: '' as any, // No status - not started
-      notes: 'First consultation to assess client needs and develop treatment plan.',
-      appointmentNumber: 1,
-      financialYear: 'Yr 24/25',
-      dayName: 'Wed',
-      startSlot: 8, // 11:00
-      duration: 3, // 45 minutes
-      sessionNoteDone: false,
-      assessmentDone: false
-    },
-    {
-      id: 'apt5',
-      title: 'Therapy Session',
-      clientName: 'Michael Brown',
-      clientGender: 'Male',
-      clientDOB: '18/07/1975',
-      date: weekDays[4]?.date, // Friday
-      startTime: '09:30',
-      endTime: '10:15',
-      type: 'General Session' as const,
-      deliveryMethod: 'telehealth' as const,
-      arrivalStatus: '' as any, // No status - not started
-      notes: 'Cognitive behavioral therapy session for depression management.',
-      appointmentNumber: 5,
-      financialYear: 'Yr 24/25',
-      dayName: 'Fri',
-      startSlot: 2, // 09:30
-      duration: 3, // 45 minutes
-      sessionNoteDone: false,
-      assessmentDone: false
-    },
-    {
-      id: 'apt6',
-      title: 'Assessment Session',
-      clientName: 'Emma Davis',
-      clientGender: 'Female',
-      clientDOB: '12/09/1990',
-      date: weekDays[1]?.date, // Tuesday
-      startTime: '13:45',
-      endTime: '14:30',
-      type: 'Assessment Session' as const,
-      deliveryMethod: 'in-person' as const,
-      arrivalStatus: '' as any, // No status - not started
-      notes: 'Comprehensive psychological assessment for anxiety and mood disorders.',
-      appointmentNumber: 2,
-      financialYear: 'Yr 24/25',
-      dayName: 'Tue',
-      startSlot: 19, // 13:45
-      duration: 3, // 45 minutes
-      sessionNoteDone: false,
-      assessmentDone: false
-    },
-    {
-      id: 'apt7',
-      title: 'Therapy Session',
-      clientName: 'Lisa Anderson',
-      clientGender: 'Female',
-      clientDOB: '25/04/1991',
-      date: weekDays[0]?.date, // Monday
-      startTime: '14:00',
-      endTime: '14:45',
-      type: 'General Session' as const,
-      deliveryMethod: 'in-person' as const,
-      arrivalStatus: '' as any,
-      notes: 'PTSD treatment using EMDR therapy techniques.',
-      appointmentNumber: 8,
-      financialYear: 'Yr 24/25',
-      dayName: 'Mon',
-      startSlot: 20, // 14:00
-      duration: 3, // 45 minutes
-      sessionNoteDone: false,
-      assessmentDone: false
-    },
-    {
-      id: 'apt8',
-      title: 'Follow-up Session',
-      clientName: 'David Miller',
-      clientGender: 'Male',
-      clientDOB: '16/01/1979',
-      date: weekDays[2]?.date, // Wednesday
-      startTime: '15:30',
-      endTime: '16:15',
-      type: 'General Session' as const,
-      deliveryMethod: 'telehealth' as const,
-      arrivalStatus: '' as any,
-      notes: 'Progress review and adjustment of treatment goals.',
-      appointmentNumber: 12,
-      financialYear: 'Yr 24/25',
-      dayName: 'Wed',
-      startSlot: 26, // 15:30
-      duration: 3, // 45 minutes
-      sessionNoteDone: false,
-      assessmentDone: false
-    },
-    {
-      id: 'apt9',
-      title: 'Group Session',
-      clientName: 'Michelle Torres',
-      clientGender: 'Female',
-      clientDOB: '03/06/1987',
-      date: weekDays[3]?.date, // Thursday
-      startTime: '10:00',
-      endTime: '10:45',
-      type: 'General Session' as const,
-      deliveryMethod: 'in-person' as const,
-      arrivalStatus: '' as any,
-      notes: 'Group therapy session focusing on social anxiety management.',
-      appointmentNumber: 6,
-      financialYear: 'Yr 24/25',
-      dayName: 'Thu',
-      startSlot: 4, // 10:00
-      duration: 3, // 45 minutes
-      sessionNoteDone: false,
-      assessmentDone: false
-    },
-    {
-      id: 'apt10',
-      title: 'Therapy Session',
-      clientName: 'Thomas Wilson',
-      clientGender: 'Male',
-      clientDOB: '29/10/1984',
-      date: weekDays[4]?.date, // Friday
-      startTime: '13:00',
-      endTime: '13:45',
-      type: 'General Session' as const,
-      deliveryMethod: 'in-person' as const,
-      arrivalStatus: '' as any,
-      notes: 'Anger management and emotional regulation techniques.',
-      appointmentNumber: 9,
-      financialYear: 'Yr 24/25',
-      dayName: 'Fri',
-      startSlot: 16, // 13:00
-      duration: 3, // 45 minutes
+      startSlot: 8,
+      duration: 3,
       sessionNoteDone: false,
       assessmentDone: false
     }
-  ]);
+  ], [weekDays]);
+
+  // Use DB appointments if available, otherwise use mock data
+  const appointments = dbAppointments.length > 0 ? dbAppointments : mockAppointments;
 
   // Handler to update appointment status
   const handleStatusUpdate = (appointmentId: string, status: string) => {
-    setAppointments(prev => prev.map(apt => 
-      apt.id === appointmentId 
-        ? { ...apt, arrivalStatus: status as any }
-        : apt
-    ));
+    updateStatus(appointmentId, status);
   };
 
   // Function to check if a slot has an appointment
