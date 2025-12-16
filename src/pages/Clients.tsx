@@ -15,6 +15,7 @@ import { formatDate } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import AddClientDialog from '@/components/clients/AddClientDialog';
+import EditClientDialog from '@/components/clients/EditClientDialog';
 import { useTheme } from '@/components/ThemeProvider';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useClients, Client as DBClient } from '@/hooks/useClients';
@@ -190,6 +191,7 @@ const Clients = () => {
   const [editMode, setEditMode] = useState(false);
   const [editedClient, setEditedClient] = useState<Partial<Client>>({});
   const [isNewDialogOpen, setIsNewDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLetter, setSelectedLetter] = useState<string>('');
@@ -205,21 +207,22 @@ const Clients = () => {
     setActiveTab('profile');
   };
 
-  const handleEditToggle = async () => {
-    if (editMode && activeClient) {
-      // Save changes to database
+  const handleEditToggle = () => {
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveClient = async (editedData: Partial<Client>) => {
+    if (activeClient) {
       try {
         await updateClient({
           id: activeClient.id,
-          ...editedClient,
+          ...editedData,
         });
-        setActiveClient({...activeClient, ...editedClient} as Client);
+        setActiveClient({ ...activeClient, ...editedData } as Client);
       } catch (error) {
         console.error('Error updating client:', error);
       }
     }
-    
-    setEditMode(!editMode);
   };
 
   const handleCreateClient = () => {
@@ -292,10 +295,17 @@ const Clients = () => {
                 Back to Clients
               </Button>
               <Button onClick={handleEditToggle}>
-                {editMode ? 'Save Changes' : 'Edit Profile'}
+                Edit Profile
               </Button>
             </div>
           </div>
+
+          <EditClientDialog
+            client={activeClient}
+            open={isEditDialogOpen}
+            onOpenChange={setIsEditDialogOpen}
+            onSave={handleSaveClient}
+          />
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="mb-6">
