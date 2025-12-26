@@ -1131,6 +1131,7 @@ export type Database = {
         Args: { client_profile_id: string }
         Returns: boolean
       }
+      clients_belongs_to_user: { Args: never; Returns: boolean }
       get_current_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
