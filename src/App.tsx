@@ -7,30 +7,28 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./components/ThemeProvider";
-import Layout from "./components/layout/Layout";
-import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import NotFound from "./pages/NotFound";
+import Dashboard from "./pages/Dashboard";
 import AiAssistant from "./pages/AiAssistant";
 import Documents from "./pages/Documents";
 import Assessments from "./pages/Assessments";
+import AllAssessments from "./pages/AllAssessments";
 import Reports from "./pages/Reports";
 import Clients from "./pages/Clients";
-import CaseSilo from "./pages/CaseSilo";
-import Profile from "./pages/Profile";
-import Interview from "./pages/Interview";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
 import ClientDetails from "./pages/ClientDetails";
 import LegalTasks from "./pages/LegalTasks";
+import CaseSilo from "./pages/CaseSilo";
+import Interview from "./pages/Interview";
 import Schedule from "./pages/Schedule";
-import AllAssessments from "./pages/AllAssessments";
 import JITAI from "./pages/JITAI";
 import Knowledge from "./pages/Knowledge";
 import ServiceData from "./pages/ServiceData";
 import ModuleMarketplace from "./pages/ModuleMarketplace";
-
-// Client Portal Pages
+import Profile from "./pages/Profile";
 import ClientDashboard from "./pages/client/ClientDashboard";
 import MyJourney from "./pages/client/MyJourney";
 import ReflectionsAndTasks from "./pages/client/ReflectionsAndTasks";
@@ -38,6 +36,7 @@ import MoodTracker from "./pages/client/MoodTracker";
 import Messages from "./pages/client/Messages";
 import Resources from "./pages/client/Resources";
 import AccountSettings from "./pages/client/AccountSettings";
+import Layout from "./components/layout/Layout";
 
 const queryClient = new QueryClient();
 
@@ -50,39 +49,44 @@ const App = () => (
             <Toaster />
             <Sonner />
             <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route element={<Layout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/ai-assistant" element={<AiAssistant />} />
-              <Route path="/documents" element={<Documents />} />
-              <Route path="/assessments" element={<Assessments />} />
-              <Route path="/all-assessments" element={<AllAssessments />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/clients" element={<Clients />} />
-              <Route path="/client-details/:clientId" element={<ClientDetails />} />
-              <Route path="/legal-tasks" element={<LegalTasks />} />
-              <Route path="/legal-tasks/:taskId" element={<LegalTasks />} />
-              <Route path="/case-silo" element={<CaseSilo />} />
-              <Route path="/interview/:caseId" element={<Interview />} />
-              <Route path="/schedule" element={<Schedule />} />
-              <Route path="/jitai" element={<JITAI />} />
-              <Route path="/knowledge" element={<Knowledge />} />
-              <Route path="/service-data" element={<ServiceData />} />
-              <Route path="/module-marketplace" element={<ModuleMarketplace />} />
-              <Route path="/profile" element={<Profile />} />
+              {/* Public routes */}
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
               
-              {/* Client Portal Routes */}
-              <Route path="/client/dashboard" element={<ClientDashboard />} />
-              <Route path="/client/journey" element={<MyJourney />} />
-              <Route path="/client/reflections" element={<ReflectionsAndTasks />} />
-              <Route path="/client/mood-tracker" element={<MoodTracker />} />
-              <Route path="/client/messages" element={<Messages />} />
-              <Route path="/client/resources" element={<Resources />} />
-              <Route path="/client/settings" element={<AccountSettings />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
+              {/* Protected routes with Layout */}
+              <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/ai-assistant" element={<AiAssistant />} />
+                <Route path="/documents" element={<Documents />} />
+                <Route path="/assessments" element={<Assessments />} />
+                <Route path="/all-assessments" element={<AllAssessments />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/clients" element={<Clients />} />
+                <Route path="/client-details/:clientId" element={<ClientDetails />} />
+                <Route path="/legal-tasks" element={<LegalTasks />} />
+                <Route path="/legal-tasks/:taskId" element={<LegalTasks />} />
+                <Route path="/case-silo" element={<CaseSilo />} />
+                <Route path="/interview/:caseId" element={<Interview />} />
+                <Route path="/schedule" element={<Schedule />} />
+                <Route path="/jitai" element={<JITAI />} />
+                <Route path="/knowledge" element={<Knowledge />} />
+                <Route path="/service-data" element={<ServiceData />} />
+                <Route path="/module-marketplace" element={<ModuleMarketplace />} />
+                <Route path="/profile" element={<Profile />} />
+                
+                {/* Client Portal Routes */}
+                <Route path="/client/dashboard" element={<ClientDashboard />} />
+                <Route path="/client/journey" element={<MyJourney />} />
+                <Route path="/client/reflections" element={<ReflectionsAndTasks />} />
+                <Route path="/client/mood-tracker" element={<MoodTracker />} />
+                <Route path="/client/messages" element={<Messages />} />
+                <Route path="/client/resources" element={<Resources />} />
+                <Route path="/client/settings" element={<AccountSettings />} />
+              </Route>
+              
+              {/* Catch-all route */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </TooltipProvider>
         </ThemeProvider>
