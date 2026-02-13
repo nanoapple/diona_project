@@ -1359,6 +1359,17 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
         </ScrollArea>
 
         <DialogFooter className="sticky bottom-0 bg-background pt-4 border-t">
+          {!isFormValid && (
+            <p className="text-sm text-destructive mr-auto self-center">
+              {!formData.firstName.trim() ? 'First name is required' :
+               !formData.lastName.trim() ? 'Last name is required' :
+               (!formData.birthDay || !formData.birthMonth || !formData.birthYear) ? 'Date of birth is required' :
+               !formData.sex ? 'Sex is required' :
+               !formData.mobilePhone.trim() ? 'Mobile phone is required' :
+               !formData.addressLine1.trim() ? 'Address is required' :
+               !formData.privacyPolicyConsent ? 'Privacy policy consent is required (Section 5)' : ''}
+            </p>
+          )}
           <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
