@@ -214,10 +214,49 @@ const Clients = () => {
   const handleSaveClient = async (editedData: Partial<Client>) => {
     if (activeClient) {
       try {
+        // Map camelCase form data to snake_case DB columns
+        const dbData: Record<string, any> = {};
+        const keyMap: Record<string, string> = {
+          firstName: 'first_name',
+          lastName: 'last_name',
+          preferredFirstName: 'preferred_first_name',
+          dateOfBirth: 'date_of_birth',
+          genderIdentity: 'gender_identity',
+          culturalIdentity: 'cultural_identity',
+          mobilePhone: 'mobile_phone',
+          alternatePhone: 'alternate_phone',
+          addressLine1: 'address_line1',
+          addressLine2: 'address_line2',
+          timeZone: 'time_zone',
+          ndisParticipantNumber: 'ndis_participant_number',
+          ndisFundingType: 'ndis_funding_type',
+          ndisStartDate: 'ndis_start_date',
+          ndisEndDate: 'ndis_end_date',
+          ndisAmountRemaining: 'ndis_amount_remaining',
+          dateOfInjury: 'date_of_injury',
+          injuryType: 'injury_type',
+          primaryReason: 'primary_reason',
+          concessionType: 'concession_type',
+          lawyerSolicitor: 'lawyer_solicitor',
+          hasLegalIssues: 'has_legal_issues',
+          legalDetails: 'legal_details',
+          billingDetails: 'billing_details',
+          emergencyContact: 'emergency_contact',
+          referralDetails: 'referral_details',
+          communicationPreferences: 'communication_preferences',
+          engagementEnabled: 'engagement_enabled',
+        };
+
+        for (const [key, value] of Object.entries(editedData)) {
+          if (key === 'id' || key === 'name' || key === 'address' || key === 'phone') continue;
+          const dbKey = keyMap[key] || key;
+          dbData[dbKey] = value;
+        }
+
         await updateClient({
           id: activeClient.id,
-          ...editedData,
-        });
+          ...dbData,
+        } as any);
         setActiveClient({ ...activeClient, ...editedData } as Client);
       } catch (error) {
         console.error('Error updating client:', error);
