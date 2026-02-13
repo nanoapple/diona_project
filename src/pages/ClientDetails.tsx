@@ -1,15 +1,14 @@
-
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { formatDate } from '@/lib/utils';
-import { User, Calendar, Phone, Mail, MapPin, FileText, Archive, AlertCircle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useTheme } from '@/components/ThemeProvider';
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { formatDate } from "@/lib/utils";
+import { User, Calendar, Phone, Mail, MapPin, FileText, Archive, AlertCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface ClientDetail {
   id: string;
@@ -23,7 +22,7 @@ interface ClientDetail {
   genderIdentity: string;
   pronouns: string;
   culturalIdentity: string;
-  
+
   // Contact Information
   email: string;
   mobilePhone: string;
@@ -35,18 +34,18 @@ interface ClientDetail {
   postcode: string;
   country: string;
   timeZone: string;
-  
+
   // Communication Preferences
   appointmentReminders: string[];
   marketingMessages: boolean;
-  
+
   // NDIS Details
   ndisParticipantNumber: string;
   ndisFundingType: string;
   ndisStartDate: string;
   ndisEndDate: string;
   ndisAmountRemaining: string;
-  
+
   // Clinical & Case Info
   dateOfInjury: string;
   primaryReason: string;
@@ -54,37 +53,37 @@ interface ClientDetail {
   concessionType: string;
   insurer: string;
   lawyerSolicitor: string;
-  
+
   // Legal Issues
   hasLegalIssues: boolean;
   courtOrder: boolean;
   detention: boolean;
   communityService: boolean;
   legalNotes: string;
-  
+
   // Billing
   invoiceTo: string;
   emailInvoiceTo: string;
   invoiceExtraInfo: string;
-  
+
   // Emergency Contact
   emergencyContactName: string;
   emergencyContactRelationship: string;
   emergencyContactPhone: string;
   emergencyContactEmail: string;
-  
+
   // Referral
   referringPractitioner: string;
   referralType: string;
   referralSource: string;
-  
+
   caseIds: string[];
 }
 
 interface Case {
   id: string;
   title: string;
-  status: 'active' | 'pending' | 'completed';
+  status: "active" | "pending" | "completed";
   type: string;
   lastUpdated: string;
 }
@@ -96,145 +95,131 @@ const ClientDetails = () => {
   const [client, setClient] = useState<ClientDetail | null>(null);
   const [cases, setCases] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
     const fetchClientDetails = async () => {
       try {
         // In a real app, this would be an API call to fetch client details
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         const mockClient: ClientDetail = {
-          id: clientId || '1',
+          id: clientId || "1",
           // Personal Details
-          title: 'Mr',
-          firstName: 'John',
-          lastName: 'Doe',
-          preferredFirstName: 'Johnny',
-          dateOfBirth: '1985-06-12',
-          sex: 'Male',
-          genderIdentity: 'Man',
-          pronouns: 'he/him',
-          culturalIdentity: 'Australian, Anglo-Celtic background',
-          
+          title: "Mr",
+          firstName: "John",
+          lastName: "Doe",
+          preferredFirstName: "Johnny",
+          dateOfBirth: "1985-06-12",
+          sex: "Male",
+          genderIdentity: "Man",
+          pronouns: "he/him",
+          culturalIdentity: "Australian, Anglo-Celtic background",
+
           // Contact Information
-          email: 'john.doe@example.com',
-          mobilePhone: '0412 345 678',
-          alternatePhone: '02 9876 5432',
-          addressLine1: '123 Main Street',
-          addressLine2: 'Unit 5',
-          suburb: 'Sydney',
-          state: 'NSW',
-          postcode: '2000',
-          country: 'Australia',
-          timeZone: 'Australia/Sydney',
-          
+          email: "john.doe@example.com",
+          mobilePhone: "0412 345 678",
+          alternatePhone: "02 9876 5432",
+          addressLine1: "123 Main Street",
+          addressLine2: "Unit 5",
+          suburb: "Sydney",
+          state: "NSW",
+          postcode: "2000",
+          country: "Australia",
+          timeZone: "Australia/Sydney",
+
           // Communication Preferences
-          appointmentReminders: ['SMS', 'Email'],
+          appointmentReminders: ["SMS", "Email"],
           marketingMessages: false,
-          
+
           // NDIS Details
-          ndisParticipantNumber: '4300123456',
-          ndisFundingType: 'Plan Managed',
-          ndisStartDate: '2023-01-01',
-          ndisEndDate: '2024-12-31',
-          ndisAmountRemaining: '$45,000',
-          
+          ndisParticipantNumber: "4300123456",
+          ndisFundingType: "Plan Managed",
+          ndisStartDate: "2023-01-01",
+          ndisEndDate: "2024-12-31",
+          ndisAmountRemaining: "$45,000",
+
           // Clinical & Case Info
-          dateOfInjury: '2023-01-15',
-          primaryReason: 'Workplace Injury - Back and psychological adjustment',
-          appointmentNotes: 'Client has reported significant psychological distress following the workplace incident. Initial assessment indicates development of adjustment disorder with anxiety features. Prefers morning appointments.',
-          concessionType: 'Healthcare Card',
-          insurer: 'WorkCover NSW',
-          lawyerSolicitor: 'Smith & Partners Legal',
-          
+          dateOfInjury: "2023-01-15",
+          primaryReason: "Workplace Injury - Back and psychological adjustment",
+          appointmentNotes:
+            "Client has reported significant psychological distress following the workplace incident. Initial assessment indicates development of adjustment disorder with anxiety features. Prefers morning appointments.",
+          concessionType: "Healthcare Card",
+          insurer: "WorkCover NSW",
+          lawyerSolicitor: "Smith & Partners Legal",
+
           // Legal Issues
           hasLegalIssues: true,
           courtOrder: false,
           detention: false,
           communityService: true,
-          legalNotes: 'Ongoing WorkCover claim. Currently under review for permanent impairment assessment. Legal representation secured for claim proceedings.',
-          
+          legalNotes:
+            "Ongoing WorkCover claim. Currently under review for permanent impairment assessment. Legal representation secured for claim proceedings.",
+
           // Billing
-          invoiceTo: 'WorkCover NSW',
-          emailInvoiceTo: 'claims@workcover.nsw.gov.au',
-          invoiceExtraInfo: 'Claim Reference: WC-2023-045678. Please include claim number in all invoices.',
-          
+          invoiceTo: "WorkCover NSW",
+          emailInvoiceTo: "claims@workcover.nsw.gov.au",
+          invoiceExtraInfo: "Claim Reference: WC-2023-045678. Please include claim number in all invoices.",
+
           // Emergency Contact
-          emergencyContactName: 'Sarah Doe',
-          emergencyContactRelationship: 'Spouse',
-          emergencyContactPhone: '0423 456 789',
-          emergencyContactEmail: 'sarah.doe@example.com',
-          
+          emergencyContactName: "Sarah Doe",
+          emergencyContactRelationship: "Spouse",
+          emergencyContactPhone: "0423 456 789",
+          emergencyContactEmail: "sarah.doe@example.com",
+
           // Referral
-          referringPractitioner: 'Dr. Michael Chen',
-          referralType: 'GP Referral',
-          referralSource: 'WorkCover Insurance',
-          
-          caseIds: ['1', '2']
+          referringPractitioner: "Dr. Michael Chen",
+          referralType: "GP Referral",
+          referralSource: "WorkCover Insurance",
+
+          caseIds: ["1", "2"],
         };
-        
+
         const mockCases: Case[] = [
           {
-            id: '1',
-            title: 'WorkCover Claim - Back Injury',
-            status: 'active',
-            type: 'Workers Compensation',
-            lastUpdated: '2023-04-10'
+            id: "1",
+            title: "WorkCover Claim - Back Injury",
+            status: "active",
+            type: "Workers Compensation",
+            lastUpdated: "2023-04-10",
           },
           {
-            id: '2',
-            title: 'TPD Claim - Insurance',
-            status: 'pending',
-            type: 'Total Permanent Disability',
-            lastUpdated: '2023-03-25'
-          }
+            id: "2",
+            title: "TPD Claim - Insurance",
+            status: "pending",
+            type: "Total Permanent Disability",
+            lastUpdated: "2023-03-25",
+          },
         ];
-        
+
         setClient(mockClient);
         setCases(mockCases);
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching client details:', error);
+        console.error("Error fetching client details:", error);
         toast({
           title: "Error",
           description: "Failed to load client details. Please try again.",
-          variant: "destructive"
+          variant: "destructive",
         });
         setIsLoading(false);
       }
     };
-    
+
     fetchClientDetails();
   }, [clientId, toast]);
 
   const renderStatusBadge = (status: string) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <Badge className="bg-green-500">Active</Badge>;
-      case 'pending':
+      case "pending":
         return <Badge className="bg-yellow-500">Pending</Badge>;
-      case 'completed':
+      case "completed":
         return <Badge className="bg-blue-500">Completed</Badge>;
       default:
         return <Badge className="bg-gray-500">Unknown</Badge>;
     }
-  };
-
-  const getSexFullName = (sex: string): string => {
-    // Handle both abbreviated and full names for backwards compatibility
-    const sexMap: Record<string, string> = {
-      'M': 'Male',
-      'F': 'Female',
-      'X': 'Non-binary',
-      'O': 'Other',
-      'Male': 'Male',
-      'Female': 'Female',
-      'Non-binary': 'Non-binary',
-      'Intersex': 'Intersex',
-      'Other': 'Other',
-    };
-    return sexMap[sex] || sex;
   };
 
   if (isLoading) {
@@ -251,9 +236,7 @@ const ClientDetails = () => {
         <CardContent className="py-10 text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground" />
           <h2 className="mt-4 text-xl font-semibold">Client Not Found</h2>
-          <p className="mt-2 text-muted-foreground">
-            We couldn't find the client you're looking for.
-          </p>
+          <p className="mt-2 text-muted-foreground">We couldn't find the client you're looking for.</p>
           <Button asChild className="mt-4">
             <Link to="/clients">Back to Clients</Link>
           </Button>
@@ -266,7 +249,9 @@ const ClientDetails = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold mb-1">{client.firstName} {client.lastName}</h1>
+          <h1 className="text-3xl font-bold mb-1">
+            {client.firstName} {client.lastName}
+          </h1>
           <p className="text-muted-foreground">
             DOB: {formatDate(client.dateOfBirth)} | Case Type: {client.primaryReason}
           </p>
@@ -291,9 +276,11 @@ const ClientDetails = () => {
 
         <TabsContent value="profile" className="space-y-6">
           {/* Personal Details Section */}
-          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(210,15%,65%)]' : 'border-l-4 border-green-500'}>
-            <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(210,15%,88%)]' : 'bg-green-50'}>
-              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(210,20%,25%)]' : 'text-green-700'}>Personal Details</CardTitle>
+          <Card className={theme === "e-ink" ? "border-l-4 border-[hsl(210,15%,65%)]" : "border-l-4 border-green-500"}>
+            <CardHeader className={theme === "e-ink" ? "bg-[hsl(210,15%,88%)]" : "bg-green-50"}>
+              <CardTitle className={theme === "e-ink" ? "!text-[hsl(210,20%,25%)]" : "text-green-700"}>
+                Personal Details
+              </CardTitle>
               <CardDescription>Basic personal information</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
@@ -311,7 +298,7 @@ const ClientDetails = () => {
                   <p className="text-base font-medium">{client.lastName}</p>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">Preferred First Name</p>
@@ -325,8 +312,8 @@ const ClientDetails = () => {
                   </div>
                 </div>
                 <div className="space-y-1">
-                   <p className="text-sm font-medium text-muted-foreground">Sex</p>
-                   <p className="text-base">{getSexFullName(client.sex)}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Sex</p>
+                  <p className="text-base">{getSexFullName(client.sex)}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">Gender Identity</p>
@@ -345,9 +332,11 @@ const ClientDetails = () => {
           </Card>
 
           {/* Contact Information Section */}
-          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(270,15%,65%)]' : 'border-l-4 border-green-500'}>
-            <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(270,15%,88%)]' : 'bg-green-50'}>
-              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(270,20%,25%)]' : 'text-green-700'}>Contact Information</CardTitle>
+          <Card className={theme === "e-ink" ? "border-l-4 border-[hsl(270,15%,65%)]" : "border-l-4 border-green-500"}>
+            <CardHeader className={theme === "e-ink" ? "bg-[hsl(270,15%,88%)]" : "bg-green-50"}>
+              <CardTitle className={theme === "e-ink" ? "!text-[hsl(270,20%,25%)]" : "text-green-700"}>
+                Contact Information
+              </CardTitle>
               <CardDescription>Contact details and address</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
@@ -378,9 +367,9 @@ const ClientDetails = () => {
                   <p className="text-base">{client.timeZone}</p>
                 </div>
               </div>
-              
+
               <Separator />
-              
+
               <div className="space-y-2">
                 <p className="text-sm font-medium text-muted-foreground">Address</p>
                 <div className="flex items-start gap-2">
@@ -388,20 +377,22 @@ const ClientDetails = () => {
                   <div>
                     <p className="text-base">{client.addressLine1}</p>
                     {client.addressLine2 && <p className="text-base">{client.addressLine2}</p>}
-                    <p className="text-base">{client.suburb} {client.state} {client.postcode}</p>
+                    <p className="text-base">
+                      {client.suburb} {client.state} {client.postcode}
+                    </p>
                     <p className="text-base">{client.country}</p>
                   </div>
                 </div>
               </div>
-              
+
               <Separator />
-              
+
               <div className="space-y-2">
                 <p className="text-sm font-medium text-muted-foreground">Communication Preferences</p>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">Appointment Reminders: {client.appointmentReminders.join(', ')}</Badge>
+                  <Badge variant="outline">Appointment Reminders: {client.appointmentReminders.join(", ")}</Badge>
                   <Badge variant={client.marketingMessages ? "default" : "secondary"}>
-                    Marketing Messages: {client.marketingMessages ? 'Yes' : 'No'}
+                    Marketing Messages: {client.marketingMessages ? "Yes" : "No"}
                   </Badge>
                 </div>
               </div>
@@ -410,9 +401,13 @@ const ClientDetails = () => {
 
           {/* NDIS Details Section */}
           {client.ndisParticipantNumber && (
-            <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(180,15%,65%)]' : 'border-l-4 border-green-500'}>
-              <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(180,15%,88%)]' : 'bg-green-50'}>
-                <CardTitle className={theme === 'e-ink' ? '!text-[hsl(180,20%,25%)]' : 'text-green-700'}>NDIS Plan Details</CardTitle>
+            <Card
+              className={theme === "e-ink" ? "border-l-4 border-[hsl(180,15%,65%)]" : "border-l-4 border-green-500"}
+            >
+              <CardHeader className={theme === "e-ink" ? "bg-[hsl(180,15%,88%)]" : "bg-green-50"}>
+                <CardTitle className={theme === "e-ink" ? "!text-[hsl(180,20%,25%)]" : "text-green-700"}>
+                  NDIS Plan Details
+                </CardTitle>
                 <CardDescription>National Disability Insurance Scheme information</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-6">
@@ -443,9 +438,11 @@ const ClientDetails = () => {
           )}
 
           {/* Clinical & Case Information Section */}
-          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(40,15%,65%)]' : 'border-l-4 border-green-500'}>
-            <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(40,15%,88%)]' : 'bg-green-50'}>
-              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(40,20%,25%)]' : 'text-green-700'}>Clinical & Case Information</CardTitle>
+          <Card className={theme === "e-ink" ? "border-l-4 border-[hsl(40,15%,65%)]" : "border-l-4 border-green-500"}>
+            <CardHeader className={theme === "e-ink" ? "bg-[hsl(40,15%,88%)]" : "bg-green-50"}>
+              <CardTitle className={theme === "e-ink" ? "!text-[hsl(40,20%,25%)]" : "text-green-700"}>
+                Clinical & Case Information
+              </CardTitle>
               <CardDescription>Treatment and case details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
@@ -471,9 +468,9 @@ const ClientDetails = () => {
                   <p className="text-base">{client.lawyerSolicitor}</p>
                 </div>
               </div>
-              
+
               <Separator />
-              
+
               <div className="space-y-2">
                 <p className="text-sm font-medium text-muted-foreground">Appointment Notes</p>
                 <div className="bg-muted/50 p-3 rounded-md">
@@ -485,9 +482,13 @@ const ClientDetails = () => {
 
           {/* Legal Issues Section */}
           {client.hasLegalIssues && (
-            <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(340,15%,65%)]' : 'border-l-4 border-green-500'}>
-              <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(340,15%,88%)]' : 'bg-green-50'}>
-                <CardTitle className={theme === 'e-ink' ? '!text-[hsl(340,20%,25%)]' : 'text-green-700'}>Legal Issues</CardTitle>
+            <Card
+              className={theme === "e-ink" ? "border-l-4 border-[hsl(340,15%,65%)]" : "border-l-4 border-green-500"}
+            >
+              <CardHeader className={theme === "e-ink" ? "bg-[hsl(340,15%,88%)]" : "bg-green-50"}>
+                <CardTitle className={theme === "e-ink" ? "!text-[hsl(340,20%,25%)]" : "text-green-700"}>
+                  Legal Issues
+                </CardTitle>
                 <CardDescription>Active legal matters and court orders</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-6">
@@ -496,7 +497,7 @@ const ClientDetails = () => {
                   {client.detention && <Badge variant="destructive">Detention</Badge>}
                   {client.communityService && <Badge variant="outline">Community Service</Badge>}
                 </div>
-                
+
                 {client.legalNotes && (
                   <div className="space-y-2">
                     <p className="text-sm font-medium text-muted-foreground">Legal Notes</p>
@@ -510,9 +511,11 @@ const ClientDetails = () => {
           )}
 
           {/* Billing Information Section */}
-          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(50,15%,65%)]' : 'border-l-4 border-green-500'}>
-            <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(50,15%,88%)]' : 'bg-green-50'}>
-              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(50,20%,25%)]' : 'text-green-700'}>Billing & Invoicing</CardTitle>
+          <Card className={theme === "e-ink" ? "border-l-4 border-[hsl(50,15%,65%)]" : "border-l-4 border-green-500"}>
+            <CardHeader className={theme === "e-ink" ? "bg-[hsl(50,15%,88%)]" : "bg-green-50"}>
+              <CardTitle className={theme === "e-ink" ? "!text-[hsl(50,20%,25%)]" : "text-green-700"}>
+                Billing & Invoicing
+              </CardTitle>
               <CardDescription>Payment and invoicing details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
@@ -526,7 +529,7 @@ const ClientDetails = () => {
                   <p className="text-base">{client.emailInvoiceTo}</p>
                 </div>
               </div>
-              
+
               {client.invoiceExtraInfo && (
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-muted-foreground">Additional Information</p>
@@ -539,9 +542,11 @@ const ClientDetails = () => {
           </Card>
 
           {/* Emergency Contact Section */}
-          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(25,15%,65%)]' : 'border-l-4 border-green-500'}>
-            <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(25,15%,88%)]' : 'bg-green-50'}>
-              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(25,20%,25%)]' : 'text-green-700'}>Emergency Contact</CardTitle>
+          <Card className={theme === "e-ink" ? "border-l-4 border-[hsl(25,15%,65%)]" : "border-l-4 border-green-500"}>
+            <CardHeader className={theme === "e-ink" ? "bg-[hsl(25,15%,88%)]" : "bg-green-50"}>
+              <CardTitle className={theme === "e-ink" ? "!text-[hsl(25,20%,25%)]" : "text-green-700"}>
+                Emergency Contact
+              </CardTitle>
               <CardDescription>Emergency contact information</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
@@ -576,9 +581,11 @@ const ClientDetails = () => {
           </Card>
 
           {/* Referral Information Section */}
-          <Card className={theme === 'e-ink' ? 'border-l-4 border-[hsl(140,15%,65%)]' : 'border-l-4 border-green-500'}>
-            <CardHeader className={theme === 'e-ink' ? 'bg-[hsl(140,15%,88%)]' : 'bg-green-50'}>
-              <CardTitle className={theme === 'e-ink' ? '!text-[hsl(140,20%,25%)]' : 'text-green-700'}>Referral Information</CardTitle>
+          <Card className={theme === "e-ink" ? "border-l-4 border-[hsl(140,15%,65%)]" : "border-l-4 border-green-500"}>
+            <CardHeader className={theme === "e-ink" ? "bg-[hsl(140,15%,88%)]" : "bg-green-50"}>
+              <CardTitle className={theme === "e-ink" ? "!text-[hsl(140,20%,25%)]" : "text-green-700"}>
+                Referral Information
+              </CardTitle>
               <CardDescription>Referral source and details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
@@ -679,11 +686,12 @@ const ClientDetails = () => {
                 {cases.map((caseItem) => (
                   <Card key={caseItem.id} className="overflow-hidden">
                     <div className="flex flex-col md:flex-row">
-                      <div className="md:w-2 bg-primary" 
+                      <div
+                        className="md:w-2 bg-primary"
                         style={{
-                          backgroundColor: caseItem.status === 'active' ? 'green' : 
-                                         caseItem.status === 'pending' ? 'orange' : 'blue'
-                        }} 
+                          backgroundColor:
+                            caseItem.status === "active" ? "green" : caseItem.status === "pending" ? "orange" : "blue",
+                        }}
                       />
                       <CardContent className="p-6 flex-1">
                         <div className="flex flex-col md:flex-row md:items-center justify-between">
@@ -694,9 +702,7 @@ const ClientDetails = () => {
                               <span className="hidden md:inline mx-2">•</span>
                               <span>Last updated: {formatDate(caseItem.lastUpdated)}</span>
                             </div>
-                            <div className="mt-2">
-                              {renderStatusBadge(caseItem.status)}
-                            </div>
+                            <div className="mt-2">{renderStatusBadge(caseItem.status)}</div>
                           </div>
                           <div className="mt-4 md:mt-0 flex gap-2">
                             <Button asChild variant="outline" size="sm">
@@ -734,12 +740,17 @@ const ClientDetails = () => {
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h4 className="font-medium">Initial Consultation Notes</h4>
-                      <p className="text-xs text-muted-foreground">Added by: Sarah Johnson • {formatDate('2023-01-10')}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Added by: Sarah Johnson • {formatDate("2023-01-10")}
+                      </p>
                     </div>
                     <Badge variant="outline">Confidential</Badge>
                   </div>
                   <p className="text-sm mt-2">
-                    Client appears to have a strong case for workers compensation. Employer failed to provide appropriate safety equipment despite prior complaints. Medical evidence supports causation between the workplace incident and physical injury. Mental health symptoms developed afterward and appear related.
+                    Client appears to have a strong case for workers compensation. Employer failed to provide
+                    appropriate safety equipment despite prior complaints. Medical evidence supports causation between
+                    the workplace incident and physical injury. Mental health symptoms developed afterward and appear
+                    related.
                   </p>
                 </div>
 
@@ -747,12 +758,17 @@ const ClientDetails = () => {
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h4 className="font-medium">Case Strategy Notes</h4>
-                      <p className="text-xs text-muted-foreground">Added by: Michael Brown • {formatDate('2023-02-15')}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Added by: Michael Brown • {formatDate("2023-02-15")}
+                      </p>
                     </div>
                     <Badge variant="outline">Confidential</Badge>
                   </div>
                   <p className="text-sm mt-2">
-                    Focus strategy on both physical and psychological injury components. Need to gather additional evidence regarding prior complaints about safety equipment. Consider requesting witness statements from colleagues who were present during the incident. Psychological assessment will be key to establishing extent of mental health impact.
+                    Focus strategy on both physical and psychological injury components. Need to gather additional
+                    evidence regarding prior complaints about safety equipment. Consider requesting witness statements
+                    from colleagues who were present during the incident. Psychological assessment will be key to
+                    establishing extent of mental health impact.
                   </p>
                 </div>
               </div>
