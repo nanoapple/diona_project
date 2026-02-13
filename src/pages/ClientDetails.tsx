@@ -222,12 +222,16 @@ const ClientDetails = () => {
   };
 
   const getSexFullName = (sex: string): string => {
+    // Handle both abbreviated and full names for backwards compatibility
     const sexMap: Record<string, string> = {
       'M': 'Male',
       'F': 'Female',
+      'X': 'Non-binary',
       'O': 'Other',
       'Male': 'Male',
       'Female': 'Female',
+      'Non-binary': 'Non-binary',
+      'Intersex': 'Intersex',
       'Other': 'Other',
     };
     return sexMap[sex] || sex;
