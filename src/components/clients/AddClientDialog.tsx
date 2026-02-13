@@ -638,9 +638,9 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
                       <SelectValue placeholder="Select sex" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="M">Male</SelectItem>
-                      <SelectItem value="F">Female</SelectItem>
-                      <SelectItem value="X">Non-binary</SelectItem>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                      <SelectItem value="Non-binary">Non-binary</SelectItem>
                       <SelectItem value="Intersex">Intersex</SelectItem>
                     </SelectContent>
                   </Select>
