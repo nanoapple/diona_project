@@ -246,9 +246,26 @@ const Clients = () => {
           communicationPreferences: 'communication_preferences',
           engagementEnabled: 'engagement_enabled',
         };
+        // Keys that are NOT direct DB columns (nested in JSONB or computed)
+        const skipKeys = new Set([
+          'id', 'name', 'address', 'phone',
+          // These are part of legal_details JSONB, not standalone columns
+          'courtOrder', 'detention', 'communityService', 'legalNotes',
+          // These are part of emergency_contact JSONB
+          'emergencyContactName', 'emergencyContactRelationship', 'emergencyContactPhone', 'emergencyContactEmail',
+          // These are part of billing_details JSONB
+          'invoiceTo', 'emailInvoiceTo', 'invoiceExtraInfo',
+          // These are part of referral_details JSONB
+          'referringPractitioner', 'referralType', 'referralSource',
+          // These are part of communication_preferences JSONB
+          'appointmentReminders', 'marketingMessages', 'bookingConfirmationEmails', 'bookingCancellationEmails',
+          // UI-only fields
+          'privacyPolicyConsent', 'shareDataWithTeam', 'emergencyConsentNotes', 'appointmentNotes',
+          'caseIds', 'birthDay', 'birthMonth', 'birthYear', 'customPronouns',
+        ]);
 
         for (const [key, value] of Object.entries(editedData)) {
-          if (key === 'id' || key === 'name' || key === 'address' || key === 'phone') continue;
+          if (skipKeys.has(key)) continue;
           const dbKey = keyMap[key] || key;
           dbData[dbKey] = value;
         }
