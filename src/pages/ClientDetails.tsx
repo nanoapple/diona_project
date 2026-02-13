@@ -221,6 +221,18 @@ const ClientDetails = () => {
     }
   };
 
+  const getSexFullName = (sex: string): string => {
+    const sexMap: Record<string, string> = {
+      'M': 'Male',
+      'F': 'Female',
+      'O': 'Other',
+      'Male': 'Male',
+      'Female': 'Female',
+      'Other': 'Other',
+    };
+    return sexMap[sex] || sex;
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -309,8 +321,8 @@ const ClientDetails = () => {
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">Sex</p>
-                  <p className="text-base">{client.sex}</p>
+                   <p className="text-sm font-medium text-muted-foreground">Sex</p>
+                   <p className="text-base">{getSexFullName(client.sex)}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">Gender Identity</p>
