@@ -10,6 +10,18 @@ import { User, Calendar, Phone, Mail, MapPin, FileText, Archive, AlertCircle } f
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/components/ThemeProvider";
 
+const getSexFullName = (sex: string): string => {
+  const map: Record<string, string> = {
+    M: "Male",
+    F: "Female",
+    Male: "Male",
+    Female: "Female",
+    Intersex: "Intersex",
+    "Prefer not to say": "Prefer not to say",
+  };
+  return map[sex] || sex;
+};
+
 interface ClientDetail {
   id: string;
   // Personal Details
