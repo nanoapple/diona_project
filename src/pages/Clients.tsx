@@ -264,10 +264,13 @@ const Clients = () => {
           'caseIds', 'birthDay', 'birthMonth', 'birthYear', 'customPronouns',
         ]);
 
+        const dateColumns = new Set(['date_of_birth', 'date_of_injury', 'ndis_start_date', 'ndis_end_date']);
+
         for (const [key, value] of Object.entries(editedData)) {
           if (skipKeys.has(key)) continue;
           const dbKey = keyMap[key] || key;
-          dbData[dbKey] = value;
+          // Convert empty strings to null for date columns
+          dbData[dbKey] = dateColumns.has(dbKey) && value === '' ? null : value;
         }
 
         await updateClient({
