@@ -336,7 +336,33 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
   };
 
   const updateField = (field: keyof ClientFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+      
+      // Cascading logic: country → state → timeZone
+      if (field === 'country') {
+        updated.state = '';
+        updated.timeZone = '';
+        updated.postcode = '';
+      }
+      if (field === 'state') {
+        const tzMap: Record<string, string> = {
+          'NSW': 'Australia/Sydney',
+          'VIC': 'Australia/Melbourne',
+          'QLD': 'Australia/Brisbane',
+          'SA': 'Australia/Adelaide',
+          'WA': 'Australia/Perth',
+          'TAS': 'Australia/Hobart',
+          'NT': 'Australia/Darwin',
+          'ACT': 'Australia/Sydney',
+        };
+        if (updated.country === 'Australia' && tzMap[value as string]) {
+          updated.timeZone = tzMap[value as string];
+        }
+      }
+      
+      return updated;
+    });
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -750,20 +776,80 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="state">State</Label>
-                  <Select value={formData.state} onValueChange={(value) => updateField('state', value)}>
+                  <Label htmlFor="country">Country</Label>
+                  <Select value={formData.country} onValueChange={(value) => updateField('country', value)}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select state" />
+                      <SelectValue placeholder="Select country" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="NSW">NSW</SelectItem>
-                      <SelectItem value="VIC">VIC</SelectItem>
-                      <SelectItem value="QLD">QLD</SelectItem>
-                      <SelectItem value="SA">SA</SelectItem>
-                      <SelectItem value="WA">WA</SelectItem>
-                      <SelectItem value="TAS">TAS</SelectItem>
-                      <SelectItem value="NT">NT</SelectItem>
-                      <SelectItem value="ACT">ACT</SelectItem>
+                      <SelectItem value="Australia">Australia</SelectItem>
+                      <SelectItem value="New Zealand">New Zealand</SelectItem>
+                      <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                      <SelectItem value="United States">United States</SelectItem>
+                      <SelectItem value="Canada">Canada</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="state">State / Region</Label>
+                  <Select value={formData.state} onValueChange={(value) => updateField('state', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select state/region" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {formData.country === 'Australia' && (
+                        <>
+                          <SelectItem value="NSW">New South Wales (NSW)</SelectItem>
+                          <SelectItem value="VIC">Victoria (VIC)</SelectItem>
+                          <SelectItem value="QLD">Queensland (QLD)</SelectItem>
+                          <SelectItem value="SA">South Australia (SA)</SelectItem>
+                          <SelectItem value="WA">Western Australia (WA)</SelectItem>
+                          <SelectItem value="TAS">Tasmania (TAS)</SelectItem>
+                          <SelectItem value="NT">Northern Territory (NT)</SelectItem>
+                          <SelectItem value="ACT">Australian Capital Territory (ACT)</SelectItem>
+                        </>
+                      )}
+                      {formData.country === 'New Zealand' && (
+                        <>
+                          <SelectItem value="AUK">Auckland</SelectItem>
+                          <SelectItem value="WGN">Wellington</SelectItem>
+                          <SelectItem value="CAN">Canterbury</SelectItem>
+                          <SelectItem value="WKO">Waikato</SelectItem>
+                          <SelectItem value="BOP">Bay of Plenty</SelectItem>
+                          <SelectItem value="OTA">Otago</SelectItem>
+                        </>
+                      )}
+                      {formData.country === 'United Kingdom' && (
+                        <>
+                          <SelectItem value="ENG">England</SelectItem>
+                          <SelectItem value="SCT">Scotland</SelectItem>
+                          <SelectItem value="WLS">Wales</SelectItem>
+                          <SelectItem value="NIR">Northern Ireland</SelectItem>
+                        </>
+                      )}
+                      {formData.country === 'United States' && (
+                        <>
+                          <SelectItem value="CA">California</SelectItem>
+                          <SelectItem value="NY">New York</SelectItem>
+                          <SelectItem value="TX">Texas</SelectItem>
+                          <SelectItem value="FL">Florida</SelectItem>
+                          <SelectItem value="IL">Illinois</SelectItem>
+                          <SelectItem value="WA_US">Washington</SelectItem>
+                        </>
+                      )}
+                      {formData.country === 'Canada' && (
+                        <>
+                          <SelectItem value="ON">Ontario</SelectItem>
+                          <SelectItem value="QC">Quebec</SelectItem>
+                          <SelectItem value="BC">British Columbia</SelectItem>
+                          <SelectItem value="AB">Alberta</SelectItem>
+                        </>
+                      )}
+                      {(!formData.country || formData.country === 'Other') && (
+                        <SelectItem value="other">Other</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -778,28 +864,50 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="country">Country</Label>
-                  <Input
-                    id="country"
-                    value={formData.country}
-                    onChange={(e) => updateField('country', e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-2">
                   <Label>Time Zone</Label>
                   <Select value={formData.timeZone} onValueChange={(value) => updateField('timeZone', value)}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Select time zone" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Australia/Sydney">Australia/Sydney</SelectItem>
-                      <SelectItem value="Australia/Melbourne">Australia/Melbourne</SelectItem>
-                      <SelectItem value="Australia/Brisbane">Australia/Brisbane</SelectItem>
-                      <SelectItem value="Australia/Adelaide">Australia/Adelaide</SelectItem>
-                      <SelectItem value="Australia/Perth">Australia/Perth</SelectItem>
-                      <SelectItem value="Australia/Darwin">Australia/Darwin</SelectItem>
-                      <SelectItem value="Australia/Hobart">Australia/Hobart</SelectItem>
+                      {formData.country === 'Australia' && (
+                        <>
+                          <SelectItem value="Australia/Sydney">Australia/Sydney (AEST)</SelectItem>
+                          <SelectItem value="Australia/Melbourne">Australia/Melbourne (AEST)</SelectItem>
+                          <SelectItem value="Australia/Brisbane">Australia/Brisbane (AEST)</SelectItem>
+                          <SelectItem value="Australia/Adelaide">Australia/Adelaide (ACST)</SelectItem>
+                          <SelectItem value="Australia/Perth">Australia/Perth (AWST)</SelectItem>
+                          <SelectItem value="Australia/Darwin">Australia/Darwin (ACST)</SelectItem>
+                          <SelectItem value="Australia/Hobart">Australia/Hobart (AEST)</SelectItem>
+                        </>
+                      )}
+                      {formData.country === 'New Zealand' && (
+                        <>
+                          <SelectItem value="Pacific/Auckland">Pacific/Auckland (NZST)</SelectItem>
+                          <SelectItem value="Pacific/Chatham">Pacific/Chatham</SelectItem>
+                        </>
+                      )}
+                      {formData.country === 'United Kingdom' && (
+                        <SelectItem value="Europe/London">Europe/London (GMT/BST)</SelectItem>
+                      )}
+                      {formData.country === 'United States' && (
+                        <>
+                          <SelectItem value="America/New_York">Eastern (ET)</SelectItem>
+                          <SelectItem value="America/Chicago">Central (CT)</SelectItem>
+                          <SelectItem value="America/Denver">Mountain (MT)</SelectItem>
+                          <SelectItem value="America/Los_Angeles">Pacific (PT)</SelectItem>
+                        </>
+                      )}
+                      {formData.country === 'Canada' && (
+                        <>
+                          <SelectItem value="America/Toronto">Eastern (ET)</SelectItem>
+                          <SelectItem value="America/Vancouver">Pacific (PT)</SelectItem>
+                          <SelectItem value="America/Edmonton">Mountain (MT)</SelectItem>
+                        </>
+                      )}
+                      {(!formData.country || formData.country === 'Other') && (
+                        <SelectItem value="UTC">UTC</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
