@@ -642,6 +642,7 @@ export function AddClientDialog({ isOpen, onOpenChange, onClientCreated }: AddCl
                       <SelectItem value="Female">Female</SelectItem>
                       <SelectItem value="Non-binary">Non-binary</SelectItem>
                       <SelectItem value="Intersex">Intersex</SelectItem>
+                      <SelectItem value="Prefer not to say">Prefer not to say</SelectItem>
                     </SelectContent>
                   </Select>
                   {errors.sex && (
